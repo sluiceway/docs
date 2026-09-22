@@ -41,6 +41,19 @@ describe("resolveLink", () => {
     // Covered by the generated reference.
     ["README.md", "docs/reference.md#inputs", "/docs/reference/action/#inputs"],
     ["docs/README.md", "reference.md", "/docs/reference/action/"],
+    // The live site, as the README links to it since v0.25.0: the same page of this build.
+    ["README.md", "https://docs.sluiceway.dev/", "/docs/"],
+    ["README.md", "https://docs.sluiceway.dev/roadmap/", "/docs/roadmap/"],
+    [
+      "README.md",
+      "https://docs.sluiceway.dev/guides/workflow/#pin-a-commit",
+      "/docs/guides/workflow/#pin-a-commit",
+    ],
+    [
+      "README.md",
+      "https://docs.sluiceway.dev/reference/action/#inputs",
+      "/docs/reference/action/#inputs",
+    ],
     // Not on the site: GitHub at the pinned tag.
     ["docs/security.md", "../SECURITY.md", `${blob}/SECURITY.md`],
     ["README.md", "#more", `${blob}/README.md#more`],
@@ -63,6 +76,18 @@ describe("resolveLink", () => {
   test("a heading the file does not have is a warning", () => {
     const got = resolveLink("../README.md#no-such-heading", "docs/security.md", site);
     expect(got.warning).toContain("no-such-heading");
+  });
+
+  test("a page or heading of the live site this build does not have is a warning", () => {
+    const page = resolveLink("https://docs.sluiceway.dev/guides/nowhere/", "README.md", site);
+    expect(page.warning).toContain("no page guides/nowhere");
+    const heading = resolveLink(
+      "https://docs.sluiceway.dev/guides/workflow/#nowhere",
+      "README.md",
+      site,
+    );
+    expect(heading.url).toBe("/docs/guides/workflow/#nowhere");
+    expect(heading.warning).toContain('no id "nowhere"');
   });
 
   test("a file the action does not have is a warning", () => {

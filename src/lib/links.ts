@@ -14,7 +14,15 @@ export interface SiteMap {
   files: Map<string, string>;
   /** Every heading id GitHub gives an action file, for telling a missing heading apart. */
   slugs: Map<string, Set<string>>;
+  /**
+   * Every page id, to its URL and the heading ids it shows. No ids means the page has ids this
+   * map cannot know before rendering (a page written here, the glossary's terms): any fragment.
+   */
+  pages: Map<string, { url: string; ids?: Set<string> }>;
 }
+
+/** The live site. The action links to it by full URL, and those links land on this build. */
+export const LIVE_SITE = "https://docs.sluiceway.dev/";
 
 export interface Resolved {
   url: string;
@@ -26,6 +34,7 @@ const EXTERNAL = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
 
 /** Where a link in `from` (an action file) should go. */
 export function resolveLink(href: string, from: string, site: SiteMap): Resolved {
+  if (href.startsWith(LIVE_SITE)) return liveLink(href, from, site);
   if (EXTERNAL.test(href) || href.startsWith("/")) return { url: href };
   const hash = href.indexOf("#");
   const pathPart = hash === -1 ? href : href.slice(0, hash);
@@ -48,6 +57,24 @@ export function resolveLink(href: string, from: string, site: SiteMap): Resolved
     return { url: githubUrl(path, fragment), warning: missing(path, from, href) };
   }
   return { url: site.files.get(path) ?? githubUrl(path), warning: missing(path, from, href) };
+}
+
+/**
+ * A link to a page of the live site goes to the same page of this build, which shows the same
+ * pinned tag and works under any base. A page or heading this build does not have is a warning.
+ */
+function liveLink(href: string, from: string, site: SiteMap): Resolved {
+  const [path = "", fragment = ""] = href.slice(LIVE_SITE.length).split("#");
+  const id = path.replace(/\/$/, "");
+  const page = site.pages.get(id);
+  if (!page) {
+    return { url: href, warning: `${from} links to ${href}, and this site has no page ${id}.` };
+  }
+  const known = !fragment || !page.ids || page.ids.has(decodeURIComponent(fragment));
+  return {
+    url: fragment ? `${page.url}#${fragment}` : page.url,
+    warning: known ? undefined : `${from} links to ${href}, and that page has no id "${fragment}".`,
+  };
 }
 
 /** A warning when the linked file is not in the action at the pinned tag. */

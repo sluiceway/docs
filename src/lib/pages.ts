@@ -238,6 +238,10 @@ function firstParagraph(path: string, title: string, retitle?: string): Part {
   };
 }
 
+function isGenerated(part: Part): boolean {
+  return part.headings.length === 0 && part.dropped === undefined;
+}
+
 /** Generated Markdown, resolved against `from` for its links. It holds no source headings. */
 function generated(from: string, markdown: string): Part {
   return { from, markdown, headings: [] };
@@ -451,13 +455,25 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/workflow",
       title: titleOf("docs/workflow.md"),
       description:
-        "The check and the whole workflow part by part, with what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
+        "The check, the one-job workflow and what it gives up, and what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
       source: "docs/workflow.md",
       headerPicture: {
         picture: "pending-5",
         alt: "5 stacks are pending: five crates wait upstream of Penny, the sluice gate",
       },
       parts: [wholeFile("docs/workflow.md")],
+    },
+    {
+      id: "guides/split-workflow",
+      title: titleOf("docs/split-workflow.md"),
+      description:
+        "The same loop as four jobs, for credentials that only read in scans, an environment per stack, and issue edits that start no job with credentials.",
+      source: "docs/split-workflow.md",
+      headerPicture: {
+        picture: "deploying-4",
+        alt: "A stack is deploying, 4 stacks are pending: the gate is open, one crate goes through it and four wait upstream",
+      },
+      parts: [wholeFile("docs/split-workflow.md")],
     },
     {
       id: "guides/read-only-trial",
@@ -526,7 +542,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/notifications",
       title: titleOf("docs/notifications.md"),
       description:
-        "The outputs and the result file a later step can use to tell people or chart numbers.",
+        "Opt-in messages to Slack, Telegram or a webhook when stacks are pending or a deploy fails, and the outputs and result file for anything else.",
       source: "docs/notifications.md",
       headerPicture: {
         picture: "in-sync",
@@ -792,16 +808,28 @@ export function urlFor(base: string): (id: string) => string {
  * a page id, with an optional `#fragment`, into a URL.
  */
 export function siteMap(all: Page[], url: (id: string) => string): SiteMap {
-  const site: SiteMap = { anchors: new Map(), files: new Map(), slugs: new Map() };
+  const site: SiteMap = {
+    anchors: new Map(),
+    files: new Map(),
+    slugs: new Map(),
+    pages: new Map(),
+  };
+  for (const id of Object.values(SLICE_3).filter(written)) site.pages.set(id, { url: url(id) });
   for (const page of all) {
+    // Generated headings and the glossary's terms get their ids when the page renders.
+    const open =
+      page.termAnchors || page.parts.some((p) => isGenerated(p) && /^#/m.test(p.markdown));
+    const ids = open ? undefined : new Set<string>();
+    site.pages.set(page.id, { url: url(page.id), ids });
     if (!site.files.has(page.source) && page.source !== README) {
       site.files.set(page.source, url(page.id));
     }
     for (const part of page.parts) {
-      if (part.headings.length === 0 && part.dropped === undefined) continue;
+      if (isGenerated(part)) continue;
       const slugs = githubSlugs(part.from);
       site.slugs.set(part.from, new Set(slugs));
       for (const i of part.headings) {
+        ids?.add(slugs[i] ?? "");
         site.anchors.set(`${part.from}#${slugs[i]}`, url(`${page.id}#${slugs[i]}`));
       }
       if (part.dropped !== undefined) {
@@ -810,6 +838,8 @@ export function siteMap(all: Page[], url: (id: string) => string): SiteMap {
     }
   }
   for (const entry of covered()) {
+    const [id = "", fragment] = entry.page.split("#");
+    if (fragment) site.pages.get(id)?.ids?.add(fragment);
     if (entry.link.includes("#")) site.anchors.set(entry.link, url(entry.page));
     else site.files.set(entry.link, url(entry.page));
   }
@@ -873,6 +903,7 @@ export function sidebar(): SidebarItem[] {
       label: "Guides",
       items: [
         { slug: "guides/workflow" },
+        { slug: "guides/split-workflow" },
         { slug: "guides/read-only-trial" },
         { slug: "guides/init" },
         { slug: "guides/configuration" },
