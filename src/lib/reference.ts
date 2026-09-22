@@ -82,8 +82,19 @@ function constraints(node: SchemaNode, what = "The value"): string[] {
     out.push(`${what} needs ${node.required.map(code).join(" and ")}.`);
   }
   if (node.items) out.push(...constraints(node.items, "Each entry"));
+  // With alternatives of more than one kind, each limit says which kind it is for.
+  const kinds = new Set((node.anyOf ?? []).map((alt) => alt.type));
+  const ofKind = (word: string) => (what === "Each entry" ? `Each ${word} entry` : `A ${word}`);
   for (const alt of node.anyOf ?? []) {
-    out.push(...constraints(alt, alt.type === "array" ? "A list" : what));
+    const kind =
+      alt.type === "array"
+        ? "A list"
+        : kinds.size > 1 && alt.type === "object"
+          ? ofKind("mapping")
+          : kinds.size > 1 && alt.type === "string" && alt.const === undefined
+            ? ofKind("string")
+            : what;
+    out.push(...constraints(alt, kind));
   }
   return [...new Set(out)];
 }
@@ -98,13 +109,16 @@ function flagsAsCode(text: string): string {
 
 /**
  * A description that says what a key means for each tool, as "helm: ... kubectl: ...", with
- * each tool's sentences as an item of its own. What comes before the first tool stays a
- * paragraph. The items take `*`, so they do not run into the list of facts under them.
+ * each tool's sentences as an item of its own. A lead can name two tools, as "opentofu and
+ * terraform: ...", and a key's own values lead the same way, as `wrapper`'s "terragrunt: ...".
+ * What comes before the first lead stays a paragraph. The items take `*`, so they do not run
+ * into the list of facts under them.
  */
 function describe(description: string, tools: readonly string[]): string[] {
   const text = flagsAsCode(description);
   if (tools.length === 0) return [text];
-  const lead = new RegExp(`(?:^|(?<=\\. ))(${tools.join("|")}): `, "g");
+  const one = tools.join("|");
+  const lead = new RegExp(`(?:^|(?<=\\. ))((?:${one})(?: and (?:${one}))*): `, "g");
   const starts = [...text.matchAll(lead)];
   const first = starts[0];
   if (!first) return [text];
@@ -114,7 +128,8 @@ function describe(description: string, tools: readonly string[]): string[] {
   starts.forEach((match, i) => {
     const end = starts[i + 1]?.index ?? text.length;
     const body = text.slice(match.index + match[0].length, end).trim();
-    out.push(`* ${code(match[1])}: ${body}`);
+    const names = (match[1] ?? "").split(" and ").map(code).join(" and ");
+    out.push(`* ${names}: ${body}`);
   });
   return out;
 }
@@ -149,7 +164,13 @@ export function configReference(schemaJson: string, options: ConfigReferenceOpti
     const anchor = options.guideAnchors.get(key.path);
     if (anchor) facts.push(`- **In the guide:** [${key.path}](${options.guideUrl}#${anchor})`);
     out.push("", `${"#".repeat(depth)} ${code(key.path)}`, "");
-    if (node.description) out.push(...describe(node.description, tools), "");
+    const leads = [
+      ...tools,
+      ...allowed(node)
+        .map(String)
+        .filter((v) => !tools.includes(v)),
+    ];
+    if (node.description) out.push(...describe(node.description, leads), "");
     out.push(...facts);
   }
   return out.join("\n");
@@ -162,20 +183,43 @@ interface ActionYml {
   outputs?: { [name: string]: { description?: string } };
 }
 
+/**
+ * The modes and the values `true` and `false` in an input or output description, as code:
+ * "scan only. true turns the job red" reads "`scan` only. `true` turns the job red", as the
+ * action's own reference.md writes it. A mode is code only where it names the mode: before
+ * " only." and in the list after "Set by ".
+ */
+function valuesAsCode(text: string, modes: readonly string[]): string {
+  const mode = modes.join("|");
+  return text
+    .replace(new RegExp(`(^|\\. )(${mode}) only\\.`, "g"), "$1`$2` only.")
+    .replace(new RegExp(`\\bSet by ((?:${mode})(?:(?:, | and )(?:${mode}))*)\\b`, "g"), (all) =>
+      all.replace(new RegExp(`\\b(${mode})\\b`, "g"), "`$1`"),
+    )
+    .replace(/(^|[\s(])(true|false)(?=$|[\s.,;:)])/g, "$1`$2`");
+}
+
+/** The modes the `mode` input lists after "One of:". */
+function modesOf(action: ActionYml): string[] {
+  const list = /One of: ([a-z, ]+)\./.exec(action.inputs?.mode?.description ?? "")?.[1];
+  return list ? list.split(", ") : [];
+}
+
 /** The inputs and outputs of action.yml. */
 export function actionReference(actionYml: string): string {
   const action = Bun.YAML.parse(actionYml) as ActionYml;
+  const modes = modesOf(action);
   const out: string[] = ["## Inputs", "", "Generated from the action's `action.yml`."];
   for (const [name, input] of Object.entries(action.inputs ?? {})) {
     out.push("", `### ${code(name)}`, "");
-    if (input.description) out.push(input.description.trim(), "");
+    if (input.description) out.push(valuesAsCode(input.description.trim(), modes), "");
     out.push(`- **Required:** ${input.required ? "yes" : "no"}`);
     if (input.default !== undefined) out.push(`- **Default:** ${code(input.default)}`);
   }
   out.push("", "## Outputs", "", "Generated from the action's `action.yml`.");
   for (const [name, output] of Object.entries(action.outputs ?? {})) {
     out.push("", `### ${code(name)}`, "");
-    if (output.description) out.push(output.description.trim());
+    if (output.description) out.push(valuesAsCode(output.description.trim(), modes));
   }
   return out.join("\n");
 }
