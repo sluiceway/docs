@@ -5,7 +5,7 @@ description: Every state Penny draws at the top of the dashboard, and when the d
 
 import HeaderGallery from "../../components/HeaderGallery.astro";
 import { headerStates, waterSteps } from "../../lib/action-text";
-import { ROUTES } from "../../lib/routes";
+import { glossary, ROUTES } from "../../lib/routes";
 
 export const pictures = [
   { picture: "first-run", alt: "Penny beside an empty channel: the scan found no stacks" },
@@ -81,8 +81,15 @@ The water upstream of Penny rises in five steps, with one amber mark each on the
   </tbody>
 </table>
 
+## The spinner is not a header
+
+A deploying or queued row starts with the <a href={glossary("Spinner")}>spinner</a>, a small
+crate on its way through the gate. It comes from the same release tag as the header, and it
+says only that the row's deploy is on its way, not the state of the dashboard, so it is not in
+the pictures above.
+
 ## Without the header
 
 With <a href={ROUTES.personality}><code>dashboard.personality: false</code></a>{" "}
-the dashboard shows no header and none of the two voiced lines, and keeps the counts, the rows
-and the plain wording.
+the dashboard shows no header, no spinner and none of the two voiced lines, and keeps the
+counts, the rows and the plain wording.
