@@ -77,6 +77,7 @@ export interface Application {
 
 export function softwareApplication(app: Application): object {
   const runners = supportedRunners();
+  const tools = supportedTools();
   return {
     "@context": "https://schema.org",
     // Also SoftwareSourceCode, the type that has `codeRepository`: the action is its code.
@@ -85,6 +86,7 @@ export function softwareApplication(app: Application): object {
     description: app.description,
     applicationCategory: "DeveloperApplication",
     ...(runners ? { operatingSystem: runners } : {}),
+    ...(tools ? { keywords: ["GitHub Action", ...tools].join(", ") } : {}),
     softwareVersion: app.version,
     license: "https://www.apache.org/licenses/LICENSE-2.0",
     url: app.url,
@@ -104,6 +106,17 @@ export function supportedRunners(): string | undefined {
   const readme = readVendor("README.md", "The start page's structured data");
   const line = /^- \*\*(GitHub Actions runners[^*]*?)\.?\*\*/m.exec(readme);
   return line?.[1];
+}
+
+/**
+ * The tools the README's "How it works" says Sluiceway works with, such as "Pulumi" and
+ * "Kubernetes manifests", or undefined when the sentence no longer says. Only a tool the
+ * pinned text names becomes a keyword.
+ */
+export function supportedTools(): string[] | undefined {
+  const readme = readVendor("README.md", "The start page's structured data");
+  const list = /^.*\bIt works with (.+?), side by side\b/m.exec(readme)?.[1];
+  return list?.split(/, | and /).map((tool) => tool.trim());
 }
 
 /** JSON for inside a <script>, with `<` escaped so no string can close the element. */

@@ -255,6 +255,7 @@ describe("JSON-LD", () => {
     expect(app.offers).toEqual({ "@type": "Offer", price: "0", priceCurrency: "USD" });
     expect(String(app.description)).toStartWith("Sluiceway keeps one GitHub issue");
     expect(String(app.operatingSystem)).toStartWith("GitHub Actions runners");
+    expect(String(app.keywords)).toStartWith("GitHub Action, Pulumi, OpenTofu");
   });
 
   test("every docs page has a BreadcrumbList from home to itself", () => {

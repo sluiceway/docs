@@ -390,7 +390,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "how-it-works",
       title: "How it works",
       description:
-        "How a scan previews your Pulumi and OpenTofu stacks, how a tick asks for a deploy, and how the deploy checks the preview again.",
+        "How a scan previews your Pulumi, OpenTofu, Helm and Kubernetes manifests stacks, how a tick asks for a deploy, and how the deploy checks it again.",
       source: README,
       headerPicture: {
         picture: "pending-4",
@@ -583,6 +583,15 @@ export function pages(repoUrl: string, base: string): Page[] {
         alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
       },
       parts: [wholeFile("docs/onboarding-log.md")],
+    },
+    {
+      id: "roadmap",
+      title: titleOf("docs/roadmap.md"),
+      description:
+        "What Sluiceway does today, what comes before 1.0, and what comes after, each item with where it was decided.",
+      source: "docs/roadmap.md",
+      recordsContext: true,
+      parts: [wholeFile("docs/roadmap.md")],
     },
     {
       id: "not-in-v1",
@@ -828,7 +837,10 @@ export function sidebar(): SidebarItem[] {
       ],
     },
     { label: "Known rough edges", items: [{ slug: "onboarding-log" }] },
-    { label: "Not yet", items: [{ slug: "not-in-v1" }, { slug: "what-v1-is" }] },
+    {
+      label: "Not yet",
+      items: [{ slug: "roadmap" }, { slug: "not-in-v1" }, { slug: "what-v1-is" }],
+    },
     { label: "Changelog", items: [{ slug: "changelog" }] },
   ];
 }
