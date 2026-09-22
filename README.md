@@ -55,10 +55,10 @@ By hand:
 
 ```sh
 git -C vendor/sluiceway fetch --tags
-git -C vendor/sluiceway checkout v0.8.0
-git submodule set-branch --branch v0.8.0 vendor/sluiceway
+git -C vendor/sluiceway checkout v0.9.0
+git submodule set-branch --branch v0.9.0 vendor/sluiceway
 git add .gitmodules vendor/sluiceway
-git commit -m "chore: follow sluiceway v0.8.0"
+git commit -m "chore: follow sluiceway v0.9.0"
 ```
 
 Then run `bun run check` and open a pull request. `git submodule update --remote` does not work here, because the `branch` line names a tag.
