@@ -40,14 +40,24 @@ export interface Page {
   /** The action file shown as the page's source in the footer. */
   source: string;
   sidebarLabel?: string;
-  headerPicture?: { picture: string; alt: string };
+  /**
+   * The picture at the top of the page, which says what the page is about. Every page has one
+   * but a decision record that is not about Penny, which carries her mark beside its number.
+   */
+  headerPicture?: HeaderPicture;
   /** Bare record numbers in parentheses and table cells link to their records here. */
   recordsContext?: boolean;
   /** Give every `**Term**:` paragraph an id, for the glossary. */
   termAnchors?: boolean;
-  /** Written above the parts, as HTML, such as the record number of a decision record. */
+  /** Written above the parts, such as the record number of a decision record. */
   eyebrow?: string;
   parts: Part[];
+}
+
+/** One of Penny's header pictures: a file stem from the action's assets/mascot, and the state in words. */
+export interface HeaderPicture {
+  picture: string;
+  alt: string;
 }
 
 /**
@@ -289,6 +299,53 @@ export function recordDescription(record: Pick<DecisionRecord, "number" | "title
   return options.find((d) => d.length <= 160) ?? `${record.title.slice(0, 159)}.`;
 }
 
+/**
+ * The records about Penny and her pictures show the picture they are about at the top. Every
+ * other record carries her mark beside its number.
+ */
+export const RECORD_PICTURES: Record<string, HeaderPicture> = {
+  // The mascot is the gate and her name is Penny: Penny herself, at rest.
+  "0030": {
+    picture: "in-sync",
+    alt: "Every stack is in sync: Penny, the sluice gate with a face, rests on a calm quay",
+  },
+  // The header states, and bad news wins: the state that wins over all the others.
+  "0031": {
+    picture: "failing",
+    alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
+  },
+  // The files named by role: the first of them, the scan that found nothing yet.
+  "0033": {
+    picture: "first-run",
+    alt: "The scan found no stacks yet: Penny stands beside an empty channel",
+  },
+  // Penny mid-channel on a wide quay: the composition, with crates upstream.
+  "0038": {
+    picture: "pending-4",
+    alt: "4 stacks are pending: four crates wait upstream of Penny, who stands mid-channel on the quay",
+  },
+  // Pending pictures picked from the pending count: its middle picture had three crates.
+  "0039": {
+    picture: "pending-3",
+    alt: "3 stacks are pending: three crates wait upstream of Penny",
+  },
+  // A destroy adds a sign to the same picture.
+  "0043": {
+    picture: "deploying-destroys",
+    alt: "A stack is deploying, and some changes delete or replace resources: the destroy sign stands in the water",
+  },
+  // One crate per pending stack up to twelve, and the sign on its pole.
+  "0047": {
+    picture: "pending-12-destroys",
+    alt: "12 stacks are pending, some delete or replace resources: twelve crates wait upstream and the destroy sign stands on its pole",
+  },
+  // Drift, which added the seep through the closed gate to the pictures.
+  "0055": {
+    picture: "drift",
+    alt: "A stack drifted: water seeps through the closed gate and Penny looks at it",
+  },
+};
+
 export function recordId(record: Pick<DecisionRecord, "file">): string {
   return `why/${record.file.replace(/^docs\/adr\//, "").replace(/\.md$/, "")}`;
 }
@@ -309,6 +366,13 @@ export function changelogHeadings(markdown: string, repoUrl: string): string {
 
 export function pages(repoUrl: string, base: string): Page[] {
   const recordList = records();
+  for (const number of Object.keys(RECORD_PICTURES)) {
+    if (!recordList.some((r) => r.number === number)) {
+      throw new Error(
+        `RECORD_PICTURES names record ${number}, which the pinned tag does not have.`,
+      );
+    }
+  }
   const changelog = source("CHANGELOG.md");
   const versions = changelog.headings
     .filter((h) => h.depth === 2)
@@ -321,6 +385,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "How a scan previews your Pulumi and OpenTofu stacks, how a tick asks for a deploy, and how the deploy checks the preview again.",
       source: README,
+      headerPicture: {
+        picture: "pending-4",
+        alt: "4 stacks are pending: four crates wait upstream of Penny, the sluice gate",
+      },
       parts: [sectionPart(README, "How it works", { dropHeading: true })],
     },
     {
@@ -329,7 +397,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "Add Sluiceway to a repo of infrastructure as code one step at a time: check your setup, scan read only, then add the whole workflow.",
       source: README,
-      headerPicture: { picture: "first-run", alt: "The scan found no stacks yet" },
+      headerPicture: {
+        picture: "first-run",
+        alt: "The scan found no stacks yet: Penny stands beside an empty channel",
+      },
       parts: [
         sectionPart(README, "Get started", { dropHeading: true }),
         sectionPart(README, "Requirements"),
@@ -342,6 +413,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "How to read the dashboard's rows, tick to deploy a stack, read the job log, and the limits to know.",
       source: README,
+      headerPicture: {
+        picture: "pending-4-destroys",
+        alt: "4 stacks are pending, some delete or replace resources: the destroy sign stands in the water",
+      },
       parts: [
         sectionPart(README, "Using the dashboard", { dropHeading: true }),
         sectionPart(README, "Reading the job log"),
@@ -354,6 +429,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "Every key of sluiceway.yaml, from who may tick to the opt-in drift check, with examples and the messages it gives.",
       source: "docs/configuration.md",
+      headerPicture: {
+        picture: "pending-1",
+        alt: "1 stack is pending: one crate waits upstream of Penny",
+      },
       parts: [wholeFile("docs/configuration.md")],
     },
     {
@@ -362,6 +441,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "How your workflow loads credentials for the tool, with recipes for the usual places they live.",
       source: "docs/credentials.md",
+      headerPicture: {
+        picture: "deploying",
+        alt: "A stack is deploying: the gate is open and water runs downstream",
+      },
       parts: [wholeFile("docs/credentials.md")],
     },
     {
@@ -370,6 +453,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "Complete workflows for a Node monorepo, a secret manager and a cloud with OIDC, ready to copy.",
       source: "docs/example-workflows.md",
+      headerPicture: {
+        picture: "pending-3",
+        alt: "3 stacks are pending: three crates wait upstream of Penny",
+      },
       parts: [
         wholeFile("docs/example-workflows.md"),
         generated("docs/example-workflows.md", exampleFiles()),
@@ -381,6 +468,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "The outputs and the result file a later step can use to tell people or chart numbers.",
       source: "docs/notifications.md",
+      headerPicture: {
+        picture: "in-sync",
+        alt: "Every stack is in sync: Penny rests on a calm quay",
+      },
       parts: [wholeFile("docs/notifications.md")],
     },
     {
@@ -389,6 +480,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "What a tick promises, who can tick, and how GitHub Environments make the gate stronger.",
       source: "docs/security.md",
+      headerPicture: {
+        picture: "pending-1",
+        alt: "1 stack is pending: one crate waits at the closed gate",
+      },
       parts: [
         preamble("docs/security.md"),
         // The README's other promises are on this page already, in security.md's words.
@@ -403,6 +498,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "Every key of sluiceway.yaml with its type, default and allowed values, generated from the schema.",
       source: "schema/sluiceway.schema.json",
+      headerPicture: {
+        picture: "pending-2",
+        alt: "2 stacks are pending: two crates wait upstream of Penny",
+      },
       parts: [
         generated(
           "schema/sluiceway.schema.json",
@@ -418,6 +517,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       title: "Action inputs and outputs",
       description: "The modes, inputs and outputs of the action, generated from its action.yml.",
       source: "action.yml",
+      headerPicture: {
+        picture: "deploying",
+        alt: "A stack is deploying: the gate is open and water runs downstream",
+      },
       parts: [
         sectionPart(README, "Modes"),
         generated("action.yml", actionReference(readVendor("action.yml", "The reference"))),
@@ -430,6 +533,10 @@ export function pages(repoUrl: string, base: string): Page[] {
         "The words Sluiceway uses for stacks, rows, ticks and deploys, what each one means, and the words it avoids.",
       source: "CONTEXT.md",
       termAnchors: true,
+      headerPicture: {
+        picture: "in-sync",
+        alt: "Every stack is in sync: Penny rests on a calm quay",
+      },
       parts: [wholeFile("CONTEXT.md")],
     },
     {
@@ -439,6 +546,10 @@ export function pages(repoUrl: string, base: string): Page[] {
         "The decision records behind Sluiceway, in number order: what was decided, and which later record amends or supersedes it.",
       source: "docs/adr",
       recordsContext: true,
+      headerPicture: {
+        picture: "pending-12",
+        alt: "12 stacks are pending: twelve crates wait upstream of Penny",
+      },
       parts: [generated("docs/adr", recordIndex(recordList, base))],
     },
     ...recordList.map(
@@ -450,6 +561,7 @@ export function pages(repoUrl: string, base: string): Page[] {
         source: record.file,
         recordsContext: true,
         eyebrow: `Decision record ${record.number}`,
+        headerPicture: RECORD_PICTURES[record.number],
         parts: [wholeFile(record.file)],
       }),
     ),
@@ -459,6 +571,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "Every hurdle a new user met while setting up Sluiceway, and what was done about it.",
       source: "docs/onboarding-log.md",
+      headerPicture: {
+        picture: "failing",
+        alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
+      },
       parts: [wholeFile("docs/onboarding-log.md")],
     },
     {
@@ -467,6 +583,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description: "What Sluiceway does not do yet, and everything left out of v1 with the reason.",
       source: "docs/later.md",
       recordsContext: true,
+      headerPicture: {
+        picture: "pending-more",
+        alt: "More than 12 stacks are pending: the row of crates runs past the left edge",
+      },
       parts: [sectionPart(README, "What it does not do yet"), wholeFile("docs/later.md")],
     },
     {
@@ -476,6 +596,10 @@ export function pages(repoUrl: string, base: string): Page[] {
         "What the first version of Sluiceway covers, and the names, defaults and fixed values it settles.",
       source: "docs/build-plan.md",
       recordsContext: true,
+      headerPicture: {
+        picture: "in-sync",
+        alt: "Every stack is in sync: Penny rests on a calm quay",
+      },
       parts: [
         // The rest of section 2 is about milestones and how the code is written.
         firstParagraph("docs/build-plan.md", "2. What v1 is", "What v1 is"),
@@ -492,6 +616,10 @@ export function pages(repoUrl: string, base: string): Page[] {
       description:
         "Every release of Sluiceway, the GitHub Action, and what changed in it, newest first.",
       source: "CHANGELOG.md",
+      headerPicture: {
+        picture: "deploying",
+        alt: "A stack is deploying: the gate is open and water runs downstream",
+      },
       parts: [
         generated(
           "CHANGELOG.md",

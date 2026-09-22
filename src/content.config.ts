@@ -16,6 +16,8 @@ export const collections = {
         source: z.string().optional(),
         /** One of Penny's header pictures above the page's content, from HeaderPicture. */
         headerPicture: z.object({ picture: z.string(), alt: z.string() }).optional(),
+        /** A line above the content, such as "Decision record 0012", with Penny's mark. */
+        eyebrow: z.string().optional(),
       }),
     }),
   }),

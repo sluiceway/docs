@@ -1,7 +1,10 @@
 ---
-// Footer: the ink slab that closes every page. The note carries the version and the licence.
+// Footer: the ink slab that closes every page: Penny's mark beside the wordmark, the links,
+// and the note with the version and the licence. The slab is ink in both themes, so the mark
+// is the dark file in both.
 import { WAITLIST_URL } from "../lib/site";
 import AnalyticsNote from "./AnalyticsNote.astro";
+import PennyMark from "./PennyMark.astro";
 
 interface Props {
   version: string;
@@ -12,6 +15,10 @@ const { version, links } = Astro.props;
 ---
 
 <div class="sw-footer not-content">
+  <p class="sw-footer__brand">
+    <PennyMark size={34} onInk />
+    <span translate="no">sluiceway</span>
+  </p>
   <nav class="sw-footer__links" aria-label="Footer">
     {links.map(({ label, href }) => <a {href}>{label}</a>)}
   </nav>

@@ -59,6 +59,7 @@ export function actionDocsLoader(): Loader {
             source: page.source,
             ...(page.sidebarLabel ? { sidebar: { label: page.sidebarLabel } } : {}),
             ...(page.headerPicture ? { headerPicture: page.headerPicture } : {}),
+            ...(page.eyebrow ? { eyebrow: page.eyebrow } : {}),
           },
         });
         const body = page.parts.map((p) => p.markdown).join("\n\n");
@@ -140,7 +141,6 @@ async function renderPage(
 ): Promise<{ html: string; headings: Heading[] }> {
   const headings: Heading[] = [];
   const html: string[] = [];
-  if (page.eyebrow) html.push(`<p class="sw-eyebrow">${page.eyebrow}</p>`);
   const self = page.id.startsWith("why/") ? page.id.slice(4, 8) : undefined;
 
   for (const part of page.parts) {
