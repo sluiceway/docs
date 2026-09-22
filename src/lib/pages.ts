@@ -96,12 +96,7 @@ const README = "README.md";
  */
 export const README_UNMAPPED: Record<string, string> = {
   "What it looks like": "slice 3's page what-it-looks-like",
-  Inputs: "the generated reference, reference/action",
-  Outputs: "the generated reference, reference/action",
-  Security: "the Security page; its five promises stay on GitHub",
-  Documentation: "the sidebar",
-  Contributing: "not a page",
-  License: "not a page",
+  More: "the sidebar, the footer and the changelog page",
 };
 
 // Helpers that cut the action's files into parts.
@@ -128,11 +123,16 @@ function range(from: number, to: number): number[] {
   return Array.from({ length: Math.max(0, to - from) }, (_, i) => from + i);
 }
 
-/** A whole file without its h1. */
+/** A whole file without its h1, which the page title says. A link to the h1 lands on the page. */
 function wholeFile(path: string, transform: (md: string) => string = (md) => md): Part {
   const src = source(path);
   const { body } = splitTitle(src.markdown, path);
-  return { from: path, markdown: transform(body), headings: range(1, src.headings.length) };
+  return {
+    from: path,
+    markdown: transform(body),
+    headings: range(1, src.headings.length),
+    dropped: 0,
+  };
 }
 
 /** The file's h1, as a page title. */
@@ -351,6 +351,12 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
     picture: "drift",
     alt: "A stack drifted: water seeps through the closed gate and Penny looks at it",
   },
+  // The row spinner, one of the header's crates on its way through the open gate. The spinner
+  // itself is not a header, so the record shows the header it belongs to.
+  "0063": {
+    picture: "deploying",
+    alt: "A stack is deploying: the gate is open and water runs downstream",
+  },
 };
 
 export function recordId(record: Pick<DecisionRecord, "file">): string {
@@ -396,13 +402,16 @@ export function pages(repoUrl: string, base: string): Page[] {
         picture: "pending-4",
         alt: "4 stacks are pending: four crates wait upstream of Penny, the sluice gate",
       },
-      parts: [sectionPart(README, "How it works", { dropHeading: true })],
+      parts: [
+        sectionPart(README, "How it works", { dropHeading: true }),
+        sectionPart(README, "What it does"),
+      ],
     },
     {
       id: "get-started",
       title: "Get started",
       description:
-        "Add Sluiceway to a repo of infrastructure as code one step at a time: check your setup, scan read only, then add the whole workflow.",
+        "Add Sluiceway to a repo of infrastructure as code: check your setup, add the workflow, then tell it about your stacks and load your credentials.",
       source: README,
       headerPicture: {
         picture: "first-run",
@@ -410,25 +419,45 @@ export function pages(repoUrl: string, base: string): Page[] {
       },
       parts: [
         sectionPart(README, "Get started", { dropHeading: true }),
-        sectionPart(README, "Requirements"),
-        sectionPart(README, "Setup"),
+        // Here since the README moved it, so get-started/#requirements keeps working.
+        sectionPart("docs/reference.md", "Requirements"),
       ],
     },
     {
       id: "using-the-dashboard",
-      title: "Using the dashboard",
+      title: titleOf("docs/using-the-dashboard.md"),
       description:
         "How to read the dashboard's rows, tick to deploy a stack, read the job log, and the limits to know.",
-      source: README,
+      source: "docs/using-the-dashboard.md",
       headerPicture: {
         picture: "pending-4-destroys",
         alt: "4 stacks are pending, some delete or replace resources: the destroy sign stands in the water",
       },
-      parts: [
-        sectionPart(README, "Using the dashboard", { dropHeading: true }),
-        sectionPart(README, "Reading the job log"),
-        sectionPart(README, "Limits"),
-      ],
+      parts: [wholeFile("docs/using-the-dashboard.md")],
+    },
+    {
+      id: "guides/workflow",
+      title: titleOf("docs/workflow.md"),
+      description:
+        "The check and the whole workflow part by part, with what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
+      source: "docs/workflow.md",
+      headerPicture: {
+        picture: "pending-5",
+        alt: "5 stacks are pending: five crates wait upstream of Penny, the sluice gate",
+      },
+      parts: [wholeFile("docs/workflow.md")],
+    },
+    {
+      id: "guides/read-only-trial",
+      title: titleOf("docs/read-only-trial.md"),
+      description:
+        "Run the scan alone first: your dashboard with every stack and its changes, and nothing that can deploy.",
+      source: "docs/read-only-trial.md",
+      headerPicture: {
+        picture: "pending-7",
+        alt: "7 stacks are pending: seven crates wait upstream of the closed gate",
+      },
+      parts: [wholeFile("docs/read-only-trial.md")],
     },
     {
       id: "guides/configuration",
@@ -494,7 +523,9 @@ export function pages(repoUrl: string, base: string): Page[] {
       parts: [
         preamble("docs/security.md"),
         // The README's other promises are on this page already, in security.md's words.
-        listItems(README, "What it promises", ["It never holds your credentials."]),
+        listItems(README, "What it promises", [
+          "It never holds your credentials, and there is no backend.",
+        ]),
         fromFirstH2("docs/security.md"),
       ],
     },
@@ -529,7 +560,7 @@ export function pages(repoUrl: string, base: string): Page[] {
         alt: "A stack is deploying: the gate is open and water runs downstream",
       },
       parts: [
-        sectionPart(README, "Modes"),
+        sectionPart("docs/reference.md", "Modes"),
         generated("action.yml", actionReference(readVendor("action.yml", "The reference"))),
       ],
     },
@@ -600,14 +631,15 @@ export function pages(repoUrl: string, base: string): Page[] {
     {
       id: "not-in-v1",
       title: titleOf("docs/later.md"),
-      description: "What Sluiceway does not do yet, and everything left out of v1 with the reason.",
+      description:
+        "Everything that was considered and left out of v1 of Sluiceway, why, and where that was decided.",
       source: "docs/later.md",
       recordsContext: true,
       headerPicture: {
         picture: "pending-more",
         alt: "More than 12 stacks are pending: the row of crates runs past the left edge",
       },
-      parts: [sectionPart(README, "What it does not do yet"), wholeFile("docs/later.md")],
+      parts: [wholeFile("docs/later.md")],
     },
     {
       id: "what-v1-is",
@@ -658,9 +690,12 @@ export function covered(): Covered[] {
   const slugs = githubSlugs(README);
   return [
     { link: README, page: SLICE_3.overview },
+    // The index of the action's docs: the sidebar is this site's.
+    { link: "docs/README.md", page: SLICE_3.overview },
     { link: "docs/adr", page: "why" },
-    { link: `${README}#inputs`, page: "reference/action#inputs" },
-    { link: `${README}#outputs`, page: "reference/action#outputs" },
+    { link: "docs/reference.md", page: "reference/action" },
+    { link: "docs/reference.md#inputs", page: "reference/action#inputs" },
+    { link: "docs/reference.md#outputs", page: "reference/action#outputs" },
     ...(written(SLICE_3.whatItLooksLike)
       ? range(looks.first, looks.end).map((i) => ({
           link: `${README}#${slugs[i]}`,
@@ -813,6 +848,8 @@ export function sidebar(): SidebarItem[] {
     {
       label: "Guides",
       items: [
+        { slug: "guides/workflow" },
+        { slug: "guides/read-only-trial" },
         { slug: "guides/configuration" },
         { slug: "guides/credentials" },
         { slug: "guides/example-workflows" },

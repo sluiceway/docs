@@ -32,10 +32,11 @@ export function goodNewsLine(): string {
   return line;
 }
 
-/** The README's lead: the first paragraph after the header picture. */
+/** The README's lead: the first paragraph after the header picture, and any comment above it. */
 export function readmeLead(): string {
   const readme = read("README.md");
   const lead = readme
+    .replace(/^\s*<!--[\s\S]*?-->\s*/, "")
     .replace(/^<p[\s\S]*?<\/p>\s*/, "")
     .split(/\n\s*\n/)[0]
     ?.trim();
