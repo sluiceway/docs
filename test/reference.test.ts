@@ -74,3 +74,70 @@ test("a fixed value, a length limit, a flag and a sentence per tool read as they
     "* `helm`: Passed with `--namespace` to every command.\n* `kubectl`: The namespace of objects that name none.",
   );
 });
+
+test("modes and true or false in an action description are code", () => {
+  const markdown = actionReference(
+    [
+      "inputs:",
+      "  mode:",
+      "    description: >-",
+      "      What this step does. One of: scan, apply, check.",
+      "  strict:",
+      "    description: scan only. true turns the job red.",
+      "outputs:",
+      "  changed:",
+      "    description: >-",
+      "      Set by scan and apply. true when the body changed, false otherwise.",
+    ].join("\n"),
+  );
+  expect(markdown).toContain("`scan` only. `true` turns the job red.");
+  expect(markdown).toContain("Set by `scan` and `apply`. `true` when the body changed, `false`");
+  expect(markdown).toContain("What this step does. One of: scan, apply, check.");
+});
+
+test("a description for two tools, or per value of the key, is one item per lead", () => {
+  const schema = {
+    properties: {
+      stacks: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            tool: { type: "string", enum: ["opentofu", "terraform", "helm"] },
+            wrapper: {
+              type: "string",
+              enum: ["terragrunt"],
+              description:
+                "opentofu and terraform: What stands in front. terragrunt: runs the tool there.",
+            },
+          },
+        },
+      },
+    },
+  };
+  const markdown = configReference(JSON.stringify(schema), {
+    guideAnchors: new Map(),
+    guideUrl: "/docs/guides/configuration/",
+  });
+  expect(markdown).toContain(
+    "* `opentofu` and `terraform`: What stands in front.\n* `terragrunt`: runs the tool there.",
+  );
+});
+
+test("limits of a key that is a string or a mapping say which they are for", () => {
+  const schema = {
+    properties: {
+      phase: {
+        anyOf: [
+          { type: "string", minLength: 1 },
+          { type: "object", properties: { from: { type: "string" } }, required: ["from"] },
+        ],
+      },
+    },
+  };
+  const markdown = configReference(JSON.stringify(schema), {
+    guideAnchors: new Map(),
+    guideUrl: "/docs/guides/configuration/",
+  });
+  expect(markdown).toContain("- A string is at least 1 character long.\n- A mapping needs `from`.");
+});
