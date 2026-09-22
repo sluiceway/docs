@@ -92,7 +92,27 @@ test("modes and true or false in an action description are code", () => {
   );
   expect(markdown).toContain("`scan` only. `true` turns the job red.");
   expect(markdown).toContain("Set by `scan` and `apply`. `true` when the body changed, `false`");
-  expect(markdown).toContain("What this step does. One of: scan, apply, check.");
+  expect(markdown).toContain("What this step does. One of: `scan`, `apply`, `check`.");
+});
+
+test("a list of modes, input names and keys in an action description are code", () => {
+  const markdown = actionReference(
+    [
+      "inputs:",
+      "  mode:",
+      "    description: >-",
+      "      One of: auto, scan, apply. Leave it out for auto, which scans on a push.",
+      "  bot-token:",
+      "    description: >-",
+      "      scan and apply. Needs chat-id too, and posts on the events notify.events in",
+      "      sluiceway.yaml lists.",
+      "  chat-id:",
+      "    description: scan and apply. The chat.",
+    ].join("\n"),
+  );
+  expect(markdown).toContain("Leave it out for `auto`, which scans on a push.");
+  expect(markdown).toContain("`scan` and `apply`. Needs `chat-id` too");
+  expect(markdown).toContain("the events `notify.events` in `sluiceway.yaml` lists.");
 });
 
 test("a description for two tools, or per value of the key, is one item per lead", () => {
@@ -140,4 +160,21 @@ test("limits of a key that is a string or a mapping say which they are for", () 
     guideUrl: "/docs/guides/configuration/",
   });
   expect(markdown).toContain("- A string is at least 1 character long.\n- A mapping needs `from`.");
+});
+
+test("a list of fixed values names the values each entry may take", () => {
+  const markdown = configReference(
+    JSON.stringify({
+      properties: {
+        notify: {
+          type: "object",
+          properties: {
+            events: { type: "array", items: { type: "string", enum: ["pending", "failed"] } },
+          },
+        },
+      },
+    }),
+    { guideAnchors: new Map(), guideUrl: "/guides/configuration/" },
+  );
+  expect(markdown).toContain("- **Allowed values of each entry:** `pending`, `failed`");
 });
