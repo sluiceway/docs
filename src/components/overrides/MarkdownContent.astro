@@ -3,12 +3,15 @@
 // shows that picture first, full width of the text column. A page with an `eyebrow`, such as
 // the number of a decision record, shows it next, with Penny's mark beside it when the page has
 // no picture of its own. Pages read from the action cannot hold a component, so both come in
-// here.
+// here, and so does the redirect of old fragments on a page whose headings moved.
 import Default from "@astrojs/starlight/components/MarkdownContent.astro";
+import { ANCHOR_REDIRECTS } from "../../lib/anchor-redirects";
+import AnchorRedirect from "../AnchorRedirect.astro";
 import HeaderPicture from "../HeaderPicture.astro";
 import PennyMark from "../PennyMark.astro";
 
-const { headerPicture, eyebrow } = Astro.locals.starlightRoute.entry.data;
+const { id, data } = Astro.locals.starlightRoute.entry;
+const { headerPicture, eyebrow } = data;
 ---
 
 <Default>
@@ -21,5 +24,6 @@ const { headerPicture, eyebrow } = Astro.locals.starlightRoute.entry.data;
       </p>
     )
   }
+  {id in ANCHOR_REDIRECTS && <AnchorRedirect id={id} />}
   <slot />
 </Default>
