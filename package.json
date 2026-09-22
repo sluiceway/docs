@@ -11,9 +11,10 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "typecheck": "bun --bun astro check",
-    "check": "bun run lint && bun run tokens --check && bun run pin && bun run typecheck && bun run build",
+    "check": "bun run lint && bun run tokens --check && bun run pin && bun run test && bun run typecheck && bun run build",
     "links": "bun scripts/check-links.ts",
     "pin": "bun scripts/check-pin.ts",
+    "test": "bun test",
     "tokens": "bun scripts/build-tokens.ts"
   },
   "dependencies": {

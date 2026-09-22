@@ -1,6 +1,7 @@
 ---
 // Footer: the ink slab that closes every page. The note carries the version and the licence.
 import { WAITLIST_URL } from "../lib/site";
+import AnalyticsNote from "./AnalyticsNote.astro";
 
 interface Props {
   version: string;
@@ -17,9 +18,10 @@ const { version, links } = Astro.props;
   {
     WAITLIST_URL && (
       <p class="sw-footer__note">
-        <a href={WAITLIST_URL}>A hosted version of Sluiceway is planned.</a>
+        <a href={WAITLIST_URL} data-analytics-event="waitlist-click">A hosted version of Sluiceway is planned.</a>
       </p>
     )
   }
   <p class="sw-footer__note">Sluiceway v{version} &middot; Apache-2.0</p>
+  <AnalyticsNote />
 </div>

@@ -1,0 +1,3 @@
+# Tests live in test/. Without a root, `bun test` also runs the action's own suite in vendor/.
+[test]
+root = "test"
