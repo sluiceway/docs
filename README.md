@@ -74,6 +74,8 @@ The docs read the action's files from a git submodule at `vendor/sluiceway`, che
 
 When Sluiceway publishes a release, Renovate opens a pull request that moves the submodule and the `branch` line to the new tag. It never picks a commit on `main`, and it never merges on its own: the build is the check, and a person looks at the site before merging.
 
+A weekly workflow (`.github/workflows/freshness.yml`) compares the tag in `.gitmodules` with the action's latest release. While the pin is behind, it keeps one issue open, titled "The docs pin vX.Y.Z; the action released vA.B.C", with the releases in between. It closes the issue once the pin catches up. You can also start it by hand from the Actions tab.
+
 By hand:
 
 ```sh
