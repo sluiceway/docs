@@ -276,6 +276,19 @@ export function records(): DecisionRecord[] {
     });
 }
 
+/**
+ * A record's description: its title, which is the decision, with what the page holds. The
+ * long titles go alone or with only the number, so no description passes 160 characters.
+ */
+export function recordDescription(record: Pick<DecisionRecord, "number" | "title">): string {
+  const options = [
+    `${record.title}. Decision record ${record.number}, with its reasons and consequences.`,
+    `Decision record ${record.number}: ${record.title}.`,
+    `${record.title}.`,
+  ];
+  return options.find((d) => d.length <= 160) ?? `${record.title.slice(0, 159)}.`;
+}
+
 export function recordId(record: Pick<DecisionRecord, "file">): string {
   return `why/${record.file.replace(/^docs\/adr\//, "").replace(/\.md$/, "")}`;
 }
@@ -305,7 +318,8 @@ export function pages(repoUrl: string, base: string): Page[] {
     {
       id: "how-it-works",
       title: "How it works",
-      description: "How a scan, a tick and a deploy fit together.",
+      description:
+        "How a scan previews your Pulumi and OpenTofu stacks, how a tick asks for a deploy, and how the deploy checks the preview again.",
       source: README,
       parts: [sectionPart(README, "How it works", { dropHeading: true })],
     },
@@ -313,7 +327,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "get-started",
       title: "Get started",
       description:
-        "Check your setup, scan read only, then add the whole workflow, one step at a time.",
+        "Add Sluiceway to a repo of infrastructure as code one step at a time: check your setup, scan read only, then add the whole workflow.",
       source: README,
       headerPicture: { picture: "first-run", alt: "The scan found no stacks yet" },
       parts: [
@@ -326,7 +340,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "using-the-dashboard",
       title: "Using the dashboard",
       description:
-        "What the rows and boxes of the dashboard do, what the job log says, and the limits to know.",
+        "How to read the dashboard's rows, tick to deploy a stack, read the job log, and the limits to know.",
       source: README,
       parts: [
         sectionPart(README, "Using the dashboard", { dropHeading: true }),
@@ -337,7 +351,8 @@ export function pages(repoUrl: string, base: string): Page[] {
     {
       id: "guides/configuration",
       title: titleOf("docs/configuration.md"),
-      description: "Every key of sluiceway.yaml, with examples and the messages it gives.",
+      description:
+        "Every key of sluiceway.yaml, from who may tick to the opt-in drift check, with examples and the messages it gives.",
       source: "docs/configuration.md",
       parts: [wholeFile("docs/configuration.md")],
     },
@@ -411,7 +426,8 @@ export function pages(repoUrl: string, base: string): Page[] {
     {
       id: "reference/glossary",
       title: "Glossary",
-      description: "The words Sluiceway uses, and the ones it avoids.",
+      description:
+        "The words Sluiceway uses for stacks, rows, ticks and deploys, what each one means, and the words it avoids.",
       source: "CONTEXT.md",
       termAnchors: true,
       parts: [wholeFile("CONTEXT.md")],
@@ -419,7 +435,8 @@ export function pages(repoUrl: string, base: string): Page[] {
     {
       id: "why",
       title: "Decision records",
-      description: "The decision records behind Sluiceway, in number order.",
+      description:
+        "The decision records behind Sluiceway, in number order: what was decided, and which later record amends or supersedes it.",
       source: "docs/adr",
       recordsContext: true,
       parts: [generated("docs/adr", recordIndex(recordList, base))],
@@ -429,7 +446,7 @@ export function pages(repoUrl: string, base: string): Page[] {
         id: recordId(record),
         title: record.title,
         sidebarLabel: `${record.number} ${record.title}`,
-        description: `Decision record ${record.number}: ${record.title}.`,
+        description: recordDescription(record),
         source: record.file,
         recordsContext: true,
         eyebrow: `Decision record ${record.number}`,
@@ -472,7 +489,8 @@ export function pages(repoUrl: string, base: string): Page[] {
     {
       id: "changelog",
       title: titleOf("CHANGELOG.md"),
-      description: "Every release of Sluiceway and what changed in it.",
+      description:
+        "Every release of Sluiceway, the GitHub Action, and what changed in it, newest first.",
       source: "CHANGELOG.md",
       parts: [
         generated(

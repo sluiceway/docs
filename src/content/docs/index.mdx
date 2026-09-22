@@ -1,11 +1,11 @@
 ---
 title: Sluiceway
-description: Sluiceway keeps one GitHub issue that shows which infrastructure stacks have changes waiting, and deploys a stack when you tick its box.
+description: Sluiceway is a GitHub Action that keeps one issue showing which Pulumi and OpenTofu stacks have changes waiting, and deploys a stack when you tick its box.
 template: splash
-# The browser title without Starlight's " | Sluiceway" suffix, which would repeat the name.
+# The browser title says what the product is, without Starlight's " | Sluiceway" suffix.
 head:
   - tag: title
-    content: Sluiceway docs
+    content: "Sluiceway: a deploy dashboard in one GitHub issue"
 hero:
   title: One issue. Every stack. <span class="sw-swash">Your tick.</span>
   actions:
@@ -22,7 +22,7 @@ import SpeechBubble from "../../components/SpeechBubble.astro";
 import Steps from "../../components/Steps.astro";
 import WaveRule from "../../components/WaveRule.astro";
 import { goodNewsLine, howItWorks } from "../../lib/action-text";
-import { ROUTES } from "../../lib/routes";
+import { page, ROUTES } from "../../lib/routes";
 import "../../styles/landing.css";
 
 <div class="sw-landing">
@@ -32,12 +32,8 @@ import "../../styles/landing.css";
   <HeaderPicture
     picture="in-sync"
     alt="Penny, the sluice gate, resting on a calm quay because every stack is in sync"
-    eager
   />
-  <p class="sw-landing__small">
-    The panel above shows crates waiting. This picture shows nothing pending. The header of your
-    dashboard always shows the real state of your stacks.
-  </p>
+  <p class="sw-landing__small">{"The panel above shows crates waiting. This picture shows nothing pending. The header of your dashboard always shows the real state of your stacks."}</p>
 </section>
 
 ## How it works
@@ -59,6 +55,10 @@ import "../../styles/landing.css";
     The decision records say why Sluiceway works the way it does.
   </Card>
 </div>
+
+<p class="sw-landing__guides">
+  The guides: <a href={page("how-it-works")}>How it works</a>, <a href={page("guides/configuration")}>Configuration</a>, <a href={page("guides/credentials")}>Credentials</a>, <a href={page("guides/example-workflows")}>Example workflows</a>, <a href={page("guides/notifications")}>Notifications and metrics</a> and <a href={page("guides/security")}>Security</a>. Every key is in the <a href={page("reference/sluiceway-yaml")}><code>sluiceway.yaml</code> reference</a>.
+</p>
 
 <HostedLine />
 

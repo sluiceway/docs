@@ -1,8 +1,10 @@
 ---
 // Text links in place of Starlight's icon row, drawn as the design system's nav links.
+import { LANDING_URL } from "../../lib/site";
 import { DOCS_REPO_URL, REPO_URL } from "../../lib/source";
 
 const links = [
+  { label: "Sluiceway", title: "The Sluiceway home page", href: LANDING_URL },
   { label: "GitHub", title: "Sluiceway on GitHub", href: REPO_URL },
   { label: "Docs repo", title: "The source of this site on GitHub", href: DOCS_REPO_URL },
 ];

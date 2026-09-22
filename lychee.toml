@@ -12,10 +12,10 @@ max_cache_age = "1d"
 accept = ["200..=299"]
 
 exclude = [
-  # The site itself. `bun run links` checks it from dist/, before it is deployed.
+  # The site itself, at either address. `bun run links` checks it from dist/, before it is
+  # deployed.
   '^https://sluiceway\.github\.io/docs(/|$)',
-  # Preconnect hints name a font host, not a page.
-  '^https://fonts\.(googleapis|gstatic)\.com/?$',
+  '^https://docs\.sluiceway\.dev(/|$)',
 ]
 
 exclude_path = ["(^|/)dist/pagefind/", "(^|/)node_modules/", "(^|/)vendor/"]

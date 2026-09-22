@@ -6,7 +6,9 @@
 //
 // The light and dark files swap with Starlight's data-theme and with prefers-color-scheme. A
 // <picture> with <source media> can only follow the system setting, not the site's theme
-// switch, so both files are in the markup and CSS shows one. The hidden one is not fetched.
+// switch, so both files are in the markup and CSS shows one. Both load lazily: a lazy image
+// that CSS hides is never fetched, so a page loads one file per picture, the one its theme
+// shows. An eager pair would fetch both.
 import { existsSync } from "node:fs";
 import { vendorPath } from "../lib/source";
 
@@ -16,12 +18,9 @@ interface Props {
   /** The state in words, such as "4 stacks are pending, some delete or replace resources". */
   alt: string;
   width?: number;
-  /** Load at once, for the first picture on a page. Every other picture loads lazily. */
-  eager?: boolean;
 }
 
-const { picture, alt, width = 880, eager = false } = Astro.props;
-const loading = eager ? "eager" : "lazy";
+const { picture, alt, width = 880 } = Astro.props;
 
 const files = import.meta.glob<string>("/vendor/sluiceway/assets/mascot/*.svg", {
   eager: true,
@@ -47,6 +46,6 @@ const height = Math.round((width * 160) / 880);
 ---
 
 <div class="sw-header-picture not-content">
-  <img class="sw-pic-light" src={light} {alt} {width} {height} {loading} decoding="async" />
-  <img class="sw-pic-dark" src={dark} {alt} {width} {height} {loading} decoding="async" />
+  <img class="sw-pic-light" src={light} {alt} {width} {height} loading="lazy" decoding="async" />
+  <img class="sw-pic-dark" src={dark} {alt} {width} {height} loading="lazy" decoding="async" />
 </div>
