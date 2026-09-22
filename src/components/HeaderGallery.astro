@@ -1,7 +1,8 @@
 ---
 // Every state Penny draws, one per row: the picture, its file name, and when the dashboard
 // shows it. "Shown when" is read from the tables of the action's assets/mascot/README.md at
-// the pinned tag, and the build fails if a picture has no row there.
+// the pinned tag, and the build fails if a picture has no row there. A picture with signs
+// shows the row of the picture without them and the row of its signs.
 import { shownWhen } from "../lib/action-text";
 import HeaderPicture from "./HeaderPicture.astro";
 
@@ -22,8 +23,13 @@ const when = shownWhen(pictures.map(({ picture }) => picture));
         <p class="sw-gallery__caption">
           <code>{picture}</code>
           <span>
-            <span class="sw-gallery__label">Shown when</span> {when[picture]}
+            <span class="sw-gallery__label">Shown when</span> {when[picture]?.when}
           </span>
+          {when[picture]?.signs && (
+            <span>
+              <span class="sw-gallery__label">With these signs when</span> {when[picture]?.signs}
+            </span>
+          )}
         </p>
       </li>
     ))
