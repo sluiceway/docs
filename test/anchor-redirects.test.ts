@@ -29,8 +29,9 @@ describe("the map", () => {
       test(`${page}/#${from} goes to ${to}`, () => {
         expect(own.has(from), `${page} has #${from} again: take it out of the map`).toBe(false);
         const [target = "", fragment] = to.split("#");
-        expect(target).not.toBe(page);
-        const there = ids(target);
+        // A heading renamed on its own page lands on the new heading, never on the page top.
+        if (target === page) expect(fragment, `${to} needs a fragment`).toBeDefined();
+        const there = target === page ? own : ids(target);
         if (fragment) expect(there.has(fragment), `${target} has no #${fragment}`).toBe(true);
       });
     }

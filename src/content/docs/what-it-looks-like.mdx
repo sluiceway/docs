@@ -40,6 +40,7 @@ section comes before every other and each of its rows starts with a
 - **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy from the dashboard that ended, newest
   first, one line each: its <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a>,
   the date and time in UTC, and a link to its run. A failed deploy is listed too, with its
-  failure reason. A deploy that went out can have a <a href={glossary("Shipped line")}>shipped line</a> under it, and a full scan adds
+  failure reason, and stays listed when a later deploy of its stack clears the <a href={glossary("Failure line")}>failure line</a> on
+  the row. A deploy that went out can have a <a href={glossary("Shipped line")}>shipped line</a> under it, and a full scan adds
   the <a href={glossary("Outside deploy")}>outside deploys</a> it finds in the tool's own history, which this example does not show.
 - **The <a href={glossary("Rescan box")}>rescan box</a>.** Tick it to start a full scan of every stack. It deploys nothing.
