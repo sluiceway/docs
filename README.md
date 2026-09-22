@@ -37,7 +37,7 @@ The site URL comes from two environment variables: `DOCS_SITE` (default `https:/
 
 Every push to `main` builds the site and deploys it to GitHub Pages (`.github/workflows/pages.yml`). You can also start the workflow by hand from the Actions tab.
 
-The site is at https://docs.sluiceway.dev/. Two repository variables decide which address the build uses:
+The site is at https://docs.sluiceway.dev/, the custom domain in the repository's Pages settings. The Pages address, https://sluiceway.github.io/docs/, redirects to it and keeps the path. Two repository variables decide which address the build uses, and both are set for the custom domain:
 
 | Variable | Unset | With the custom domain |
 | --- | --- | --- |
