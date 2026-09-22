@@ -56,6 +56,7 @@ export default defineConfig({
         SocialIcons: "./src/components/overrides/SocialIcons.astro",
         Footer: "./src/components/overrides/Footer.astro",
         MarkdownContent: "./src/components/overrides/MarkdownContent.astro",
+        Hero: "./src/components/overrides/Hero.astro",
       },
       expressiveCode: {
         themes: [codeTheme("dark"), codeTheme("light")],

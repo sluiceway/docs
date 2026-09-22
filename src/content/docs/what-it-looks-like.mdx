@@ -1,0 +1,32 @@
+---
+title: What it looks like
+description: The example dashboard from Sluiceway's README, rendered by Sluiceway's own code, and a walk through its parts.
+---
+
+import ExampleDashboard from "../../components/ExampleDashboard.astro";
+import { inlineHtml, readmeDashboardIntro } from "../../lib/action-text";
+import { glossary, ROUTES } from "../../lib/routes";
+
+<p class="sw-lead" set:html={inlineHtml(readmeDashboardIntro())} />
+
+<ExampleDashboard />
+
+## The parts
+
+Read the dashboard from the top.
+
+- **The <a href={glossary("Header")}>header</a>.** Penny with four crates upstream, one per pending stack, and the destroy
+  sign, because a pending row deletes resources. <a href={ROUTES.theHeader}>The header</a> shows every picture.
+- **The <a href={glossary("Counts line")}>counts line</a>.** How many stacks are pending, deploying, preview failed and in
+  sync, always all four, and how many pending stacks destroy resources. Under it, the
+  <a href={glossary("Scan line")}>scan line</a> says which commit the last scan checked out, when, in which run, and when the
+  last full scan was.
+- **A <a href={glossary("Pending")}>pending</a> row.** `apps/api:prod` has one update waiting. Its row links the preview,
+  names the pull requests that brought the change, links the compare view, and folds the
+  changes under their count. Tick its box to deploy that stack exactly as its row shows it.
+- **A row with deletes.** `apps/legacy-worker:prod` deletes three resources. A
+  <a href={glossary("Destroy")}>destroy</a> is listed first, outside the fold, and always carries a warning.
+- **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count.
+- **Recently deployed.** The newest deploys from the dashboard, each with its
+  <a href={glossary("Ticker")}>ticker</a> and a link to its run.
+- **The <a href={glossary("Rescan box")}>rescan box</a>.** Tick it to start a full scan of every stack. It deploys nothing.

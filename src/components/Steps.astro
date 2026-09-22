@@ -1,11 +1,14 @@
 ---
 // Steps: a numbered run of three to six steps. Titles are full clauses in the present tense,
 // bodies one sentence. The numbers are generated.
+// With `html`, titles and bodies are trusted inline HTML, such as a step read from the
+// action's README, and an empty body is left out.
 interface Props {
   items: { title: string; body: string }[];
+  html?: boolean;
 }
 
-const { items } = Astro.props;
+const { items, html = false } = Astro.props;
 ---
 
 <ol class="sw-steps not-content">
@@ -16,8 +19,16 @@ const { items } = Astro.props;
           {i + 1}
         </div>
         <div>
-          <p class="sw-step__title">{item.title}</p>
-          <p class="sw-step__body">{item.body}</p>
+          {html ? (
+            <p class="sw-step__title" set:html={item.title} />
+          ) : (
+            <p class="sw-step__title">{item.title}</p>
+          )}
+          {html ? (
+            item.body && <p class="sw-step__body" set:html={item.body} />
+          ) : (
+            <p class="sw-step__body">{item.body}</p>
+          )}
         </div>
       </li>
     ))
