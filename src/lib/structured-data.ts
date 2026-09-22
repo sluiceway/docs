@@ -99,24 +99,29 @@ export function softwareApplication(app: Application): object {
 }
 
 /**
- * The runners the README's Requirements list names, such as "GitHub Actions runners with
+ * The runners the reference's Requirements list names, such as "GitHub Actions runners with
  * runner version 2.328.0 or newer", or undefined when the list no longer says.
  */
 export function supportedRunners(): string | undefined {
-  const readme = readVendor("README.md", "The start page's structured data");
-  const line = /^- \*\*(GitHub Actions runners[^*]*?)\.?\*\*/m.exec(readme);
+  const reference = readVendor("docs/reference.md", "The start page's structured data");
+  const line = /^- \*\*(GitHub Actions runners[^*]*?)\.?\*\*/m.exec(reference);
   return line?.[1];
 }
 
 /**
- * The tools the README's "How it works" says Sluiceway works with, such as "Pulumi" and
- * "Kubernetes manifests", or undefined when the sentence no longer says. Only a tool the
- * pinned text names becomes a keyword.
+ * The tools the README's "What it does" lists, such as "Pulumi" and "Kubernetes manifests":
+ * the items whose bold lead goes on with ", with". Undefined when there is none. Only a tool
+ * the pinned text names becomes a keyword.
  */
 export function supportedTools(): string[] | undefined {
   const readme = readVendor("README.md", "The start page's structured data");
-  const list = /^.*\bIt works with (.+?), side by side\b/m.exec(readme)?.[1];
-  return list?.split(/, | and /).map((tool) => tool.trim());
+  const start = readme.indexOf("\n## What it does\n");
+  if (start === -1) return undefined;
+  const rest = readme.slice(start + 1);
+  const end = rest.indexOf("\n## ");
+  const section = end === -1 ? rest : rest.slice(0, end);
+  const tools = [...section.matchAll(/^- \*\*([^*]+)\*\*, with\b/gm)].map((m) => m[1] ?? "");
+  return tools.length > 0 ? tools : undefined;
 }
 
 /** JSON for inside a <script>, with `<` escaped so no string can close the element. */

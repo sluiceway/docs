@@ -11,19 +11,17 @@ const blob = `${REPO_URL}/blob/${TAG}`;
 
 describe("resolveLink", () => {
   const cases: [from: string, href: string, want: string][] = [
-    // A README section that is part of a page, from docs/.
-    ["docs/example-workflows.md", "../README.md#pin-a-commit", "/docs/get-started/#pin-a-commit"],
+    // A section of another file that a page shows, from docs/.
+    ["docs/workflow.md", "reference.md#requirements", "/docs/get-started/#requirements"],
     [
       "docs/security.md",
-      "../README.md#with-github-environments",
-      "/docs/get-started/#with-github-environments",
+      "workflow.md#with-github-environments",
+      "/docs/guides/workflow/#with-github-environments",
     ],
     // A README section shown without its heading lands on the page itself.
-    [
-      "docs/example-workflows.md",
-      "../README.md#2-add-the-workflow",
-      "/docs/get-started/#2-add-the-workflow",
-    ],
+    ["docs/workflow.md", "../README.md#get-started", "/docs/get-started/"],
+    // A file's h1 is the page title: a link to it lands on the page, as on GitHub.
+    ["docs/read-only-trial.md", "workflow.md#the-workflow", "/docs/guides/workflow/"],
     // Whole files, and headings in them.
     ["README.md", "docs/credentials.md", "/docs/guides/credentials/"],
     ["README.md", "docs/configuration.md#driftenabled", "/docs/guides/configuration/#driftenabled"],
@@ -41,10 +39,11 @@ describe("resolveLink", () => {
       "/docs/guides/example-workflows/#cloud-oidcyml",
     ],
     // Covered by the generated reference.
-    ["README.md", "#inputs", "/docs/reference/action/#inputs"],
+    ["README.md", "docs/reference.md#inputs", "/docs/reference/action/#inputs"],
+    ["docs/README.md", "reference.md", "/docs/reference/action/"],
     // Not on the site: GitHub at the pinned tag.
     ["docs/security.md", "../SECURITY.md", `${blob}/SECURITY.md`],
-    ["README.md", "#security", `${blob}/README.md#security`],
+    ["README.md", "#more", `${blob}/README.md#more`],
     ["README.md", "docs/brief.md", `${blob}/docs/brief.md`],
     // Left alone.
     [

@@ -283,7 +283,7 @@ describe("JSON-LD", () => {
       "Guides",
       "Credentials and your own tooling",
     ]);
-    expect(items[1]?.item).toBe(`${ROOT}guides/configuration/`);
+    expect(items[1]?.item).toBe(`${ROOT}guides/workflow/`);
   });
 });
 
