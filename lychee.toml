@@ -1,0 +1,21 @@
+# External links in the built site and the README, checked by lychee in
+# .github/workflows/links.yml. Links inside the site are checked by `bun run links`, which needs
+# no network, so they are left out here.
+
+scheme = ["https", "http"]
+max_retries = 3
+retry_wait_time = 5
+timeout = 30
+max_concurrency = 8
+cache = true
+max_cache_age = "1d"
+accept = ["200..=299"]
+
+exclude = [
+  # The site itself. `bun run links` checks it from dist/, before it is deployed.
+  '^https://sluiceway\.github\.io/docs(/|$)',
+  # Preconnect hints name a font host, not a page.
+  '^https://fonts\.(googleapis|gstatic)\.com/?$',
+]
+
+exclude_path = ["(^|/)dist/pagefind/", "(^|/)node_modules/", "(^|/)vendor/"]

@@ -1,0 +1,24 @@
+name: A page is wrong or unclear
+description: Something on the docs site is wrong, out of date, or hard to follow.
+labels: [docs]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The address of the page.
+      placeholder: https://sluiceway.github.io/docs/...
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong or unclear
+      description: Quote the part of the page, and say what you expected it to say.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: What you were trying to do
+      description: Optional. It helps to know what you came to the page for.

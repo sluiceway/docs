@@ -1,0 +1,60 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":semanticCommits",
+    ":pinAllExceptPeerDependencies",
+    "customManagers:biomeVersions"
+  ],
+  "timezone": "Etc/UTC",
+  "schedule": ["before 6am on monday"],
+  "prConcurrentLimit": 5,
+  "git-submodules": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Group the tooling that never reaches the site.",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "dev tooling"
+    },
+    {
+      "description": "Biome's version is in package.json and in the $schema of biome.json. Move them together.",
+      "matchPackageNames": ["@biomejs/biome"],
+      "groupName": "dev tooling"
+    },
+    {
+      "description": "Astro, Starlight and their integrations move together.",
+      "matchPackageNames": ["astro", "@astrojs/**", "satteri"],
+      "groupName": "astro"
+    },
+    {
+      "description": "@astrojs/check supports TypeScript 5 and 6 only. Lift this when it supports 7.",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7"
+    },
+    {
+      "description": "Bun stays at the action's version, so both repositories build with the same runtime.",
+      "matchManagers": ["bun-version"],
+      "automerge": false,
+      "prBodyNotes": [
+        "Merge this only when sluiceway/sluiceway has moved its .bun-version to the same release."
+      ]
+    },
+    {
+      "description": "The action. .gitmodules names the release tag in its branch line, so Renovate looks for a newer semver tag and moves the submodule and the line together. Commits on main are never picked. Follow a release as soon as it is out, and never merge without a person looking at the site.",
+      "matchManagers": ["git-submodules"],
+      "matchDepNames": ["vendor/sluiceway"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": null,
+      "commitMessageTopic": "sluiceway",
+      "schedule": ["at any time"],
+      "automerge": false,
+      "prBodyNotes": [
+        "This moves the docs to a new release of Sluiceway. The build is the check: it reads every page, picture and example from the submodule, and fails when one is gone. Before you merge, build the site from this branch and look at the pages that changed, in light and dark."
+      ]
+    }
+  ]
+}
