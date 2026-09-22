@@ -1,0 +1,90 @@
+name: freshness
+
+# Whether the docs follow the action's latest release, weekly. When the tag in .gitmodules is
+# behind, one issue says so and lists the releases in between. The issue is updated while the
+# pin stays behind and closed when it catches up. Renovate moves the pin itself once its app
+# is installed on the org; until then this issue is the reminder, and after, it is the
+# reminder when a Renovate pull request sits unmerged.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: freshness
+  cancel-in-progress: true
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    env:
+      ACTION_REPO: sluiceway/sluiceway
+      LABEL: freshness
+    steps:
+      # Only .gitmodules is read: its `branch` line is the pinned tag, as `bun run pin` checks.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .gitmodules
+          sparse-checkout-cone-mode: false
+
+      - name: Open, update or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # Whether version $1 comes after version $2.
+          after() {
+            [ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -n 1)" = "$1" ]
+          }
+
+          pinned=$(git config --file .gitmodules --get submodule.vendor/sluiceway.branch)
+          latest=$(gh release view --repo "$ACTION_REPO" --json tagName --jq .tagName)
+          number=$(gh issue list --state open --label "$LABEL" --json number --jq '.[0].number // empty')
+          echo "The docs pin $pinned. The action's latest release is $latest."
+
+          if ! after "$latest" "$pinned"; then
+            if [ -n "$number" ]; then
+              gh issue close "$number" \
+                --comment "The docs pin $pinned, the action's latest release. Checked in $RUN_URL."
+            fi
+            exit 0
+          fi
+
+          {
+            echo "The docs read the action at \`$pinned\`: the \`branch\` line of \`.gitmodules\` and the submodule at \`vendor/sluiceway\`. The action's latest release is \`$latest\`."
+            echo
+            echo "Releases after the pin, newest first:"
+            echo
+            gh release list --repo "$ACTION_REPO" --exclude-drafts --exclude-pre-releases \
+              --limit 100 --json tagName,publishedAt --jq '.[] | "\(.tagName) \(.publishedAt[:10])"' |
+              sort -V -r |
+              while read -r tag date; do
+                if after "$tag" "$pinned" && ! after "$tag" "$latest"; then
+                  echo "- [$tag](https://github.com/$ACTION_REPO/releases/tag/$tag), $date"
+                fi
+              done
+            echo
+            echo "To follow it, move the submodule and the \`branch\` line together, run \`bun run check\`, and read the site against the release notes before merging. The README says how, under [Updating to a new release of Sluiceway](https://github.com/$GH_REPO#updating-to-a-new-release-of-sluiceway)."
+            echo
+            echo "Checked in $RUN_URL."
+          } > body.md
+
+          title="The docs pin $pinned; the action released $latest"
+          if [ -n "$number" ]; then
+            gh issue edit "$number" --title "$title" --body-file body.md
+          else
+            gh label create "$LABEL" --color 5B8DEF --description "The docs pin an older release of the action" --force
+            gh issue create --title "$title" --label "$LABEL" --body-file body.md
+          fi
