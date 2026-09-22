@@ -110,8 +110,9 @@ export function supportedRunners(): string | undefined {
 
 /**
  * The tools the README's "What it does" lists, such as "Pulumi" and "Kubernetes manifests":
- * the items whose bold lead goes on with ", with". Undefined when there is none. Only a tool
- * the pinned text names becomes a keyword.
+ * the items whose bold lead goes on with ", with" or ", also behind". A lead of two tools
+ * ("OpenTofu and Terraform") gives both, and the wrappers named after "also behind" follow.
+ * Undefined when there is none. Only a tool the pinned text names becomes a keyword.
  */
 export function supportedTools(): string[] | undefined {
   const readme = readVendor("README.md", "The start page's structured data");
@@ -120,7 +121,12 @@ export function supportedTools(): string[] | undefined {
   const rest = readme.slice(start + 1);
   const end = rest.indexOf("\n## ");
   const section = end === -1 ? rest : rest.slice(0, end);
-  const tools = [...section.matchAll(/^- \*\*([^*]+)\*\*, with\b/gm)].map((m) => m[1] ?? "");
+  const tools = [
+    ...section.matchAll(/^- \*\*([^*]+)\*\*, (?:also behind ([^,]+), )?with\b/gm),
+  ].flatMap(([, lead = "", wrappers]) => [
+    ...lead.split(" and "),
+    ...(wrappers ? wrappers.split(" or ") : []),
+  ]);
   return tools.length > 0 ? tools : undefined;
 }
 
