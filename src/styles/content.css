@@ -1,0 +1,42 @@
+/* The pages read from the action: the record number above a decision record, the glossary's
+   terms as link targets, and wide tables that scroll inside themselves. */
+
+.sw-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-muted);
+}
+
+.sl-markdown-content .sw-term {
+  scroll-margin-top: calc(var(--sl-nav-height) + var(--space-4));
+}
+
+.sl-markdown-content .sw-term:target > strong:first-child {
+  background: var(--surface-sunk);
+  box-shadow: 0 0 0 4px var(--surface-sunk);
+  border-radius: 2px;
+}
+
+/* A table wider than the page scrolls inside itself, never the page. Cells keep a readable
+   width instead of folding to one word per line. */
+.sl-markdown-content table:not(:where(.not-content *)) {
+  max-width: 100%;
+}
+
+.sl-markdown-content :is(td, th):not(:where(.not-content *)) {
+  min-width: 10rem;
+}
+
+.sl-markdown-content :is(td, th):first-child:not(:where(.not-content *)) {
+  min-width: 0;
+}
+
+/* Long inline code, such as a quoted message, wraps. Short code, such as a stack id, never
+   does (theme.css). */
+.sl-markdown-content :not(pre) > code.sw-code-long:not(:where(.not-content *)) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
