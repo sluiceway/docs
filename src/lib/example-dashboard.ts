@@ -4,12 +4,14 @@
 // Bun runs `exampleDashboard()` from the submodule in its own process, so the renderer runs
 // exactly as the action's tests run it, outside Vite. The Markdown it prints is then turned
 // into HTML with GitHub's rules: GFM task lists (boxes shown, disabled), raw HTML such as
-// <details>, <kbd> and <sub> kept, and GitHub's emoji shortcodes turned into their emoji.
+// <details>, <kbd> and <sub> kept, GitHub's emoji shortcodes turned into their emoji, and an
+// alert such as the destroy alert's `> [!CAUTION]` shown as a callout, as on every page.
 
 import { execFileSync } from "node:child_process";
 import { nameToEmoji } from "gemoji";
 import type { Paragraph, PhrasingContent } from "mdast";
 import { defineMdastPlugin, markdownToHtml } from "satteri";
+import { githubAlerts } from "../plugins/github-alerts";
 import { shiftHeadings } from "./headings";
 import { VENDOR_DIR } from "./source";
 
@@ -110,7 +112,7 @@ export function exampleDashboard(): ExampleDashboard {
     );
   }
   const body = fold[1] ?? "";
-  const html = markdownToHtml(body, { mdastPlugins: [issueBody] }).html;
+  const html = markdownToHtml(body, { mdastPlugins: [issueBody, githubAlerts] }).html;
   const picture = PICTURE.exec(html);
   if (!picture) {
     throw new Error(

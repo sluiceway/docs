@@ -97,6 +97,14 @@ const dashboard = exampleDashboard();
   .sw-issue__body :global([align="center"]) {
     text-align: center;
   }
+  /* The destroy alert. The list under it has no margin of its own. */
+  .sw-issue__body :global(.sw-callout) {
+    margin-block: var(--space-4);
+  }
+  /* Its bold names are stack ids, which never break. */
+  .sw-issue__body :global(.sw-callout strong) {
+    white-space: nowrap;
+  }
   .sw-issue__body :global(p),
   .sw-issue__body :global(ul) {
     margin-block: 0;
