@@ -1,0 +1,24 @@
+---
+// The one line about the hosted version. Renders nothing until WAITLIST_URL is set.
+import { WAITLIST_URL } from "../../lib/site";
+---
+
+{
+  WAITLIST_URL && (
+    <p class="sw-hosted not-content">
+      A hosted version of Sluiceway is planned. <a href={WAITLIST_URL}>Hear when it opens</a>.
+    </p>
+  )
+}
+
+<style>
+  .sw-hosted {
+    text-align: center;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--ink-muted);
+  }
+  .sw-hosted a {
+    color: var(--ink);
+  }
+</style>

@@ -1,0 +1,58 @@
+/* The docs landing (src/content/docs/index.mdx), after "The landing page" in the design
+   system's 30-pages.md: `space-10` between sections on a desktop, `space-9` on a phone. */
+
+.sw-landing {
+  --sw-section: var(--space-9);
+}
+@media (min-width: 980px) {
+  .sw-landing {
+    --sw-section: var(--space-10);
+  }
+}
+.sw-landing__calm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.sw-landing > .sw-landing__calm {
+  margin-top: var(--space-7);
+}
+.sw-landing > h2,
+.sw-landing > .sl-heading-wrapper.level-h2 {
+  margin-top: var(--sw-section);
+}
+.sw-landing .sw-wave {
+  margin-block: var(--sw-section) 0;
+}
+.sw-landing .sw-card-grid {
+  margin-top: var(--space-6);
+}
+.sw-landing__calm .sw-bubble-wrap {
+  display: flex;
+  justify-content: center;
+}
+.sw-landing__small {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--ink-muted);
+}
+.sw-landing .sw-hosted {
+  margin-top: var(--sw-section);
+}
+
+/* The splash page is wider than the 72ch docs column, so the hero has room for two columns. */
+:root[data-has-hero] {
+  --sl-content-width: 68rem;
+}
+
+/* The bubble sits centred over Penny, so its tail points straight down at her. */
+.sw-landing__calm .sw-bubble::before,
+.sw-landing__calm .sw-bubble::after {
+  left: 50%;
+  margin-left: -14px;
+}
+.sw-landing__calm .sw-bubble::after {
+  margin-left: -11px;
+}

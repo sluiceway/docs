@@ -7,9 +7,11 @@ interface Props {
   tone?: "warm" | "cool";
   hero?: boolean;
   tilt?: "left" | "right";
+  /** Makes the whole card a link: the title is the link text, and the card shows its focus. */
+  href?: string;
 }
 
-const { title, bar = false, tone, hero = false, tilt } = Astro.props;
+const { title, bar = false, tone, hero = false, tilt, href } = Astro.props;
 ---
 
 <div
@@ -18,10 +20,22 @@ const { title, bar = false, tone, hero = false, tilt } = Astro.props;
     "not-content",
     tone && `sw-card--${tone}`,
     tilt && `sw-card--${tilt}`,
-    { "sw-card--hero": hero, "sw-card--barred": bar },
+    { "sw-card--hero": hero, "sw-card--barred": bar, "sw-card--link": href },
   ]}
 >
   {bar && <div class="sw-card__bar" />}
-  {title && <p class="sw-card__title">{title}</p>}
+  {
+    title && (
+      <p class="sw-card__title">
+        {href ? (
+          <a class="sw-card__link" {href}>
+            {title}
+          </a>
+        ) : (
+          title
+        )}
+      </p>
+    )
+  }
   <div class="sw-card__body"><slot /></div>
 </div>

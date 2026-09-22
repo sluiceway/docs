@@ -1,11 +1,61 @@
 ---
 title: Sluiceway
 description: Sluiceway keeps one GitHub issue that shows which infrastructure stacks have changes waiting, and deploys a stack when you tick its box.
+template: splash
+hero:
+  title: One issue. Every stack. <span class="sw-swash">Your tick.</span>
+  actions:
+    - text: Get started
+      link: /get-started/
+    - text: What it looks like
+      link: /what-it-looks-like/
 ---
 
-<p class="sw-lead">
-  Sluiceway keeps one GitHub issue that shows which infrastructure stacks have changes waiting,
-  and deploys a stack when you tick its box.
-</p>
+import Card from "../../components/Card.astro";
+import HeaderPicture from "../../components/HeaderPicture.astro";
+import HostedLine from "../../components/landing/HostedLine.astro";
+import SpeechBubble from "../../components/SpeechBubble.astro";
+import Steps from "../../components/Steps.astro";
+import WaveRule from "../../components/WaveRule.astro";
+import { goodNewsLine, howItWorks } from "../../lib/action-text";
+import { ROUTES } from "../../lib/routes";
+import "../../styles/landing.css";
 
-Sluiceway is in beta.
+<div class="sw-landing">
+
+<section class="sw-landing__calm not-content" aria-label="Every stack in sync">
+  <SpeechBubble line={goodNewsLine()} />
+  <HeaderPicture
+    picture="in-sync"
+    alt="Penny, the sluice gate, resting on a calm quay because every stack is in sync"
+    eager
+  />
+  <p class="sw-landing__small">
+    The panel above shows crates waiting. This picture shows nothing pending. The header of your
+    dashboard always shows the real state of your stacks.
+  </p>
+</section>
+
+## How it works
+
+<Steps items={howItWorks()} html />
+
+<WaveRule />
+
+## Where to go next
+
+<div class="sw-card-grid">
+  <Card title="Get started" href={ROUTES.getStarted} bar>
+    Add Sluiceway one step at a time, starting with a check that changes nothing.
+  </Card>
+  <Card title="Configuration" href={ROUTES.configuration} tilt="left">
+    Every key of `sluiceway.yaml` and what it changes.
+  </Card>
+  <Card title="Why" href={ROUTES.decisions} tilt="right">
+    The decision records say why Sluiceway works the way it does.
+  </Card>
+</div>
+
+<HostedLine />
+
+</div>

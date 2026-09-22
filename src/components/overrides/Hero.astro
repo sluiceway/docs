@@ -1,0 +1,141 @@
+---
+// Replaces Starlight's hero on a splash page. Left: the `shout` line from frontmatter
+// `hero.title` (trusted HTML, so a phrase can take the swash), the README's lead read from
+// the submodule, the beta sentence, the buttons from `hero.actions` (the first is primary; a
+// link starting with `/` is a page of this site and gets the base),
+// and the licence and pinned version. Right: Penny's panel, the page's one `shadow-pop-lg`.
+//
+// The panel files are copies of design-system/assets/Penny/penny-panel-*.svg in
+// sluiceway/company. They animate themselves and stop under prefers-reduced-motion.
+import panelDark from "../../assets/penny/penny-panel-dark.svg?url";
+import panelLight from "../../assets/penny/penny-panel-light.svg?url";
+import { inlineHtml, readmeLead } from "../../lib/action-text";
+import { route } from "../../lib/routes";
+import { VERSION } from "../../lib/source";
+import Button from "../Button.astro";
+
+const { data } = Astro.locals.starlightRoute.entry;
+const { title = data.title, actions = [] } = data.hero ?? {};
+const lead = inlineHtml(readmeLead());
+const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending changes";
+---
+
+<div class="sw-hero">
+  <div class="sw-hero__copy">
+    <!-- Starlight's skip link and table of contents point at this id. -->
+    <h1 id="_top" class="sw-hero__shout" data-page-title set:html={title} />
+    <p class="sw-hero__lead" set:html={lead} />
+    <p class="sw-hero__beta">Sluiceway is in beta.</p>
+    {
+      actions.length > 0 && (
+        <div class="sw-hero__actions">
+          {actions.map(({ link, text }, i) => (
+            <Button href={link.startsWith("/") ? route(link) : link} primary={i === 0}>
+              {text}
+            </Button>
+          ))}
+        </div>
+      )
+    }
+    <p class="sw-hero__small">Apache-2.0 · v{VERSION}</p>
+  </div>
+  <div class="sw-hero__panel">
+    <img class="sw-panel-light" src={panelLight} alt={PANEL_ALT} width="200" height="152" />
+    <img class="sw-panel-dark" src={panelDark} alt={PANEL_ALT} width="200" height="152" />
+  </div>
+</div>
+
+<style>
+  .sw-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+    align-items: center;
+    padding-block: var(--space-7) var(--space-5);
+  }
+  @media (min-width: 980px) {
+    .sw-hero {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--space-8);
+    }
+  }
+  .sw-hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .sw-hero__copy > * {
+    margin: 0;
+  }
+  /* `shout`, scaled down on a phone so eight words never overflow. */
+  .sw-hero__shout {
+    font-family: var(--font-sans);
+    font-size: clamp(40px, 7vw, 64px);
+    line-height: 0.92;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .sw-hero__shout :global(.sw-swash) {
+    background-image: linear-gradient(var(--crate), var(--crate));
+    background-size: 100% 0.18em;
+    background-position: 0 88%;
+    background-repeat: no-repeat;
+    padding-bottom: 0.06em;
+  }
+  /* `body-lg` */
+  .sw-hero__lead {
+    font-size: 20px;
+    line-height: 32px;
+    color: var(--ink);
+  }
+  .sw-hero__beta {
+    font-size: 16px;
+    line-height: 27px;
+  }
+  .sw-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+  }
+  /* `small` */
+  .sw-hero__small {
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--ink-muted);
+  }
+  .sw-hero__panel {
+    justify-self: center;
+    width: 100%;
+    max-width: 520px;
+    background: var(--sky);
+    border: var(--border-bold) solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-pop-lg);
+    overflow: hidden;
+    line-height: 0;
+  }
+  .sw-hero__panel img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .sw-hero__panel .sw-panel-dark {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .sw-hero__panel .sw-panel-light {
+      display: none;
+    }
+    :global(:root:not([data-theme="light"])) .sw-hero__panel .sw-panel-dark {
+      display: block;
+    }
+  }
+  :global(:root[data-theme="dark"]) .sw-hero__panel .sw-panel-light {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .sw-hero__panel .sw-panel-dark {
+    display: block;
+  }
+</style>

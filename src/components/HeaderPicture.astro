@@ -16,9 +16,12 @@ interface Props {
   /** The state in words, such as "4 stacks are pending, some delete or replace resources". */
   alt: string;
   width?: number;
+  /** Load at once, for the first picture on a page. Every other picture loads lazily. */
+  eager?: boolean;
 }
 
-const { picture, alt, width = 880 } = Astro.props;
+const { picture, alt, width = 880, eager = false } = Astro.props;
+const loading = eager ? "eager" : "lazy";
 
 const files = import.meta.glob<string>("/vendor/sluiceway/assets/mascot/*.svg", {
   eager: true,
@@ -44,6 +47,6 @@ const height = Math.round((width * 160) / 880);
 ---
 
 <div class="sw-header-picture not-content">
-  <img class="sw-pic-light" src={light} {alt} {width} {height} loading="lazy" decoding="async" />
-  <img class="sw-pic-dark" src={dark} {alt} {width} {height} loading="lazy" decoding="async" />
+  <img class="sw-pic-light" src={light} {alt} {width} {height} {loading} decoding="async" />
+  <img class="sw-pic-dark" src={dark} {alt} {width} {height} {loading} decoding="async" />
 </div>
