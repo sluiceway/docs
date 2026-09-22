@@ -1,7 +1,7 @@
 ---
 // Replaces Starlight's footer: the page's source line, then the Footer slab.
 import Pagination from "@astrojs/starlight/components/Pagination.astro";
-import { pageSource, REPO_URL, sourceUrl, TAG, VERSION } from "../../lib/source";
+import { pageSource, REPO_URL, TAG, VERSION } from "../../lib/source";
 import ConsentBar from "../ConsentBar.astro";
 import Feedback from "../Feedback.astro";
 import SiteFooter from "../Footer.astro";
@@ -22,7 +22,7 @@ const source = pageSource(entry.data.source, entry.filePath ?? `src/content/docs
     version={VERSION}
     links={[
       { label: "GitHub", href: REPO_URL },
-      { label: "Changelog", href: sourceUrl("CHANGELOG.md") },
+      { label: "Changelog", href: `${import.meta.env.BASE_URL.replace(/\/$/, "")}/changelog/` },
       { label: `Release ${TAG}`, href: `${REPO_URL}/releases/tag/${TAG}` },
     ]}
   />

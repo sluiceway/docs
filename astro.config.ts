@@ -2,6 +2,7 @@ import { satteri } from "@astrojs/markdown-satteri";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { codeTheme } from "./src/lib/code-theme";
+import { sidebar } from "./src/lib/pages";
 // Importing the pin here makes every command fail at once when the submodule is missing or
 // not on a tag, rather than halfway through a build.
 import { TAG } from "./src/lib/source";
@@ -47,11 +48,14 @@ export default defineConfig({
         "./src/styles/tokens.css",
         "./src/styles/theme.css",
         "./src/styles/components.css",
+        "./src/styles/content.css",
       ],
+      sidebar: sidebar(),
       components: {
         SiteTitle: "./src/components/overrides/SiteTitle.astro",
         SocialIcons: "./src/components/overrides/SocialIcons.astro",
         Footer: "./src/components/overrides/Footer.astro",
+        MarkdownContent: "./src/components/overrides/MarkdownContent.astro",
       },
       expressiveCode: {
         themes: [codeTheme("dark"), codeTheme("light")],

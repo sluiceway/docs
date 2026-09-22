@@ -1,11 +1,11 @@
 import { defineCollection } from "astro:content";
-import { docsLoader } from "@astrojs/starlight/loaders";
 import { docsSchema } from "@astrojs/starlight/schema";
 import { z } from "astro/zod";
+import { actionDocsLoader } from "./loaders/action-docs";
 
 export const collections = {
   docs: defineCollection({
-    loader: docsLoader(),
+    loader: actionDocsLoader(),
     schema: docsSchema({
       extend: z.object({
         /**
@@ -14,6 +14,8 @@ export const collections = {
          * page written in this repository: the footer then links to the page's own file.
          */
         source: z.string().optional(),
+        /** One of Penny's header pictures above the page's content, from HeaderPicture. */
+        headerPicture: z.object({ picture: z.string(), alt: z.string() }).optional(),
       }),
     }),
   }),

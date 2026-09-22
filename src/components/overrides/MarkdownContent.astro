@@ -1,0 +1,14 @@
+---
+// Starlight's content wrapper, with one of Penny's header pictures on top when the page asks
+// for one in frontmatter (`headerPicture`). Pages read from the action cannot hold a
+// component, so the picture comes in here.
+import Default from "@astrojs/starlight/components/MarkdownContent.astro";
+import HeaderPicture from "../HeaderPicture.astro";
+
+const { headerPicture } = Astro.locals.starlightRoute.entry.data;
+---
+
+<Default>
+  {headerPicture && <HeaderPicture picture={headerPicture.picture} alt={headerPicture.alt} />}
+  <slot />
+</Default>
