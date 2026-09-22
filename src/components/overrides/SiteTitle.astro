@@ -1,0 +1,55 @@
+---
+// Penny's mark beside the live Inter ExtraBold wordmark, swapped per theme. The mark is a
+// copy of design-system/assets/Penny/penny-mark-*.svg; the wordmark is text, never traced.
+import markDark from "../../assets/penny/penny-mark-dark.svg?url";
+import markLight from "../../assets/penny/penny-mark-light.svg?url";
+
+const { siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a href={siteTitleHref} class="sw-site-title">
+  <img class="sw-mark sw-mark--light" alt="" src={markLight} width="30" height="34" />
+  <img class="sw-mark sw-mark--dark" alt="" src={markDark} width="30" height="34" />
+  <span class="sw-site-title__word" translate="no">sluiceway</span>
+</a>
+
+<style>
+  .sw-site-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--ink);
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: var(--radius-crate);
+  }
+  .sw-mark {
+    display: block;
+    height: 34px;
+    width: auto;
+  }
+  .sw-mark--dark {
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .sw-mark--light {
+      display: none;
+    }
+    :global(:root:not([data-theme="light"])) .sw-mark--dark {
+      display: block;
+    }
+  }
+  :global(:root[data-theme="dark"]) .sw-mark--light {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .sw-mark--dark {
+    display: block;
+  }
+  .sw-site-title__word {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 27px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+</style>

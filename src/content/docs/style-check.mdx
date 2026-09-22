@@ -1,0 +1,143 @@
+---
+title: Style check
+description: Every component the docs use, in one place, for checking both themes.
+sidebar:
+  hidden: true
+pagefind: false
+head:
+  - tag: meta
+    attrs:
+      name: robots
+      content: noindex
+---
+
+import Callout from "../../components/Callout.astro";
+import Card from "../../components/Card.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import CountsLine from "../../components/CountsLine.astro";
+import HeaderPicture from "../../components/HeaderPicture.astro";
+import SpeechBubble from "../../components/SpeechBubble.astro";
+import StageChip from "../../components/StageChip.astro";
+import Steps from "../../components/Steps.astro";
+import WaveRule from "../../components/WaveRule.astro";
+import { WARM } from "../../../vendor/sluiceway/src/render/voice";
+import exampleConfig from "../../../vendor/sluiceway/examples/pulumi-basic/sluiceway.yaml?raw";
+
+<p class="sw-lead">
+  This page is not linked from anywhere. It shows every component the docs use, so a change to
+  the theme can be checked in light and dark.
+</p>
+
+## Header picture and speech bubble
+
+The bubble holds the first-run line, read from the action's `src/render/voice.ts`, beside the
+picture it belongs to.
+
+<SpeechBubble line={WARM.firstRun} />
+
+<HeaderPicture picture="first-run" alt="The channel is empty: the scan found no stacks" />
+
+## Counts line
+
+<CountsLine counts={{ pending: 4, deploying: 0, failed: 1, "in-sync": 8 }} />
+
+A stack id is written whole, as in `apps/web:prod`, and never wraps.
+
+## Callouts
+
+<Callout kind="note" title="The dashboard is a view">
+  The issue is a view and never the source of truth.
+</Callout>
+
+<Callout kind="tip" title="Tick a box to deploy">
+  Tick a box to deploy that stack exactly as its row shows it.
+</Callout>
+
+<Callout kind="pending" title="Write the full stack id">
+  Write a stack id whole, such as `apps/web:prod`, never `apps/web`.
+</Callout>
+
+<Callout kind="danger" title="This deploy deletes resources">
+  A destroy is a delete or a replace.
+</Callout>
+
+## GitHub alerts
+
+The action's Markdown uses GitHub's alert syntax. Each kind renders as a Callout.
+
+> [!NOTE]
+> A note, from `> [!NOTE]`. It takes the note look.
+
+> [!TIP]
+> A tip, from `> [!TIP]`.
+
+> [!IMPORTANT]
+> **Sluiceway is in beta.** This one comes from `> [!IMPORTANT]` and takes the pending look.
+
+> [!WARNING]
+> A warning, from `> [!WARNING]`. It also takes the pending look.
+
+> [!CAUTION]
+> A caution, from `> [!CAUTION]`. It takes the danger look.
+>
+> A second paragraph stays inside the same callout.
+
+A plain blockquote stays a blockquote:
+
+> The issue is a view and never the source of truth.
+
+## Table
+
+| Alert          | Callout kind | Used for                            |
+| -------------- | ------------ | ----------------------------------- |
+| `[!NOTE]`      | note         | A fact about how the product works. |
+| `[!TIP]`       | tip          | Something that saves time.          |
+| `[!IMPORTANT]` | pending      | A thing that will bite later.       |
+| `[!WARNING]`   | pending      | A thing that will bite later.       |
+| `[!CAUTION]`   | danger       | A delete or a replace.              |
+
+## Code
+
+A fenced block:
+
+```sh
+git -C vendor/sluiceway describe --tags --exact-match
+```
+
+A `CodeBlock` named after its file, read from the action's `examples/pulumi-basic`:
+
+<CodeBlock name="sluiceway.yaml" code={exampleConfig} />
+
+The `lead` frame:
+
+<CodeBlock lead code="uses: sluiceway/sluiceway@v0" />
+
+## Steps
+
+<Steps
+  items={[
+    { title: "A scan previews every stack", body: "Each stack with changes gets a row." },
+    { title: "The dashboard is written", body: "One issue shows every row and its box." },
+    { title: "You tick a box", body: "Sluiceway checks that you may tick that stack." },
+    { title: "It previews again and deploys", body: "The stack deploys as its row shows it." },
+  ]}
+/>
+
+## Cards
+
+<div class="sw-card-grid">
+  <Card title="One place to look" bar>Every stack has one row and one box.</Card>
+  <Card title="Previewed twice" tilt="left">A tick previews the stack again before it deploys.</Card>
+  <Card title="Named in full" tilt="right" tone="cool">A stack id is always written whole.</Card>
+</div>
+
+## Stage chips
+
+<p>
+  <StageChip /> <StageChip stage="planned" />{" "}
+  <StageChip stage="contract" label="by contract" />
+</p>
+
+## Wave rule
+
+<WaveRule />

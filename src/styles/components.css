@@ -1,0 +1,400 @@
+/* The comic layer, ported from design-system/components/bundle.css in sluiceway/company.
+   Only the parts the docs use: Callout, CodeBlock, CountsLine, SpeechBubble, WaveRule,
+   StageChip, Card, Steps, Footer, and the header picture. Every outline is `line` at
+   `border-ink`; every shadow is hard and offset. Unlayered, so it wins over Starlight's
+   layered styles inside Markdown content. */
+
+/* ----------------------------------------------------------------- card */
+
+.sw-card {
+  position: relative;
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-6);
+}
+.sw-card--hero {
+  border-width: var(--border-bold);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop-lg);
+}
+.sw-card--warm {
+  background: var(--surface-crate);
+}
+.sw-card--cool {
+  background: var(--surface-water);
+  box-shadow: var(--shadow-pop-crate);
+}
+.sw-card--left {
+  transform: rotate(var(--tilt-left));
+}
+.sw-card--right {
+  transform: rotate(var(--tilt-right));
+}
+.sw-card__bar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 10px;
+  background: var(--crate);
+  border-bottom: var(--border-ink) solid var(--line);
+  border-radius: calc(var(--radius-md) - 2px) calc(var(--radius-md) - 2px) 0 0;
+}
+.sw-card--barred {
+  padding-top: calc(var(--space-6) + 10px);
+}
+.sw-card__title {
+  font-size: 20px;
+  line-height: 27px;
+  font-weight: 700;
+  margin: 0 0 var(--space-2);
+}
+.sw-card__body {
+  font-size: 16px;
+  line-height: 27px;
+}
+.sw-card__body > * {
+  margin: 0;
+}
+.sw-card__body > * + * {
+  margin-top: var(--space-3);
+}
+
+/* -------------------------------------------------------------- callout */
+
+.sw-callout {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+}
+.sw-callout > *,
+.sw-callout__content > * {
+  margin: 0;
+}
+.sw-callout__mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: var(--border-ink) solid var(--line-solid);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--water);
+  color: var(--on-water);
+}
+.sw-callout__title {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 700;
+  margin: 3px 0 var(--space-1);
+}
+.sw-callout__body {
+  font-size: 16px;
+  line-height: 27px;
+}
+.sw-callout__body > :first-child {
+  margin-top: 0;
+}
+.sw-callout--tip {
+  background: var(--surface-water);
+}
+.sw-callout--pending {
+  background: var(--surface-crate);
+}
+.sw-callout--pending .sw-callout__mark {
+  background: var(--pending);
+  color: var(--on-pending);
+}
+.sw-callout--danger {
+  border-color: var(--failed);
+}
+.sw-callout--danger .sw-callout__mark {
+  background: var(--failed);
+  color: var(--on-failed);
+}
+
+/* ----------------------------------------------------------- code block */
+
+/* Code blocks are Expressive Code frames themed in astro.config.ts. `lead` is the larger one. */
+.sw-codeblock--lead .expressive-code {
+  --ec-codeFontSize: 16px;
+  --ec-codeLineHeight: 28px;
+}
+
+/* ---------------------------------------------------------------- steps */
+
+.sw-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.sw-step {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+.sw-step__no {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--ink-invert);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: var(--shadow-press);
+}
+.sw-step__title {
+  font-size: 17px;
+  line-height: 24px;
+  font-weight: 700;
+  margin: 6px 0 var(--space-1);
+}
+.sw-step__body {
+  font-size: 16px;
+  line-height: 27px;
+  margin: 0;
+}
+
+/* -------------------------------------------------------- speech bubble */
+
+.sw-bubble-wrap {
+  /* Room for the tilt and the tail. */
+  padding: var(--space-2) var(--space-2) var(--space-5);
+}
+.sw-bubble {
+  position: relative;
+  display: inline-block;
+  max-width: 360px;
+  margin: 0;
+  transform: rotate(var(--tilt-shout));
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-pop);
+  font-size: 16px;
+  line-height: 27px;
+}
+.sw-bubble::before,
+.sw-bubble::after {
+  content: "";
+  position: absolute;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+.sw-bubble::before {
+  bottom: -18px;
+  border-width: 18px 14px 0 0;
+  border-color: var(--line) transparent transparent transparent;
+}
+.sw-bubble::after {
+  bottom: -12px;
+  border-width: 13px 10px 0 0;
+  border-color: var(--surface) transparent transparent transparent;
+}
+
+/* ----------------------------------------------------------- wave rule */
+
+.sw-wave {
+  display: block;
+  width: 100%;
+  height: 26px;
+  margin: 0;
+  border: 0;
+  background-repeat: repeat-x;
+  background-size: 40px 26px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='26' viewBox='0 0 40 26'><path d='M0 10q5 -6 10 0t10 0t10 0t10 0V26H0Z' fill='%234ac6b7'/><path d='M0 17q5 -6 10 0t10 0t10 0t10 0V26H0Z' fill='%230f8f83' opacity='0.28'/></svg>");
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sw-wave {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='26' viewBox='0 0 40 26'><path d='M0 10q5 -6 10 0t10 0t10 0t10 0V26H0Z' fill='%232fb5a5'/><path d='M0 17q5 -6 10 0t10 0t10 0t10 0V26H0Z' fill='%23178f82' opacity='0.28'/></svg>");
+  }
+}
+:root[data-theme="dark"] .sw-wave {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='26' viewBox='0 0 40 26'><path d='M0 10q5 -6 10 0t10 0t10 0t10 0V26H0Z' fill='%232fb5a5'/><path d='M0 17q5 -6 10 0t10 0t10 0t10 0V26H0Z' fill='%23178f82' opacity='0.28'/></svg>");
+}
+
+/* --------------------------------------------------------- counts line */
+
+.sw-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+.sw-count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 22px;
+}
+.sw-count b {
+  font-weight: 800;
+}
+.sw-count__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  border: var(--border-hair) solid var(--line-solid);
+  background: var(--surface);
+}
+.sw-count--pending .sw-count__dot {
+  background: var(--pending);
+}
+.sw-count--deploying .sw-count__dot {
+  background: var(--deploying);
+}
+.sw-count--failed .sw-count__dot {
+  background: var(--failed);
+}
+.sw-count--in-sync .sw-count__dot {
+  background: var(--in-sync);
+}
+.sw-count--zero {
+  color: var(--ink-muted);
+  border-color: var(--line-soft);
+}
+.sw-count--zero .sw-count__dot {
+  background: var(--surface);
+}
+
+/* ---------------------------------------------------------- stage chip */
+
+/* Neutral tokens only: the four signal colours mean a real product state. */
+.sw-stage {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+  background: var(--ink);
+  color: var(--ink-invert);
+}
+.sw-stage--planned {
+  background: var(--sky);
+  color: var(--ink);
+}
+.sw-stage--contract {
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+
+/* --------------------------------------------------------------- footer */
+
+/* The one block that does not flip with the theme. */
+.sw-footer {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  background: var(--slab);
+  color: var(--on-slab);
+  border: var(--border-slab) solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-6);
+}
+.sw-footer > * {
+  margin: 0;
+}
+.sw-footer a {
+  color: var(--on-slab);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.sw-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  font-weight: 700;
+}
+.sw-footer__note {
+  font-size: 14px;
+  line-height: 22px;
+  opacity: 0.8;
+}
+/* The ring's gap is the slab here, and the ring itself `on-slab`, so it shows on the ink. */
+.sw-footer a:focus-visible {
+  box-shadow:
+    0 0 0 3px var(--slab),
+    0 0 0 6px var(--on-slab);
+}
+
+/* ------------------------------------------------------- header picture */
+
+.sw-header-picture {
+  display: flex;
+  justify-content: center;
+}
+.sw-header-picture img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.sw-header-picture .sw-pic-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sw-header-picture .sw-pic-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .sw-header-picture .sw-pic-dark {
+    display: block;
+  }
+}
+:root[data-theme="dark"] .sw-header-picture .sw-pic-light {
+  display: none;
+}
+:root[data-theme="dark"] .sw-header-picture .sw-pic-dark {
+  display: block;
+}
+
+/* ------------------------------------------------------------ card grid */
+
+.sw-card-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+.sw-card-grid > .sw-card {
+  margin: 0;
+}
+
+/* Code inside a bubble, as the dashboard renders the first-run line. */
+.sw-bubble code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+}

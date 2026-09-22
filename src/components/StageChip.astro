@@ -1,0 +1,12 @@
+---
+// StageChip: whether a thing exists yet. Neutral colours only, never a signal colour.
+interface Props {
+  stage?: "today" | "planned" | "contract";
+  /** Plain and specific, such as "planned" or "shipped 0.4.0". Defaults to the stage. */
+  label?: string;
+}
+
+const { stage = "today", label = stage } = Astro.props;
+---
+
+<span class:list={["sw-stage", { [`sw-stage--${stage}`]: stage !== "today" }]}>{label}</span>

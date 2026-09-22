@@ -1,0 +1,368 @@
+/* Starlight, dressed in the design system. Starlight's own custom properties are pointed at
+   the tokens once; the tokens flip between themes (tokens.css), so these follow. This file is
+   unlayered, so it wins over Starlight's layered styles. Follows "A docs page" in
+   design-system/30-pages.md: paper ground, drawn outlines, hard offset shadows, a
+   `surface-sunk` sidebar on a `gate` rail, a 72ch text column. */
+
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  --sl-font: var(--font-sans);
+  --sl-font-mono: var(--font-mono);
+
+  /* Starlight's greys run from `white` (the text end) to `black` (the ground end). */
+  --sl-color-white: var(--ink);
+  --sl-color-gray-1: var(--ink);
+  --sl-color-gray-2: var(--ink);
+  --sl-color-gray-3: var(--ink-muted);
+  --sl-color-gray-4: var(--ink-muted);
+  --sl-color-gray-5: var(--line-soft);
+  --sl-color-gray-6: var(--surface-sunk);
+  --sl-color-gray-7: var(--surface-sunk);
+  --sl-color-black: var(--paper);
+
+  --sl-color-accent-low: var(--surface-water);
+  --sl-color-accent: var(--water-deep);
+  --sl-color-accent-high: var(--ink);
+
+  --sl-color-text: var(--ink);
+  --sl-color-text-accent: var(--ink);
+  --sl-color-text-invert: var(--on-pending);
+  --sl-color-bg: var(--paper);
+  --sl-color-bg-nav: var(--surface);
+  --sl-color-bg-sidebar: var(--surface-sunk);
+  --sl-color-bg-inline-code: var(--surface-sunk);
+  --sl-color-bg-accent: var(--pending);
+  --sl-color-hairline-light: var(--line-soft);
+  --sl-color-hairline: var(--line-soft);
+  --sl-color-hairline-shade: var(--line);
+
+  --sl-shadow-sm: var(--shadow-press);
+  --sl-shadow-md: var(--shadow-pop);
+  --sl-shadow-lg: var(--shadow-float);
+
+  --sl-text-h1: 34px;
+  --sl-text-h2: 26px;
+  --sl-text-h3: 20px;
+  --sl-text-h4: 17px;
+  --sl-line-height: 1.6875; /* 27px on 16px: the `body` style */
+  --sl-line-height-headings: 1.18;
+
+  --sl-nav-height: 4rem;
+  --sl-content-width: 72ch;
+  --sl-sidebar-width: 18rem;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--water);
+  color: var(--on-water);
+}
+
+/* ---------------------------------------------------------------- focus */
+
+/* Drawn outside the control with a `paper` gap so it lands on the page ground. Never removed. */
+:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 6px var(--focus);
+  border-radius: var(--radius-crate);
+}
+/* Starlight draws its own outlines on a few controls; replace them with the same ring. */
+.sl-markdown-content a:focus-visible,
+starlight-theme-select select:focus-visible,
+.sidebar-content a:focus-visible,
+.right-sidebar a:focus-visible {
+  outline: none;
+}
+
+/* ------------------------------------------------------------------ nav */
+
+header.header {
+  border-bottom: var(--border-ink) solid var(--line);
+}
+/* The phone menu button, drawn like every other control. */
+button.sl-menu-button {
+  border: var(--border-ink) solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+.header .right-group,
+.header .social-icons {
+  gap: var(--space-2);
+}
+.header .social-icons::after {
+  border-inline-end: var(--border-ink) solid var(--line-soft);
+  margin-inline-start: var(--space-2);
+}
+
+/* The theme switch, drawn as the landing page's theme button. */
+starlight-theme-select select {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background-color: var(--surface);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-crate);
+  box-shadow: var(--shadow-press);
+  padding-block: var(--space-2);
+}
+starlight-theme-select select {
+  /* Room for the uppercase, letter-spaced label beside the icon and caret. */
+  width: 9em;
+}
+
+/* Search opens as a drawn control rather than a soft pill. */
+site-search > button[data-open-modal] {
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-crate);
+  background: var(--surface);
+  color: var(--ink-muted);
+  box-shadow: var(--shadow-press);
+}
+site-search > button[data-open-modal]:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+site-search > button[data-open-modal] kbd {
+  background: var(--surface-sunk);
+  color: var(--ink);
+}
+site-search dialog {
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+}
+
+/* -------------------------------------------------------------- sidebar */
+
+/* `surface-sunk` on a `gate` rail. */
+@media (min-width: 50rem) {
+  .sidebar-pane {
+    border-inline-end: var(--border-bold) solid var(--gate);
+  }
+}
+.sidebar-content a {
+  border: var(--border-ink) solid transparent;
+  border-radius: var(--radius-crate);
+  color: var(--ink);
+}
+.sidebar-content a:hover {
+  border-color: var(--line);
+  background: var(--surface);
+}
+.sidebar-content a[aria-current="page"],
+.sidebar-content a[aria-current="page"]:hover,
+.sidebar-content a[aria-current="page"]:focus {
+  background: var(--pending);
+  color: var(--on-pending);
+  border-color: var(--line-solid);
+  font-weight: 800;
+}
+.sidebar-content .top-level > li > a[aria-current="page"] {
+  box-shadow: var(--shadow-press);
+}
+
+/* On this page: `small` in `ink-muted`. */
+.right-sidebar-panel h2 {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.right-sidebar-panel a {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--ink-muted);
+}
+.right-sidebar-panel a[aria-current="true"] {
+  color: var(--ink);
+  font-weight: 700;
+}
+.right-sidebar {
+  border-inline-start-color: var(--line-soft);
+}
+
+/* ----------------------------------------------------------- page title */
+
+h1#_top {
+  font-size: clamp(28px, 4.2vw, 34px);
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* A sticky nav means anchor targets need room above them. */
+[id] {
+  scroll-margin-top: calc(var(--sl-nav-height) + var(--space-4));
+}
+
+/* ------------------------------------------------------------ the prose */
+
+.sl-markdown-content :is(h1, h2, h3, h4):not(:where(.not-content *)) {
+  color: var(--ink);
+  font-weight: 800;
+}
+.sl-markdown-content h2:not(:where(.not-content *)) {
+  line-height: 32px;
+  letter-spacing: -0.015em;
+}
+.sl-markdown-content h3:not(:where(.not-content *)) {
+  line-height: 27px;
+  font-weight: 700;
+}
+.sl-markdown-content h4:not(:where(.not-content *)) {
+  line-height: 24px;
+  font-weight: 700;
+}
+/* `space-8` between the blocks of a docs page, at each h2. */
+.sl-markdown-content :not(h1, h2, h3, h4, h5, h6) + :is(h2, .sl-heading-wrapper.level-h2) {
+  margin-top: var(--space-8);
+}
+
+.sw-lead {
+  font-size: 18px;
+  line-height: 30px;
+}
+
+/* Links: ink with a `water-deep` underline, the design system's sw-link. */
+.sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--ink);
+  text-decoration: none;
+  background-image: linear-gradient(var(--water-deep), var(--water-deep));
+  background-size: 100% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 1px;
+}
+.sl-markdown-content a:hover:not(:where(.not-content *)) {
+  color: var(--ink);
+  background-color: var(--water-foam);
+}
+:root[data-theme="dark"] .sl-markdown-content a:hover:not(:where(.not-content *)) {
+  color: var(--on-water);
+}
+
+/* Inline code: `code-inline` in `crate-deep` on `surface-sunk`. Stack ids never wrap. */
+.sl-markdown-content :not(pre) > code:not(:where(.not-content *)) {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--crate-deep);
+  background: var(--surface-sunk);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+:root[data-theme="dark"] .sl-markdown-content :not(pre) > code:not(:where(.not-content *)) {
+  color: var(--crate);
+}
+
+/* Tables: a drawn frame, `line-soft` hairlines, a `label` header row. Never tilted. */
+.sl-markdown-content table:not(:where(.not-content *)) {
+  display: block;
+  overflow-x: auto;
+  width: max-content;
+  max-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+}
+.sl-markdown-content :is(th, td):not(:where(.not-content *)) {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-hair) solid var(--line-soft);
+  vertical-align: top;
+}
+.sl-markdown-content td:not(:where(.not-content *)) {
+  font-size: 15px;
+  line-height: 24px;
+}
+.sl-markdown-content tr:last-child td:not(:where(.not-content *)) {
+  border-bottom: 0;
+}
+.sl-markdown-content th:not(:where(.not-content *)) {
+  background: var(--surface-sunk);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* A plain blockquote that is not an alert. */
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+  border-inline-start: var(--border-bold) solid var(--line-soft);
+  color: var(--ink);
+}
+
+.sl-markdown-content hr:not(:where(.not-content *)) {
+  border-top: var(--border-hair) solid var(--line-soft);
+}
+
+/* Starlight's own `:::note` asides take the Callout look too. */
+.starlight-aside {
+  background: var(--surface);
+  color: var(--ink);
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-4);
+}
+.starlight-aside__title {
+  color: var(--ink);
+  font-weight: 700;
+}
+.starlight-aside--tip {
+  background: var(--surface-water);
+}
+.starlight-aside--caution {
+  background: var(--surface-crate);
+}
+.starlight-aside--danger {
+  border-color: var(--failed);
+}
+.starlight-aside__icon {
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------ code frames */
+
+/* Never tilted, never wrapped. The frame itself is themed in astro.config.ts. */
+.expressive-code .frame {
+  transform: none;
+}
+.expressive-code .frame .header .title {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+/* ------------------------------------------------------------ pagination */
+
+.pagination-links a {
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-press);
+  background: var(--surface);
+  color: var(--ink);
+}
+.pagination-links a:hover {
+  border-color: var(--line);
+}

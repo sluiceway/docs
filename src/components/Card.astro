@@ -1,0 +1,27 @@
+---
+// Card: a framed block. `bar` for a card that stands for a thing the product does. Tilt at
+// most two cards a section, as a left and right pair, and never one holding code or a table.
+interface Props {
+  title?: string;
+  bar?: boolean;
+  tone?: "warm" | "cool";
+  hero?: boolean;
+  tilt?: "left" | "right";
+}
+
+const { title, bar = false, tone, hero = false, tilt } = Astro.props;
+---
+
+<div
+  class:list={[
+    "sw-card",
+    "not-content",
+    tone && `sw-card--${tone}`,
+    tilt && `sw-card--${tilt}`,
+    { "sw-card--hero": hero, "sw-card--barred": bar },
+  ]}
+>
+  {bar && <div class="sw-card__bar" />}
+  {title && <p class="sw-card__title">{title}</p>}
+  <div class="sw-card__body"><slot /></div>
+</div>

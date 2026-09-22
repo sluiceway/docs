@@ -1,0 +1,20 @@
+---
+// CodeBlock: a framed listing named after the file it belongs in. Rendered by Expressive Code,
+// like every fenced block, so it highlights and copies the same way. Never tilted.
+import { Code } from "@astrojs/starlight/components";
+
+interface Props {
+  code: string;
+  lang?: string;
+  /** The file the snippet goes in, such as `sluiceway.yaml`. */
+  name?: string;
+  /** The larger one-line frame, used once on a page. */
+  lead?: boolean;
+}
+
+const { code, lang = "yaml", name, lead = false } = Astro.props;
+---
+
+<div class:list={["sw-codeblock", { "sw-codeblock--lead": lead }]}>
+  <Code code={code} lang={lang} title={name} />
+</div>

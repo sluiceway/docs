@@ -1,0 +1,25 @@
+---
+// Footer: the ink slab that closes every page. The note carries the version and the licence.
+import { WAITLIST_URL } from "../lib/site";
+
+interface Props {
+  version: string;
+  links: { label: string; href: string }[];
+}
+
+const { version, links } = Astro.props;
+---
+
+<div class="sw-footer not-content">
+  <nav class="sw-footer__links" aria-label="Footer">
+    {links.map(({ label, href }) => <a {href}>{label}</a>)}
+  </nav>
+  {
+    WAITLIST_URL && (
+      <p class="sw-footer__note">
+        <a href={WAITLIST_URL}>A hosted version of Sluiceway is planned.</a>
+      </p>
+    )
+  }
+  <p class="sw-footer__note">Sluiceway v{version} &middot; Apache-2.0</p>
+</div>

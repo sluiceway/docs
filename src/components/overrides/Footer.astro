@@ -1,0 +1,47 @@
+---
+// Replaces Starlight's footer: the page's source line, then the Footer slab.
+import Pagination from "@astrojs/starlight/components/Pagination.astro";
+import { pageSource, REPO_URL, sourceUrl, TAG, VERSION } from "../../lib/source";
+import SiteFooter from "../Footer.astro";
+
+const { entry } = Astro.locals.starlightRoute;
+const source = pageSource(entry.data.source, entry.filePath ?? `src/content/docs/${entry.id}`);
+---
+
+<footer class="sw-page-footer">
+  <Pagination />
+  <p class="sw-source">
+    Source: <a href={source.href}><code>{source.path}</code> at <code>{source.ref}</code></a>
+  </p>
+  <SiteFooter
+    version={VERSION}
+    links={[
+      { label: "GitHub", href: REPO_URL },
+      { label: "Changelog", href: sourceUrl("CHANGELOG.md") },
+      { label: `Release ${TAG}`, href: `${REPO_URL}/releases/tag/${TAG}` },
+    ]}
+  />
+</footer>
+
+<style>
+  .sw-page-footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+  }
+  .sw-source {
+    margin: 0;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--ink-muted);
+  }
+  .sw-source a {
+    color: var(--ink-muted);
+    text-underline-offset: 3px;
+  }
+  .sw-source code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+</style>
