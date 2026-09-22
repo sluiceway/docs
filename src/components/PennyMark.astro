@@ -20,7 +20,7 @@ const { size = 20, onInk = false, class: className } = Astro.props;
 const width = Math.round((size * 132) / 148);
 ---
 
-<span class:list={["sw-penny-mark", { "sw-penny-mark--ink": onInk }, className]}>
+<span class:list={["sw-penny-mark", { "sw-penny-mark--ink": onInk }, className]} style={`--sw-mark-h: ${size}px`}>
   {!onInk && <img class="sw-penny-mark__light" alt="" aria-hidden="true" src={markLight} {width} height={size} />}
   <img class="sw-penny-mark__dark" alt="" aria-hidden="true" src={markDark} {width} height={size} />
 </span>
