@@ -4,14 +4,33 @@ description: Every state Penny draws at the top of the dashboard, and when the d
 ---
 
 import HeaderGallery from "../../components/HeaderGallery.astro";
-import { waterSteps } from "../../lib/action-text";
+import { headerStates, waterSteps } from "../../lib/action-text";
 import { ROUTES } from "../../lib/routes";
-import { HEADER_STATES } from "../../../vendor/sluiceway/src/render/header-state";
+
+export const pictures = [
+  { picture: "first-run", alt: "Penny beside an empty channel: the scan found no stacks" },
+  { picture: "in-sync", alt: "Penny resting on a calm quay because every stack is in sync" },
+  {
+    picture: "drift",
+    alt: "A stack changed outside the code: water seeps through the closed gate and Penny looks at it",
+  },
+  { picture: "pending-1", alt: "1 stack is pending: one crate waits upstream of Penny" },
+  { picture: "pending-4", alt: "4 stacks are pending: four crates wait upstream of Penny" },
+  { picture: "pending-12", alt: "12 stacks are pending: twelve crates wait upstream of Penny" },
+  {
+    picture: "pending-more",
+    alt: "More than 12 stacks are pending: the row of crates runs past the left edge",
+  },
+  { picture: "deploying", alt: "A stack is deploying: the gate is open and water runs downstream" },
+  { picture: "failing", alt: "Something failed: the gate is stuck half open over a log, with a red lamp" },
+];
+
+export const states = headerStates(pictures.map(({ picture }) => picture));
 
 <p class="sw-lead">
   The header is the picture at the top of the dashboard: Penny, the sluice gate, on a quay in
-  one of five states. When more than one applies, the first wins, in this order:{" "}
-  {HEADER_STATES.map((state) => state.replace("-", " ")).join(", ")}.
+  one of {states.count} states. When more than one applies, the first wins, in this order:{" "}
+  {states.order}.
 </p>
 
 Upstream is on the left, where crates pile up while changes are pending. Downstream is on the
@@ -20,21 +39,7 @@ and the dashboard shows the one that matches your GitHub theme.
 
 ## The pictures
 
-<HeaderGallery
-  pictures={[
-    { picture: "first-run", alt: "Penny beside an empty channel: the scan found no stacks" },
-    { picture: "in-sync", alt: "Penny resting on a calm quay because every stack is in sync" },
-    { picture: "pending-1", alt: "1 stack is pending: one crate waits upstream of Penny" },
-    { picture: "pending-4", alt: "4 stacks are pending: four crates wait upstream of Penny" },
-    { picture: "pending-12", alt: "12 stacks are pending: twelve crates wait upstream of Penny" },
-    {
-      picture: "pending-more",
-      alt: "More than 12 stacks are pending: the row of crates runs past the left edge",
-    },
-    { picture: "deploying", alt: "A stack is deploying: the gate is open and water runs downstream" },
-    { picture: "failing", alt: "Something failed: the gate is stuck half open over a log, with a red lamp" },
-  ]}
-/>
+<HeaderGallery pictures={pictures} />
 
 ## With the destroy sign
 
