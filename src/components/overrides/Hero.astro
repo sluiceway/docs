@@ -40,9 +40,12 @@ const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending 
     <p class="sw-hero__small">Apache-2.0 · v{VERSION}</p>
   </div>
   <div class="sw-hero__panel">
-    <!-- Lazy, as HeaderPicture: the file CSS hides is then never fetched. -->
-    <img class="sw-panel-light" src={panelLight} alt={PANEL_ALT} width="200" height="152" loading="lazy" decoding="async" />
-    <img class="sw-panel-dark" src={panelDark} alt={PANEL_ALT} width="200" height="152" loading="lazy" decoding="async" />
+    <!--
+      Eager, unlike HeaderPicture: the panel is the largest thing on the first screen, and a
+      lazy one is found late. Both files load, about 7 KB each.
+    -->
+    <img class="sw-panel-light" src={panelLight} alt={PANEL_ALT} width="200" height="152" />
+    <img class="sw-panel-dark" src={panelDark} alt={PANEL_ALT} width="200" height="152" />
   </div>
 </div>
 
