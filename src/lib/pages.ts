@@ -591,6 +591,10 @@ export function pages(repoUrl: string, base: string): Page[] {
         "What Sluiceway does today, what comes before 1.0, and what comes after, each item with where it was decided.",
       source: "docs/roadmap.md",
       recordsContext: true,
+      headerPicture: {
+        picture: "pending-6",
+        alt: "6 stacks are pending: six crates wait upstream of Penny",
+      },
       parts: [wholeFile("docs/roadmap.md")],
     },
     {
