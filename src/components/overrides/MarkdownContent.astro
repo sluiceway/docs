@@ -15,7 +15,7 @@ const { headerPicture, eyebrow } = Astro.locals.starlightRoute.entry.data;
   {headerPicture && <HeaderPicture picture={headerPicture.picture} alt={headerPicture.alt} top />}
   {
     eyebrow && (
-      <p class="sw-eyebrow">
+      <p class="sw-eyebrow not-content">
         {!headerPicture && <PennyMark size={22} />}
         <span>{eyebrow}</span>
       </p>

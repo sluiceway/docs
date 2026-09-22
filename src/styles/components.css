@@ -399,9 +399,12 @@
   flex: none;
   line-height: 0;
 }
+/* The height is set here too: inside Markdown content, Starlight sets every image's height
+   to auto, which would show the mark at its full 132 by 148. */
 .sw-penny-mark img {
   display: block;
   width: auto;
+  height: var(--sw-mark-h);
 }
 .sw-penny-mark:not(.sw-penny-mark--ink) .sw-penny-mark__dark {
   display: none;
