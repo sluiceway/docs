@@ -264,11 +264,18 @@ export function records(): DecisionRecord[] {
       const src = source(path);
       const firstH2 = src.headings.find((h) => h.depth === 2)?.line ?? Number.POSITIVE_INFINITY;
       const top = src.markdown.split("\n").slice(0, firstH2);
+      // A lead opens a line or a sentence: "Amended by 0039 and 0040: ... Amended again by 0043: ...".
       const changes = top
-        .map((line) => /^(?:>\s*)?((?:Amended|Superseded)[^:]*):/.exec(line)?.[1])
-        .filter((lead): lead is string => Boolean(lead))
+        .flatMap((line) =>
+          [...line.matchAll(/(?:^(?:>\s*)?|\.\s+)((?:Amended|Superseded)[^:.]*):/g)].map(
+            (match) => match[1] ?? "",
+          ),
+        )
         .map((lead) => {
-          const plain = lead.replace(/\s*\([^)]*\)/g, "").trim();
+          const plain = lead
+            .replace(/\s*\([^)]*\)/g, "")
+            .replace(/ again\b/, "")
+            .trim();
           return {
             kind: plain
               .replace(/\s*\b\d{4}\b.*$/, "")
