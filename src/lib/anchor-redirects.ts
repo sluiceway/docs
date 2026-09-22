@@ -25,6 +25,12 @@ export const ANCHOR_REDIRECTS: Record<string, Record<string, string>> = {
   "not-in-v1": {
     "what-it-does-not-do-yet": "using-the-dashboard#limits",
   },
+  // v0.23.0 made notifications built in: Recipes became "Steps of your own", and the generic
+  // webhook recipe became the built-in webhook.
+  "guides/notifications": {
+    recipes: "guides/notifications#steps-of-your-own",
+    "a-generic-webhook": "guides/notifications#a-webhook",
+  },
 };
 
 /**
