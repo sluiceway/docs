@@ -4,7 +4,7 @@
 
 import { readFileSync } from "node:fs";
 import { markdownToHtml } from "satteri";
-import { HEADER_STATES } from "../../vendor/sluiceway/src/render/header-state";
+import { HEADER_STATES } from "../../vendor/sluiceway/src/render/dashboard-facts";
 import { WARM } from "../../vendor/sluiceway/src/render/voice";
 import { vendorPath } from "./source";
 
@@ -170,7 +170,7 @@ export function headerStates(stems: readonly string[]): { count: string; order: 
   for (const state of HEADER_STATES) {
     if (!stems.some((stem) => stem === state || stem.startsWith(`${state}-`))) {
       throw new Error(
-        `The header state \`${state}\` of vendor/sluiceway/src/render/header-state.ts has no ` +
+        `The header state \`${state}\` of vendor/sluiceway/src/render/dashboard-facts.ts has no ` +
           "picture in the gallery of src/content/docs/the-header.mdx. Add its file from assets/mascot.",
       );
     }
