@@ -12,7 +12,12 @@
   for (const wrap of document.querySelectorAll<HTMLElement>(".sw-search-or")) {
     if (!open) continue;
     wrap.hidden = false;
-    wrap.querySelector("button")?.addEventListener("click", () => open.click());
+    // Starlight closes the dialog on any click that reaches window after it opens, so this
+    // click stops here.
+    wrap.querySelector("button")?.addEventListener("click", (event) => {
+      event.stopPropagation();
+      open.click();
+    });
   }
 </script>
 
