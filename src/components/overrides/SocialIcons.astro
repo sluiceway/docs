@@ -1,0 +1,36 @@
+---
+// Text links in place of Starlight's icon row, drawn as the design system's nav links.
+import { DOCS_REPO_URL, REPO_URL } from "../../lib/source";
+
+const links = [
+  { label: "GitHub", title: "Sluiceway on GitHub", href: REPO_URL },
+  { label: "Docs repo", title: "The source of this site on GitHub", href: DOCS_REPO_URL },
+];
+---
+
+{
+  links.map(({ label, title, href }) => (
+    <a class="sw-navlink" {href} {title}>
+      {label}
+    </a>
+  ))
+}
+
+<style>
+  .sw-navlink {
+    padding: var(--space-2) var(--space-3);
+    border: var(--border-ink) solid transparent;
+    border-radius: var(--radius-crate);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 17px;
+    font-weight: 800;
+    color: var(--ink);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .sw-navlink:hover {
+    border-color: var(--line);
+    background: var(--surface-sunk);
+  }
+</style>

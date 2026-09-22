@@ -1,0 +1,30 @@
+---
+// CountsLine: the dashboard's counts, in the dashboard's own order. A zero keeps its pill.
+interface Props {
+  counts: { pending?: number; deploying?: number; failed?: number; "in-sync"?: number };
+}
+
+const ORDER = ["pending", "deploying", "failed", "in-sync"] as const;
+const WORD = {
+  pending: "pending",
+  deploying: "deploying",
+  failed: "preview failed",
+  "in-sync": "in sync",
+} as const;
+
+const { counts } = Astro.props;
+---
+
+<div class="sw-counts not-content">
+  {
+    ORDER.map((k) => {
+      const n = counts[k] ?? 0;
+      return (
+        <span class:list={["sw-count", `sw-count--${k}`, { "sw-count--zero": n === 0 }]}>
+          <span class="sw-count__dot" />
+          {n === 0 ? "0" : <b>{n}</b>} {WORD[k]}
+        </span>
+      );
+    })
+  }
+</div>

@@ -1,0 +1,3 @@
+[submodule "vendor/sluiceway"]
+	path = vendor/sluiceway
+	url = https://github.com/sluiceway/sluiceway.git

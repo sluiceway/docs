@@ -1,0 +1,15 @@
+---
+// SpeechBubble: one of the two voiced lines, verbatim, beside Penny. Pass the line itself from
+// the action's src/render/voice.ts (import `WARM` from the submodule) rather than retyping it.
+// Nothing else goes in a bubble, and each line appears at most once on the site.
+// Backticks in the line render as code, as they do on the dashboard.
+interface Props {
+  line: string;
+}
+
+const parts = Astro.props.line.split("`");
+---
+
+<div class="sw-bubble-wrap not-content">
+  <p class="sw-bubble">{parts.map((part, i) => (i % 2 === 1 ? <code>{part}</code> : part))}</p>
+</div>

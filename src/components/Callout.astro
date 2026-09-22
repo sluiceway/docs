@@ -1,0 +1,22 @@
+---
+// Callout: an aside a reader may not skip. The kind is the meaning:
+// note (how the product works), tip (saves time), pending (bites later), danger (a destroy).
+// Same markup as the GitHub alerts in Markdown (src/plugins/github-alerts.ts).
+import { CALLOUT_MARK, type CalloutKind } from "../plugins/github-alerts";
+
+interface Props {
+  kind?: CalloutKind;
+  /** The whole point of the callout, in sentence case. */
+  title?: string;
+}
+
+const { kind = "note", title } = Astro.props;
+---
+
+<aside class:list={["sw-callout", `sw-callout--${kind}`]}>
+  <div class="sw-callout__mark" aria-hidden="true">{CALLOUT_MARK[kind]}</div>
+  <div class="sw-callout__content">
+    {title && <p class="sw-callout__title">{title}</p>}
+    <div class="sw-callout__body"><slot /></div>
+  </div>
+</aside>
