@@ -112,4 +112,6 @@ jobs:
         with:
           name: lighthouse
           path: .lighthouseci/
+          # The folder's name starts with a dot, which the action skips unless told.
+          include-hidden-files: true
           if-no-files-found: error
