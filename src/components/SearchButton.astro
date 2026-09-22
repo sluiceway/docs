@@ -1,0 +1,32 @@
+---
+// SearchButton: text that opens the site's search, for a page that points the reader at it.
+// Starlight's search is a dialog opened from the header, not a page, so this presses that
+// button. It renders " or <label>" after the text before it. Without JavaScript the header's
+// search is the way in, and all of this stays hidden.
+---
+
+<span class="sw-search-or" hidden> or <button type="button" class="sw-search-button"><slot /></button></span>
+
+<script>
+  const open = document.querySelector<HTMLButtonElement>("site-search button[data-open-modal]");
+  for (const wrap of document.querySelectorAll<HTMLElement>(".sw-search-or")) {
+    if (!open) continue;
+    wrap.hidden = false;
+    wrap.querySelector("button")?.addEventListener("click", () => open.click());
+  }
+</script>
+
+<style>
+  .sw-search-button {
+    display: inline;
+    padding: 0 0 1px;
+    font: inherit;
+    color: var(--ink);
+    background: linear-gradient(var(--water-deep), var(--water-deep)) 0 100% / 100% 2px no-repeat;
+    border: 0;
+    cursor: pointer;
+  }
+  .sw-search-button:hover {
+    background-color: var(--water-foam);
+  }
+</style>
