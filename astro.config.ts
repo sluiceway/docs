@@ -1,8 +1,10 @@
 import { satteri } from "@astrojs/markdown-satteri";
+import sitemap from "@astrojs/sitemap";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { codeTheme } from "./src/lib/code-theme";
 import { sidebar } from "./src/lib/pages";
+import { UNLISTED } from "./src/lib/site";
 // Importing the pin here makes every command fail at once when the submodule is missing or
 // not on a tag, rather than halfway through a build.
 import { TAG } from "./src/lib/source";
@@ -12,8 +14,8 @@ import { githubAlerts } from "./src/plugins/github-alerts";
 const site = process.env.DOCS_SITE || "https://sluiceway.github.io";
 const base = process.env.DOCS_BASE ?? "/docs";
 
-const FONTS =
-  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap";
+const root = base.replace(/\/$/, "");
+const unlisted = new Set(UNLISTED.map((id) => `${root}/${id}/`));
 
 export default defineConfig({
   site,
@@ -37,13 +39,9 @@ export default defineConfig({
             media: `(prefers-color-scheme: ${theme})`,
           },
         })),
-        { tag: "link", attrs: { rel: "preconnect", href: "https://fonts.googleapis.com" } },
-        {
-          tag: "link",
-          attrs: { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true },
-        },
-        { tag: "link", attrs: { rel: "stylesheet", href: FONTS } },
       ],
+      // The fonts, the share image, the title rule and the JSON-LD.
+      routeMiddleware: "./src/route-data.ts",
       customCss: [
         "./src/styles/tokens.css",
         "./src/styles/theme.css",
@@ -91,5 +89,7 @@ export default defineConfig({
       lastUpdated: false,
       pagination: true,
     }),
+    // In place of Starlight's own sitemap, to leave the unlisted pages out.
+    sitemap({ filter: (page) => !unlisted.has(new URL(page).pathname) }),
   ],
 });

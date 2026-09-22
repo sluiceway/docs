@@ -56,3 +56,6 @@
 .sw-landing__calm .sw-bubble::after {
   margin-left: -11px;
 }
+.sw-landing__guides {
+  margin-top: var(--space-6);
+}

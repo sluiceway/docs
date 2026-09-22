@@ -1,27 +1,24 @@
 ---
 // Every state Penny draws, one per row: the picture, its file name, and when the dashboard
 // shows it. "Shown when" is read from the tables of the action's assets/mascot/README.md at
-// the pinned tag, and the build fails if a picture has no row there. The first picture loads
-// at once, every other one lazily.
+// the pinned tag, and the build fails if a picture has no row there.
 import { shownWhen } from "../lib/action-text";
 import HeaderPicture from "./HeaderPicture.astro";
 
 interface Props {
   /** File stems from assets/mascot with the state in words, as alt text, for each. */
   pictures: { picture: string; alt: string }[];
-  /** Whether the first picture is the first on the page. */
-  first?: boolean;
 }
 
-const { pictures, first = false } = Astro.props;
+const { pictures } = Astro.props;
 const when = shownWhen(pictures.map(({ picture }) => picture));
 ---
 
 <ul class="sw-gallery not-content">
   {
-    pictures.map(({ picture, alt }, i) => (
+    pictures.map(({ picture, alt }) => (
       <li class="sw-gallery__row">
-        <HeaderPicture {picture} {alt} eager={first && i === 0} />
+        <HeaderPicture {picture} {alt} />
         <p class="sw-gallery__caption">
           <code>{picture}</code>
           <span>

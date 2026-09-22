@@ -40,8 +40,9 @@ const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending 
     <p class="sw-hero__small">Apache-2.0 · v{VERSION}</p>
   </div>
   <div class="sw-hero__panel">
-    <img class="sw-panel-light" src={panelLight} alt={PANEL_ALT} width="200" height="152" />
-    <img class="sw-panel-dark" src={panelDark} alt={PANEL_ALT} width="200" height="152" />
+    <!-- Lazy, as HeaderPicture: the file CSS hides is then never fetched. -->
+    <img class="sw-panel-light" src={panelLight} alt={PANEL_ALT} width="200" height="152" loading="lazy" decoding="async" />
+    <img class="sw-panel-dark" src={panelDark} alt={PANEL_ALT} width="200" height="152" loading="lazy" decoding="async" />
   </div>
 </div>
 
