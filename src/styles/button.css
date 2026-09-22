@@ -1,16 +1,17 @@
-/* Button, ported from design-system/components/bundle.css in sluiceway/company: the `default`
-   variant at the `sm` size, which is all the consent bar and the feedback buttons use. The
-   focus ring comes from theme.css. */
+/* Button, ported from design-system/components/bundle.css in sluiceway/company: the default
+   size, the `sm` size and the `primary` variant, which is what the docs use. Only
+   src/components/Button.astro loads this file and sets these classes. The focus ring comes
+   from theme.css and takes the place of the hard shadow while focused, as in bundle.css. */
 
 .sw-btn {
   --sw-btn-shadow: var(--shadow-pop);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-5);
   font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 16px;
+  line-height: 20px;
   font-weight: 800;
   letter-spacing: -0.005em;
   text-decoration: none;
@@ -32,12 +33,20 @@
   transform: translate(2px, 2px);
   box-shadow: var(--shadow-press);
 }
-/* The ring replaces the hard shadow while focused, as in bundle.css. */
 .sw-btn:focus-visible {
   outline: none;
   box-shadow:
     0 0 0 3px var(--paper),
     0 0 0 6px var(--focus);
+}
+.sw-btn--primary {
+  background: var(--crate-deep);
+  color: var(--on-crate-deep);
+}
+.sw-btn--sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: 14px;
+  line-height: 18px;
 }
 .sw-btn svg {
   width: 16px;

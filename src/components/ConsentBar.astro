@@ -4,7 +4,7 @@
 // shows when the browser sends Do Not Track or Global Privacy Control. Renders nothing while
 // analytics is off.
 import { ANALYTICS_ENABLED } from "../lib/analytics";
-import "../styles/button.css";
+import Button from "./Button.astro";
 ---
 
 {
@@ -21,12 +21,12 @@ import "../styles/button.css";
         maintainer. No cookies. Allow it?
       </p>
       <div class="sw-consent__buttons">
-        <button type="button" class="sw-btn" data-consent="allow">
+        <Button size="sm" data-consent="allow">
           Allow
-        </button>
-        <button type="button" class="sw-btn" data-consent="deny">
+        </Button>
+        <Button size="sm" data-consent="deny">
           No thanks
-        </button>
+        </Button>
       </div>
     </section>
   )

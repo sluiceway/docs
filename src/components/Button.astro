@@ -1,58 +1,33 @@
 ---
-// Button: a link that looks like the design system's button. One `primary` a row at most.
-interface Props {
-  href: string;
-  primary?: boolean;
-}
+// Button: the design system's button, and the only one on the site. With `href` it is a link,
+// without it a `<button type="button">` for a script to handle. One `primary` a row at most.
+// Other attributes, such as `data-*` and `aria-label`, pass through. Styles: button.css.
+import type { HTMLAttributes } from "astro/types";
+import "../styles/button.css";
 
-const { href, primary = false } = Astro.props;
+type Props = Omit<HTMLAttributes<"a"> & HTMLAttributes<"button">, "type"> & {
+  href?: string;
+  primary?: boolean;
+  size?: "sm";
+};
+
+const { href, primary = false, size, class: className, ...attrs } = Astro.props;
+const classes = [
+  "sw-btn",
+  "not-content",
+  { "sw-btn--primary": primary, "sw-btn--sm": size === "sm" },
+  className,
+];
 ---
 
-<a class:list={["sw-btn", "not-content", { "sw-btn--primary": primary }]} {href}><slot /></a>
-
-<style>
-  /* Ported from design-system/components/bundle.css: button. */
-  .sw-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-5);
-    font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 20px;
-    font-weight: 800;
-    letter-spacing: -0.005em;
-    text-decoration: none;
-    border: var(--border-ink) solid var(--line);
-    border-radius: var(--radius-crate);
-    background: var(--surface);
-    color: var(--ink);
-    box-shadow: var(--shadow-pop);
-    transition:
-      transform 90ms steps(2),
-      box-shadow 90ms steps(2);
-  }
-  .sw-btn:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: var(--shadow-pop-lg);
-  }
-  .sw-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: var(--shadow-press);
-  }
-  .sw-btn:focus-visible {
-    box-shadow:
-      0 0 0 3px var(--paper),
-      0 0 0 6px var(--focus),
-      var(--shadow-pop);
-  }
-  .sw-btn--primary {
-    background: var(--crate-deep);
-    color: var(--on-crate-deep);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sw-btn {
-      transition: none;
-    }
-  }
-</style>
+{
+  href ? (
+    <a class:list={classes} {href} {...attrs}>
+      <slot />
+    </a>
+  ) : (
+    <button type="button" class:list={classes} {...attrs}>
+      <slot />
+    </button>
+  )
+}
