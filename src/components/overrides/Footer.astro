@@ -2,14 +2,19 @@
 // Replaces Starlight's footer: the page's source line, then the Footer slab.
 import Pagination from "@astrojs/starlight/components/Pagination.astro";
 import { pageSource, REPO_URL, sourceUrl, TAG, VERSION } from "../../lib/source";
+import ConsentBar from "../ConsentBar.astro";
+import Feedback from "../Feedback.astro";
 import SiteFooter from "../Footer.astro";
 
-const { entry } = Astro.locals.starlightRoute;
+const { entry, id } = Astro.locals.starlightRoute;
+// The thumbs end every docs page, not the landing page or the 404.
+const feedback = entry.data.template !== "splash" && id !== "" && id !== "404";
 const source = pageSource(entry.data.source, entry.filePath ?? `src/content/docs/${entry.id}`);
 ---
 
 <footer class="sw-page-footer">
   <Pagination />
+  {feedback && <Feedback />}
   <p class="sw-source">
     Source: <a href={source.href}><code>{source.path}</code> at <code>{source.ref}</code></a>
   </p>
@@ -21,6 +26,7 @@ const source = pageSource(entry.data.source, entry.filePath ?? `src/content/docs
       { label: `Release ${TAG}`, href: `${REPO_URL}/releases/tag/${TAG}` },
     ]}
   />
+  <ConsentBar />
 </footer>
 
 <style>
