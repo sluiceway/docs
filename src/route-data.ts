@@ -8,6 +8,7 @@ import interLatin from "@fontsource-variable/inter/files/inter-latin-wght-normal
 import monoLatinExt from "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-ext-wght-normal.woff2?url";
 import monoLatin from "@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2?url";
 import { inlineHtml, readmeLead } from "./lib/action-text";
+import { mascotUrl } from "./lib/mascot";
 import { SHARE_IMAGE } from "./lib/share-image";
 import { UNLISTED } from "./lib/site";
 import { REPO_URL, VERSION } from "./lib/source";
@@ -50,6 +51,26 @@ const FONT_HEAD: HeadEntry[] = [
   { tag: "style", attrs: {}, content: FONT_FACES },
 ];
 
+/**
+ * The header picture at the top of a page is its largest paint, and its <img> is lazy so that
+ * the file the theme hides is never fetched. The preload fetches the file for the system's
+ * colour scheme with the page instead. A reader who picked the other theme in the switch gets
+ * that file as well, from the lazy <img>.
+ */
+function pictureHead(picture: string): HeadEntry[] {
+  return (["light", "dark"] as const).map((theme) => ({
+    tag: "link",
+    attrs: {
+      rel: "preload",
+      as: "image",
+      href: mascotUrl(picture, theme),
+      type: "image/svg+xml",
+      media: `(prefers-color-scheme: ${theme})`,
+      fetchpriority: "high",
+    },
+  }));
+}
+
 const SUFFIX = " | Sluiceway";
 const MAX_TITLE = 60;
 
@@ -86,8 +107,10 @@ export const onRequest = defineRouteMiddleware((context) => {
     tag: "meta",
     attrs: { [key]: name, content },
   });
+  const picture = entry.data.headerPicture?.picture;
   head.push(
     ...FONT_HEAD,
+    ...(picture ? pictureHead(picture) : []),
     meta("property", "og:image", image),
     meta("property", "og:image:type", "image/png"),
     meta("property", "og:image:width", String(SHARE_IMAGE.width)),

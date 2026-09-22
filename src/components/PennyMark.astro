@@ -1,0 +1,26 @@
+---
+// PennyMark: Penny's mark, the gate alone, small. The files are copies of
+// design-system/assets/Penny/penny-mark-*.svg in sluiceway/company. The mark is decorative
+// wherever it stands: the words beside it say what the link or line is, so it carries an
+// empty alt and aria-hidden.
+//
+// It swaps light and dark with the theme, like every picture of Penny. `onInk` keeps the dark
+// file in both themes, for the footer slab, which is ink in both.
+import markDark from "../assets/penny/penny-mark-dark.svg?url";
+import markLight from "../assets/penny/penny-mark-light.svg?url";
+
+interface Props {
+  /** The height in pixels. The width follows the mark's 132 by 148. */
+  size?: number;
+  onInk?: boolean;
+  class?: string;
+}
+
+const { size = 20, onInk = false, class: className } = Astro.props;
+const width = Math.round((size * 132) / 148);
+---
+
+<span class:list={["sw-penny-mark", { "sw-penny-mark--ink": onInk }, className]}>
+  {!onInk && <img class="sw-penny-mark__light" alt="" aria-hidden="true" src={markLight} {width} height={size} />}
+  <img class="sw-penny-mark__dark" alt="" aria-hidden="true" src={markDark} {width} height={size} />
+</span>

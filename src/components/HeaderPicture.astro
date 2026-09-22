@@ -1,16 +1,17 @@
 ---
 // HeaderPicture: one of Penny's header pictures from the action's assets/mascot, at the pinned
-// tag. The files are served from the submodule at build time, so the picture on the page is
-// the file the build checked, and nothing loads from raw.githubusercontent.com (which serves
-// SVG as text/plain, so an <img> cannot show it).
+// tag (src/lib/mascot.ts).
 //
 // The light and dark files swap with Starlight's data-theme and with prefers-color-scheme. A
 // <picture> with <source media> can only follow the system setting, not the site's theme
 // switch, so both files are in the markup and CSS shows one. Both load lazily: a lazy image
 // that CSS hides is never fetched, so a page loads one file per picture, the one its theme
 // shows. An eager pair would fetch both.
-import { existsSync } from "node:fs";
-import { vendorPath } from "../lib/source";
+//
+// The picture at the top of a page is its largest paint. For that one, `top` asks for high
+// priority, and src/route-data.ts preloads the file for the system's colour scheme, so the
+// browser fetches it with the page instead of after layout.
+import { mascotUrl } from "../lib/mascot";
 
 interface Props {
   /** A file stem from assets/mascot, such as `in-sync`, `pending-4-destroys` or `first-run`. */
@@ -18,34 +19,18 @@ interface Props {
   /** The state in words, such as "4 stacks are pending, some delete or replace resources". */
   alt: string;
   width?: number;
+  /** The picture at the top of the page. */
+  top?: boolean;
 }
 
-const { picture, alt, width = 880 } = Astro.props;
-
-const files = import.meta.glob<string>("/vendor/sluiceway/assets/mascot/*.svg", {
-  eager: true,
-  query: "?url",
-  import: "default",
-});
-
-function url(theme: "light" | "dark"): string {
-  const file = `assets/mascot/${picture}-${theme}.svg`;
-  const src = files[`/vendor/sluiceway/${file}`];
-  if (!existsSync(vendorPath(file)) || !src) {
-    throw new Error(
-      `HeaderPicture: vendor/sluiceway/${file} does not exist at the pinned tag. ` +
-        `Use a stem from vendor/sluiceway/assets/mascot, such as "in-sync" or "pending-4".`,
-    );
-  }
-  return src;
-}
-
-const light = url("light");
-const dark = url("dark");
+const { picture, alt, width = 880, top = false } = Astro.props;
+const light = mascotUrl(picture, "light");
+const dark = mascotUrl(picture, "dark");
 const height = Math.round((width * 160) / 880);
+const fetchpriority = top ? "high" : undefined;
 ---
 
 <div class="sw-header-picture not-content">
-  <img class="sw-pic-light" src={light} {alt} {width} {height} loading="lazy" decoding="async" />
-  <img class="sw-pic-dark" src={dark} {alt} {width} {height} loading="lazy" decoding="async" />
+  <img class="sw-pic-light" src={light} {alt} {width} {height} loading="lazy" decoding="async" {fetchpriority} />
+  <img class="sw-pic-dark" src={dark} {alt} {width} {height} loading="lazy" decoding="async" {fetchpriority} />
 </div>

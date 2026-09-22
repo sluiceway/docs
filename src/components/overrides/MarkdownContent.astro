@@ -1,14 +1,25 @@
 ---
-// Starlight's content wrapper, with one of Penny's header pictures on top when the page asks
-// for one in frontmatter (`headerPicture`). Pages read from the action cannot hold a
-// component, so the picture comes in here.
+// Starlight's content wrapper, with Penny on top. A page with a `headerPicture` in its data
+// shows that picture first, full width of the text column. A page with an `eyebrow`, such as
+// the number of a decision record, shows it next, with Penny's mark beside it when the page has
+// no picture of its own. Pages read from the action cannot hold a component, so both come in
+// here.
 import Default from "@astrojs/starlight/components/MarkdownContent.astro";
 import HeaderPicture from "../HeaderPicture.astro";
+import PennyMark from "../PennyMark.astro";
 
-const { headerPicture } = Astro.locals.starlightRoute.entry.data;
+const { headerPicture, eyebrow } = Astro.locals.starlightRoute.entry.data;
 ---
 
 <Default>
-  {headerPicture && <HeaderPicture picture={headerPicture.picture} alt={headerPicture.alt} />}
+  {headerPicture && <HeaderPicture picture={headerPicture.picture} alt={headerPicture.alt} top />}
+  {
+    eyebrow && (
+      <p class="sw-eyebrow">
+        {!headerPicture && <PennyMark size={22} />}
+        <span>{eyebrow}</span>
+      </p>
+    )
+  }
   <slot />
 </Default>

@@ -334,6 +334,17 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* The wordmark, set like the one in the header: live Inter ExtraBold, never traced. */
+.sw-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 27px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
 .sw-footer__links {
   display: flex;
   flex-wrap: wrap;
@@ -381,6 +392,35 @@
   display: block;
 }
 
+/* ------------------------------------------------------------ penny mark */
+
+.sw-penny-mark {
+  display: inline-flex;
+  flex: none;
+  line-height: 0;
+}
+.sw-penny-mark img {
+  display: block;
+  width: auto;
+}
+.sw-penny-mark:not(.sw-penny-mark--ink) .sw-penny-mark__dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sw-penny-mark .sw-penny-mark__light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .sw-penny-mark .sw-penny-mark__dark {
+    display: block;
+  }
+}
+:root[data-theme="dark"] .sw-penny-mark .sw-penny-mark__light {
+  display: none;
+}
+:root[data-theme="dark"] .sw-penny-mark .sw-penny-mark__dark {
+  display: block;
+}
+
 /* ------------------------------------------------------------ card grid */
 
 .sw-card-grid {
@@ -425,4 +465,30 @@
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
+}
+
+/* ------------------------------------------------------ search, no results */
+
+/* Penny's mark beside Pagefind's own message when a search finds nothing. Pagefind leaves its
+   results list empty only then (while it searches, the list is not there), so this needs no
+   fork of its UI. The mark is a background, so it is never read out. */
+.pagefind-ui__results-area:has(> .pagefind-ui__results:empty) > .pagefind-ui__message::before {
+  content: "";
+  flex: none;
+  width: 25px;
+  height: 28px;
+  margin-inline-end: var(--space-3);
+  background: url("../assets/penny/penny-mark-light.svg") center / contain no-repeat;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])
+    .pagefind-ui__results-area:has(> .pagefind-ui__results:empty)
+    > .pagefind-ui__message::before {
+    background-image: url("../assets/penny/penny-mark-dark.svg");
+  }
+}
+:root[data-theme="dark"]
+  .pagefind-ui__results-area:has(> .pagefind-ui__results:empty)
+  > .pagefind-ui__message::before {
+  background-image: url("../assets/penny/penny-mark-dark.svg");
 }
