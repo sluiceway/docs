@@ -10,6 +10,7 @@ import { execFileSync } from "node:child_process";
 import { nameToEmoji } from "gemoji";
 import type { Paragraph, PhrasingContent } from "mdast";
 import { defineMdastPlugin, markdownToHtml } from "satteri";
+import { shiftHeadings } from "./headings";
 import { VENDOR_DIR } from "./source";
 
 const SCRIPT =
@@ -75,6 +76,22 @@ const issueBody = defineMdastPlugin({
 const PICTURE =
   /<p align="center">\s*<picture>\s*<source media="\(prefers-color-scheme: dark\)" srcset="[^"]*\/assets\/mascot\/([a-z0-9-]+)-dark\.svg">\s*<img alt="([^"]*)" width="880" src="[^"]*\/assets\/mascot\/\1-light\.svg">\s*<\/picture>\s*<\/p>/;
 
+// A box on GitHub is named by the text of its row. Here each disabled box takes the words its
+// row starts with as its name, such as the stack id or "Rescan all stacks", so a screen
+// reader says which row the box is on.
+const BOX = /<input type="checkbox" disabled>((?:(?!<\/li>|<input).)*)/g;
+
+function labelBoxes(html: string): string {
+  return html.replace(BOX, (match, row: string) => {
+    const name = row
+      .replace(/<[^>]+>/g, "")
+      .split(" · ")[0]
+      ?.trim()
+      .replace(/"/g, "&quot;");
+    return name ? match.replace("<input", `<input aria-label="${name}"`) : match;
+  });
+}
+
 export interface ExampleDashboard {
   /** The picture's file stem, such as `pending-4-destroys`. */
   picture: string;
@@ -103,6 +120,6 @@ export function exampleDashboard(): ExampleDashboard {
   return {
     picture: picture[1] ?? "",
     alt: picture[2] ?? "",
-    html: html.replace(PICTURE, "").trim(),
+    html: labelBoxes(shiftHeadings(html.replace(PICTURE, "").trim()).html),
   };
 }

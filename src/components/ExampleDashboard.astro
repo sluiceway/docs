@@ -24,7 +24,7 @@ const dashboard = exampleDashboard();
     </p>
   </div>
   <div class="sw-issue__body">
-    <HeaderPicture picture={dashboard.picture} alt={dashboard.alt} eager />
+    <HeaderPicture picture={dashboard.picture} alt={dashboard.alt} />
     <Fragment set:html={dashboard.html} />
   </div>
 </figure>
@@ -104,6 +104,8 @@ const dashboard = exampleDashboard();
   .sw-issue__body :global(div > p + p) {
     margin-top: var(--space-4);
   }
+  /* The renderer's h3s, shifted to h2 because the page's h1 is the heading above them. */
+  .sw-issue__body :global(h2),
   .sw-issue__body :global(h3) {
     margin: var(--space-6) 0 var(--space-4);
     font-size: 20px;
@@ -128,9 +130,13 @@ const dashboard = exampleDashboard();
   .sw-issue__body :global(summary) {
     cursor: pointer;
   }
+  /* Ink with a `water-deep` underline, as every link on the site: `water-deep` as text is
+     under 4.5:1 on the dark surface. */
   .sw-issue__body :global(a) {
-    color: var(--water-deep);
+    color: var(--ink);
     text-decoration: underline;
+    text-decoration-color: var(--water-deep);
+    text-decoration-thickness: 2px;
     text-underline-offset: 2px;
   }
   .sw-issue__body :global(code) {

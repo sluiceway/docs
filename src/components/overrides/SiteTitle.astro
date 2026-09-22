@@ -8,8 +8,9 @@ const { siteTitleHref } = Astro.locals.starlightRoute;
 ---
 
 <a href={siteTitleHref} class="sw-site-title">
-  <img class="sw-mark sw-mark--light" alt="" src={markLight} width="30" height="34" />
-  <img class="sw-mark sw-mark--dark" alt="" src={markDark} width="30" height="34" />
+  <!-- Decorative on purpose: the wordmark beside it names the link. -->
+  <img class="sw-mark sw-mark--light" alt="" aria-hidden="true" src={markLight} width="30" height="34" />
+  <img class="sw-mark sw-mark--dark" alt="" aria-hidden="true" src={markDark} width="30" height="34" />
   <span class="sw-site-title__word" translate="no">sluiceway</span>
 </a>
 

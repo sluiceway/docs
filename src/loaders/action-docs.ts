@@ -9,6 +9,7 @@
 
 import { docsLoader } from "@astrojs/starlight/loaders";
 import type { Loader, LoaderContext } from "astro/loaders";
+import { shiftHeadings } from "../lib/headings";
 import { linkRecords, rewriteLinks, type SiteMap } from "../lib/links";
 import { plainHeading } from "../lib/markdown";
 import {
@@ -163,7 +164,17 @@ async function renderPage(
     html.push(out);
   }
 
-  let joined = wrapLongCode(html.join("\n"));
+  const shifted = shiftHeadings(wrapLongCode(html.join("\n")));
+  if (shifted.levels.length !== headings.length) {
+    throw new Error(
+      `The page ${page.id} has ${shifted.levels.length} headings in its HTML and ` +
+        `${headings.length} in the renderer's list. A heading in raw HTML is not supported.`,
+    );
+  }
+  headings.forEach((h, i) => {
+    h.depth = shifted.levels[i] ?? h.depth;
+  });
+  let joined = shifted.html;
   if (page.termAnchors) joined = termAnchors(joined, headings);
 
   const seen = new Set<string>();
