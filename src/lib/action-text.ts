@@ -4,6 +4,7 @@
 
 import { readFileSync } from "node:fs";
 import { markdownToHtml } from "satteri";
+import { HEADER_STATES } from "../../vendor/sluiceway/src/render/header-state";
 import { WARM } from "../../vendor/sluiceway/src/render/voice";
 import { vendorPath } from "./source";
 
@@ -123,4 +124,26 @@ export function waterSteps(): string[] {
   const steps = match?.[1]?.split(/, (?:and )?/) ?? [];
   if (steps.length !== 5) fail(MASCOT, "the sentence that lists the five water steps");
   return steps;
+}
+
+const NUMBERS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
+/**
+ * The header states in the order the first that applies wins, and how many there are in
+ * words. Fails when a state has no picture among `stems`, so a state added in a release
+ * reaches the gallery. `pending` is shown by `pending-1` and the rest.
+ */
+export function headerStates(stems: readonly string[]): { count: string; order: string } {
+  for (const state of HEADER_STATES) {
+    if (!stems.some((stem) => stem === state || stem.startsWith(`${state}-`))) {
+      throw new Error(
+        `The header state \`${state}\` of vendor/sluiceway/src/render/header-state.ts has no ` +
+          "picture in the gallery of src/content/docs/the-header.mdx. Add its file from assets/mascot.",
+      );
+    }
+  }
+  return {
+    count: NUMBERS[HEADER_STATES.length] ?? String(HEADER_STATES.length),
+    order: HEADER_STATES.map((state) => state.replace("-", " ")).join(", "),
+  };
 }
