@@ -42,3 +42,35 @@ test("every input and output of action.yml has a section", () => {
   expect(outputs).toContain("matrix");
   for (const name of [...inputs, ...outputs]) expect(markdown).toContain(`### \`${name}\``);
 });
+
+test("a fixed value, a length limit, a flag and a sentence per tool read as they should", () => {
+  const schema = {
+    properties: {
+      stacks: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            tool: { type: "string", enum: ["helm", "kubectl"] },
+            dependsOn: { anyOf: [{ type: "string", const: "auto" }, { type: "array" }] },
+            namespace: {
+              type: "string",
+              maxLength: 63,
+              description:
+                "helm: Passed with --namespace to every command. kubectl: The namespace of objects that name none.",
+            },
+          },
+        },
+      },
+    },
+  };
+  const markdown = configReference(JSON.stringify(schema), {
+    guideAnchors: new Map(),
+    guideUrl: "/docs/guides/configuration/",
+  });
+  expect(markdown).toContain("- **Type:** `auto` or list");
+  expect(markdown).toContain("- The value is at most 63 characters long.");
+  expect(markdown).toContain(
+    "* `helm`: Passed with `--namespace` to every command.\n* `kubectl`: The namespace of objects that name none.",
+  );
+});
