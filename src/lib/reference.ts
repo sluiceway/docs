@@ -11,7 +11,9 @@ interface SchemaNode {
   required?: string[];
   items?: SchemaNode;
   anyOf?: SchemaNode[];
+  const?: unknown;
   minLength?: number;
+  maxLength?: number;
   minItems?: number;
   minimum?: number;
   maximum?: number;
@@ -48,6 +50,8 @@ function code(value: unknown): string {
 }
 
 function typeName(node: SchemaNode): string {
+  // One fixed value, such as `auto` for `dependsOn`, is its own type.
+  if (node.const !== undefined) return code(node.const);
   if (node.anyOf) return node.anyOf.map(typeName).join(" or ");
   if (node.type === "array") return node.items ? `list of ${typeName(node.items)}` : "list";
   if (node.type === "object") return "mapping";
@@ -66,6 +70,7 @@ function constraints(node: SchemaNode, what = "The value"): string[] {
   const count = (n: number, word: string) =>
     `${n} ${n === 1 ? word : word === "entry" ? "entries" : `${word}s`}`;
   if (node.minLength) out.push(`${what} is at least ${count(node.minLength, "character")} long.`);
+  if (node.maxLength) out.push(`${what} is at most ${count(node.maxLength, "character")} long.`);
   if (node.minItems) out.push(`${what} holds at least ${count(node.minItems, "entry")}.`);
   if (node.pattern) out.push(`${what} matches ${code(node.pattern)}.`);
   if (node.minimum !== undefined) out.push(`${what} is at least ${node.minimum}.`);
@@ -83,6 +88,37 @@ function constraints(node: SchemaNode, what = "The value"): string[] {
   return [...new Set(out)];
 }
 
+/**
+ * A command-line flag in a description, such as `--namespace`, as code. As text, the
+ * renderer's typography would turn its two hyphens into a dash.
+ */
+function flagsAsCode(text: string): string {
+  return text.replace(/(^|[\s(])(--?[a-z][a-z0-9-]*)(?=$|[\s.,;:)])/g, "$1`$2`");
+}
+
+/**
+ * A description that says what a key means for each tool, as "helm: ... kubectl: ...", with
+ * each tool's sentences as an item of its own. What comes before the first tool stays a
+ * paragraph. The items take `*`, so they do not run into the list of facts under them.
+ */
+function describe(description: string, tools: readonly string[]): string[] {
+  const text = flagsAsCode(description);
+  if (tools.length === 0) return [text];
+  const lead = new RegExp(`(?:^|(?<=\\. ))(${tools.join("|")}): `, "g");
+  const starts = [...text.matchAll(lead)];
+  const first = starts[0];
+  if (!first) return [text];
+  const out: string[] = [];
+  const head = text.slice(0, first.index).trim();
+  if (head) out.push(head, "");
+  starts.forEach((match, i) => {
+    const end = starts[i + 1]?.index ?? text.length;
+    const body = text.slice(match.index + match[0].length, end).trim();
+    out.push(`* ${code(match[1])}: ${body}`);
+  });
+  return out;
+}
+
 export interface ConfigReferenceOptions {
   /** The configuration guide's heading id for a key, such as `dashboard.title`. */
   guideAnchors: Map<string, string>;
@@ -98,7 +134,10 @@ export function configReference(schemaJson: string, options: ConfigReferenceOpti
   out.push(
     `Generated from the action's JSON schema. [Configuration](${options.guideUrl}) explains each key with examples.`,
   );
-  for (const key of schemaKeys(schema)) {
+  const keys = schemaKeys(schema);
+  // The values of `tool`, which the adapter options' descriptions start their sentences with.
+  const tools = (keys.find((k) => k.path === "stacks[].tool")?.node.enum ?? []).map(String);
+  for (const key of keys) {
     const depth = Math.min(4, 1 + key.path.split(".").length);
     const { node } = key;
     const facts: string[] = [`- **Type:** ${typeName(node)}`];
@@ -110,7 +149,7 @@ export function configReference(schemaJson: string, options: ConfigReferenceOpti
     const anchor = options.guideAnchors.get(key.path);
     if (anchor) facts.push(`- **In the guide:** [${key.path}](${options.guideUrl}#${anchor})`);
     out.push("", `${"#".repeat(depth)} ${code(key.path)}`, "");
-    if (node.description) out.push(node.description, "");
+    if (node.description) out.push(...describe(node.description, tools), "");
     out.push(...facts);
   }
   return out.join("\n");
