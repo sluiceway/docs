@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Sluiceway does something the docs do not describe
+    url: https://github.com/sluiceway/sluiceway/issues/new/choose
+    about: Bugs and requests for the action go to the action's repository.
+  - name: Report a vulnerability
+    url: https://github.com/sluiceway/sluiceway/security/advisories/new
+    about: Report security problems in private, never in a public issue.

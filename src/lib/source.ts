@@ -26,7 +26,10 @@ function readTag(): string {
     );
   }
   try {
-    return execFileSync("git", ["-C", VENDOR_DIR, "describe", "--tags", "--exact-match"], {
+    // A release commit also carries the moving major tag, such as `v0`. Only a full release
+    // tag counts as the pin.
+    const args = ["describe", "--tags", "--exact-match", "--match", "v[0-9]*.[0-9]*.[0-9]*"];
+    return execFileSync("git", ["-C", VENDOR_DIR, ...args], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
     }).trim();
