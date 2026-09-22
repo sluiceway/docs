@@ -5,7 +5,7 @@ description: Every state Penny draws at the top of the dashboard, and when the d
 
 import HeaderGallery from "../../components/HeaderGallery.astro";
 import { waterSteps } from "../../lib/action-text";
-import { route } from "../../lib/routes";
+import { ROUTES } from "../../lib/routes";
 import { HEADER_STATES } from "../../../vendor/sluiceway/src/render/header-state";
 
 <p class="sw-lead">
@@ -79,6 +79,6 @@ The water upstream of Penny rises in five steps, with one amber mark each on the
 
 ## Without the header
 
-With <a href={route("configuration/#dashboardpersonality")}><code>dashboard.personality: false</code></a>{" "}
+With <a href={ROUTES.personality}><code>dashboard.personality: false</code></a>{" "}
 the dashboard shows no header and none of the two voiced lines, and keeps the counts, the rows
 and the plain wording.

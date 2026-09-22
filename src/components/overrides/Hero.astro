@@ -2,7 +2,7 @@
 // Replaces Starlight's hero on a splash page. Left: the `shout` line from frontmatter
 // `hero.title` (trusted HTML, so a phrase can take the swash), the README's lead read from
 // the submodule, the beta sentence, the buttons from `hero.actions` (the first is primary; a
-// link starting with `/` is a page of this site and gets the base),
+// link starting with `/` names a page id of src/lib/pages.ts and gets the base),
 // and the licence and pinned version. Right: Penny's panel, the page's one `shadow-pop-lg`.
 //
 // The panel files are copies of design-system/assets/Penny/penny-panel-*.svg in
@@ -10,7 +10,7 @@
 import panelDark from "../../assets/penny/penny-panel-dark.svg?url";
 import panelLight from "../../assets/penny/penny-panel-light.svg?url";
 import { inlineHtml, readmeLead } from "../../lib/action-text";
-import { route } from "../../lib/routes";
+import { page } from "../../lib/routes";
 import { VERSION } from "../../lib/source";
 import Button from "../Button.astro";
 
@@ -30,7 +30,7 @@ const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending 
       actions.length > 0 && (
         <div class="sw-hero__actions">
           {actions.map(({ link, text }, i) => (
-            <Button href={link.startsWith("/") ? route(link) : link} primary={i === 0}>
+            <Button href={link.startsWith("/") ? page(link.replace(/^\/|\/$/g, "")) : link} primary={i === 0}>
               {text}
             </Button>
           ))}
