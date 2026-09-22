@@ -18,11 +18,37 @@ export const pictures = [
   { picture: "pending-4", alt: "4 stacks are pending: four crates wait upstream of Penny" },
   { picture: "pending-12", alt: "12 stacks are pending: twelve crates wait upstream of Penny" },
   {
-    picture: "pending-more",
-    alt: "More than 12 stacks are pending: the row of crates runs past the left edge",
+    picture: "pending-20",
+    alt: "20 stacks are pending: twenty crates wait upstream of Penny, piled three high",
   },
-  { picture: "deploying", alt: "A stack is deploying: the gate is open and water runs downstream" },
-  { picture: "failing", alt: "Something failed: the gate is stuck half open over a log, with a red lamp" },
+  {
+    picture: "pending-more",
+    alt: "More than 20 stacks are pending: the row of crates runs past the left edge",
+  },
+  {
+    picture: "queued-0",
+    alt: "Queued behind dependencies: a ticked crate is tied up at the closed gate",
+  },
+  {
+    picture: "queued-4",
+    alt: "Queued behind dependencies, 4 stacks are pending: a ticked crate is tied up at the closed gate and four crates wait behind it",
+  },
+  {
+    picture: "deploying-0",
+    alt: "A stack is deploying: the gate is open, one crate goes through it and water runs downstream",
+  },
+  {
+    picture: "deploying-4",
+    alt: "A stack is deploying, 4 stacks are pending: one crate goes through the open gate and four wait upstream",
+  },
+  {
+    picture: "failing-0",
+    alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
+  },
+  {
+    picture: "failing-4",
+    alt: "Something failed, 4 stacks are pending: four crates wait behind the gate, which is stuck half open over a log",
+  },
 ];
 
 export const states = headerStates(pictures.map(({ picture }) => picture));
@@ -34,7 +60,8 @@ export const states = headerStates(pictures.map(({ picture }) => picture));
 </p>
 
 Upstream is on the left, where crates pile up while changes are pending. Downstream is on the
-right, where the water runs while a stack deploys. Each picture has a light and a dark file,
+right, where the water runs while a stack deploys. The pending, queued, deploying and failing
+pictures show one crate per pending stack, up to 20. Each picture has a light and a dark file,
 and the dashboard shows the one that matches your GitHub theme.
 
 ## The pictures
@@ -43,26 +70,36 @@ and the dashboard shows the one that matches your GitHub theme.
 
 ## With the destroy sign
 
-When a pending or deploying row deletes or replaces a resource, the pending and deploying
-pictures carry the destroy sign: an amber warning triangle on a pole in the water. It does not
-move, and nothing else in the picture changes.
+When a pending, deploying or queued row replaces a resource, the pending, queued, deploying and
+failing pictures carry the replace sign, an amber warning triangle on a pole in the water. When
+one deletes a resource, they carry the delete sign, an amber diamond with a cross, under it.
+The signs do not move, and nothing else in the picture changes.
 
 <HeaderGallery
   pictures={[
     {
-      picture: "pending-4-destroys",
-      alt: "4 stacks are pending, some delete or replace resources: the destroy sign stands in the water",
+      picture: "pending-4-replaces",
+      alt: "4 stacks are pending, some replace resources: the replace sign stands on a pole in the water",
     },
     {
-      picture: "deploying-destroys",
-      alt: "A stack is deploying, and some changes delete or replace resources: the destroy sign stands in the water",
+      picture: "pending-4-deletes",
+      alt: "4 stacks are pending, some delete resources: the delete sign stands on a pole in the water",
+    },
+    {
+      picture: "pending-4-deletes-replaces",
+      alt: "4 stacks are pending, some delete or replace resources: the replace and delete signs stand on a pole in the water",
+    },
+    {
+      picture: "failing-4-deletes-replaces",
+      alt: "Something failed, 4 stacks are pending, some changes delete or replace resources: the gate is stuck over a log and both signs stand in the water",
     },
   ]}
 />
 
 ## Water steps
 
-The water upstream of Penny rises in five steps, with one amber mark each on the gauge.
+Behind the closed or jammed gate the water rises in five steps, with one amber mark each on the
+gauge. Behind the open gate of a deploy it stays at one level.
 
 <table>
   <thead>
@@ -91,5 +128,5 @@ the pictures above.
 ## Without the header
 
 With <a href={ROUTES.personality}><code>dashboard.personality: false</code></a>{" "}
-the dashboard shows no header, no spinner and none of the two voiced lines, and keeps the
+the dashboard shows no header, no spinner and none of the voiced lines, and keeps the
 counts, the rows and the plain wording.

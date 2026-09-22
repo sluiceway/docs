@@ -23,9 +23,12 @@ export function inlineHtml(markdown: string): string {
     .replace(/^<p>([\s\S]*)<\/p>$/, "$1");
 }
 
-/** The good-news line, as `src/render/voice.ts` has it. */
+/**
+ * The good-news line, as `src/render/voice.ts` has it. It has three, one per day of the scan;
+ * this is the one a scan without a day gets, the first.
+ */
 export function goodNewsLine(): string {
-  const line = WARM.goodNews(0);
+  const line = WARM.goodNews(0, undefined);
   if (typeof line !== "string" || line.trim() === "") {
     fail("src/render/voice.ts", "the good-news line (`WARM.goodNews`)");
   }
@@ -86,10 +89,23 @@ export function howItWorks(): Step[] {
 
 const MASCOT = "assets/mascot/README.md";
 
-/** Every picture stem the mascot README's two tables name, with its "Shown when" cell. */
-function shownWhenTable(): Map<string, string> {
-  const rows = new Map<string, string>();
+interface ShownWhenTable {
+  /** Picture stem, to its "Shown when" cell. */
+  pictures: Map<string, string>;
+  /** Sign suffix such as `deletes`, from a `<picture>-deletes` row, to its "Shown when" cell. */
+  signs: Map<string, string>;
+}
+
+/** Every picture stem and sign suffix the mascot README's two tables name, with its cell. */
+function shownWhenTable(): ShownWhenTable {
+  const pictures = new Map<string, string>();
+  const signs = new Map<string, string>();
   for (const [, names = "", when = ""] of read(MASCOT).matchAll(/^\| (`.+?) \| (.+?) \|$/gm)) {
+    const sign = /^`<picture>-([a-z-]+)`$/.exec(names);
+    if (sign) {
+      signs.set(sign[1] ?? "", when.trim());
+      continue;
+    }
     const stems = [...names.matchAll(/`([a-z0-9-]+)`( to `([a-z0-9-]+)`)?/g)].flatMap(
       ([, from = "", range, to = ""]) => {
         if (!range) return [from];
@@ -102,19 +118,35 @@ function shownWhenTable(): Map<string, string> {
         return out;
       },
     );
-    for (const stem of stems) rows.set(stem, when.trim());
+    for (const stem of stems) pictures.set(stem, when.trim());
   }
-  return rows;
+  return { pictures, signs };
 }
 
-/** "Shown when" for each stem asked for, from the mascot README. Fails on a missing row. */
-export function shownWhen(stems: readonly string[]): Record<string, string> {
+export interface ShownWhen {
+  /** The picture's own row, for a picture with signs the row of the picture without them. */
+  when: string;
+  /** For a picture with signs, the row of its signs, such as "there are both". */
+  signs?: string;
+}
+
+/**
+ * "Shown when" for each stem asked for, from the mascot README. A stem with signs, such as
+ * `pending-4-deletes`, takes the row of `pending-4` and the row of `<picture>-deletes`. Fails on
+ * a missing row.
+ */
+export function shownWhen(stems: readonly string[]): Record<string, ShownWhen> {
   const table = shownWhenTable();
   return Object.fromEntries(
-    stems.map((stem) => {
-      const when = table.get(stem);
-      if (!when) fail(MASCOT, `a "Shown when" row for \`${stem}\``);
-      return [stem, when];
+    stems.map((stem): [string, ShownWhen] => {
+      const own = table.pictures.get(stem);
+      if (own) return [stem, { when: own }];
+      for (const [suffix, signs] of table.signs) {
+        const base = stem.endsWith(`-${suffix}`) ? stem.slice(0, -suffix.length - 1) : "";
+        const when = table.pictures.get(base);
+        if (when) return [stem, { when, signs }];
+      }
+      return fail(MASCOT, `a "Shown when" row for \`${stem}\``);
     }),
   );
 }

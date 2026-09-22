@@ -95,7 +95,7 @@ function labelBoxes(html: string): string {
 }
 
 export interface ExampleDashboard {
-  /** The picture's file stem, such as `pending-4-destroys`. */
+  /** The picture's file stem, such as `pending-4-deletes`. */
   picture: string;
   /** The picture's alt text, as the renderer wrote it. */
   alt: string;

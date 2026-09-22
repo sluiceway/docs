@@ -17,23 +17,29 @@ Read the dashboard from the top. While a stack deploys, which this example does 
 section comes before every other and each of its rows starts with a
 <a href={glossary("Spinner")}>spinner</a>, a small moving crate.
 
-- **The <a href={glossary("Header")}>header</a>.** Penny with four crates upstream, one per pending stack, and the destroy
-  sign, because a pending row deletes resources. <a href={ROUTES.theHeader}>The header</a> shows every picture.
+- **The <a href={glossary("Header")}>header</a>.** Penny with four crates upstream, one per pending stack, and the delete
+  sign, because a pending row deletes resources. A row that replaces a resource would add the
+  replace sign. <a href={ROUTES.theHeader}>The header</a> shows every picture.
 - **The <a href={glossary("Counts line")}>counts line</a>.** How many stacks are pending, deploying, preview failed and in
   sync, always all four, each behind its <a href={glossary("Count dot")}>count dot</a>, and how many pending stacks
   destroy resources. Under it, the
   <a href={glossary("Scan line")}>scan line</a> says which commit the last scan checked out, when, in which run, and when the
   last full scan was.
 - **The <a href={glossary("Destroy alert")}>destroy alert</a>.** A caution block above the pending rows names every
-  pending stack that deletes or replaces resources, here `apps/legacy-worker:prod`. The deletes
+  pending stack that deletes or replaces resources, here `apps/legacy-worker:prod`, and in a
+  paragraph of its own every drifted stack with a resource gone outside the code. The deletes
   themselves stay under that stack's row.
 - **A <a href={glossary("Pending")}>pending</a> row.** `apps/api:prod` has one update waiting. Its row links the preview,
   names the pull requests that brought the change, links the compare view, and folds the
   changes under their count. Tick its box to deploy that stack exactly as its row shows it.
 - **A row with deletes.** `apps/legacy-worker:prod` deletes three resources. A
   <a href={glossary("Destroy")}>destroy</a> is listed first, outside the fold, and always carries a warning.
+- **A row with <a href={glossary("Change outside a stack")}>changes outside the stack</a>.** `apps/web:prod` names the pull request its stack claims and counts two
+  changes that no stack claims, such as a lockfile bump, since they may reach any stack.
 - **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count.
 - **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy from the dashboard that ended, newest
-  first, each with its <a href={glossary("Result dot")}>result dot</a>, its <a href={glossary("Ticker")}>ticker</a>
-  and a link to its run. A failed deploy is listed too, with its failure reason.
+  first, one line each: its <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a>,
+  the date and time in UTC, and a link to its run. A failed deploy is listed too, with its
+  failure reason. A deploy that went out can have a <a href={glossary("Shipped line")}>shipped line</a> under it, and a full scan adds
+  the <a href={glossary("Outside deploy")}>outside deploys</a> it finds in the tool's own history, which this example does not show.
 - **The <a href={glossary("Rescan box")}>rescan box</a>.** Tick it to start a full scan of every stack. It deploys nothing.

@@ -318,7 +318,7 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
   },
   // The header states, and bad news wins: the state that wins over all the others.
   "0031": {
-    picture: "failing",
+    picture: "failing-0",
     alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
   },
   // The files named by role: the first of them, the scan that found nothing yet.
@@ -336,15 +336,16 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
     picture: "pending-3",
     alt: "3 stacks are pending: three crates wait upstream of Penny",
   },
-  // A destroy adds a sign to the same picture.
+  // A destroy adds a sign to the same picture. Since 0075 there are two signs, and the picture
+  // with both says what the one sign said: some changes delete or replace resources.
   "0043": {
-    picture: "deploying-destroys",
-    alt: "A stack is deploying, and some changes delete or replace resources: the destroy sign stands in the water",
+    picture: "deploying-0-deletes-replaces",
+    alt: "A stack is deploying, and some changes delete or replace resources: the replace and delete signs stand on a pole in the water",
   },
   // One crate per pending stack up to twelve, and the sign on its pole.
   "0047": {
-    picture: "pending-12-destroys",
-    alt: "12 stacks are pending, some delete or replace resources: twelve crates wait upstream and the destroy sign stands on its pole",
+    picture: "pending-12-deletes-replaces",
+    alt: "12 stacks are pending, some delete or replace resources: twelve crates wait upstream and the replace and delete signs stand on their pole",
   },
   // Drift, which added the seep through the closed gate to the pictures.
   "0055": {
@@ -354,8 +355,19 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
   // The row spinner, one of the header's crates on its way through the open gate. The spinner
   // itself is not a header, so the record shows the header it belongs to.
   "0063": {
-    picture: "deploying",
-    alt: "A stack is deploying: the gate is open and water runs downstream",
+    picture: "deploying-0",
+    alt: "A stack is deploying: the gate is open, one crate goes through it and water runs downstream",
+  },
+  // The failing and deploying pictures count the crates too, asked for after a dashboard with
+  // nine pending stacks and one failed preview showed two crates behind the jam.
+  "0066": {
+    picture: "failing-9",
+    alt: "Something failed, 9 stacks are pending: nine crates wait behind the gate, which is stuck half open over a log",
+  },
+  // A delete sign next to the replace sign, up to 20 crates, and the queued state: all three.
+  "0075": {
+    picture: "queued-20-deletes-replaces",
+    alt: "Queued behind dependencies, 20 stacks are pending, some delete or replace resources: a ticked crate is tied up at the closed gate, twenty crates wait behind it, and the replace and delete signs stand on their pole",
   },
 };
 
@@ -396,7 +408,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "how-it-works",
       title: "How it works",
       description:
-        "How a scan previews your Pulumi, OpenTofu, Helm and Kubernetes manifests stacks, how a tick asks for a deploy, and how the deploy checks it again.",
+        "How a scan previews your Pulumi, OpenTofu, Terraform, Helm and Kubernetes manifests stacks, how a tick asks for a deploy, and how the deploy checks it again.",
       source: README,
       headerPicture: {
         picture: "pending-4",
@@ -430,8 +442,8 @@ export function pages(repoUrl: string, base: string): Page[] {
         "How to read the dashboard's rows, tick to deploy a stack, read the job log, and the limits to know.",
       source: "docs/using-the-dashboard.md",
       headerPicture: {
-        picture: "pending-4-destroys",
-        alt: "4 stacks are pending, some delete or replace resources: the destroy sign stands in the water",
+        picture: "pending-4-deletes-replaces",
+        alt: "4 stacks are pending, some delete or replace resources: the replace and delete signs stand on a pole in the water",
       },
       parts: [wholeFile("docs/using-the-dashboard.md")],
     },
@@ -460,6 +472,18 @@ export function pages(repoUrl: string, base: string): Page[] {
       parts: [wholeFile("docs/read-only-trial.md")],
     },
     {
+      id: "guides/init",
+      title: titleOf("docs/init.md"),
+      description:
+        "Run init once in your clone: it writes a first workflow and sluiceway.yaml from what it finds, commits nothing, and lists what is left for you.",
+      source: "docs/init.md",
+      headerPicture: {
+        picture: "pending-8",
+        alt: "8 stacks are pending: eight crates wait upstream of the closed gate",
+      },
+      parts: [wholeFile("docs/init.md")],
+    },
+    {
       id: "guides/configuration",
       title: titleOf("docs/configuration.md"),
       description:
@@ -478,8 +502,8 @@ export function pages(repoUrl: string, base: string): Page[] {
         "How your workflow loads credentials for the tool, with recipes for the usual places they live.",
       source: "docs/credentials.md",
       headerPicture: {
-        picture: "deploying",
-        alt: "A stack is deploying: the gate is open and water runs downstream",
+        picture: "deploying-0",
+        alt: "A stack is deploying: the gate is open, one crate goes through it and water runs downstream",
       },
       parts: [wholeFile("docs/credentials.md")],
     },
@@ -556,8 +580,8 @@ export function pages(repoUrl: string, base: string): Page[] {
       description: "The modes, inputs and outputs of the action, generated from its action.yml.",
       source: "action.yml",
       headerPicture: {
-        picture: "deploying",
-        alt: "A stack is deploying: the gate is open and water runs downstream",
+        picture: "deploying-0",
+        alt: "A stack is deploying: the gate is open, one crate goes through it and water runs downstream",
       },
       parts: [
         sectionPart("docs/reference.md", "Modes"),
@@ -610,7 +634,7 @@ export function pages(repoUrl: string, base: string): Page[] {
         "Every hurdle a new user met while setting up Sluiceway, and what was done about it.",
       source: "docs/onboarding-log.md",
       headerPicture: {
-        picture: "failing",
+        picture: "failing-0",
         alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
       },
       parts: [wholeFile("docs/onboarding-log.md")],
@@ -637,7 +661,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       recordsContext: true,
       headerPicture: {
         picture: "pending-more",
-        alt: "More than 12 stacks are pending: the row of crates runs past the left edge",
+        alt: "More than 20 stacks are pending: the row of crates runs past the left edge",
       },
       parts: [wholeFile("docs/later.md")],
     },
@@ -669,8 +693,8 @@ export function pages(repoUrl: string, base: string): Page[] {
         "Every release of Sluiceway, the GitHub Action, and what changed in it, newest first.",
       source: "CHANGELOG.md",
       headerPicture: {
-        picture: "deploying",
-        alt: "A stack is deploying: the gate is open and water runs downstream",
+        picture: "deploying-0",
+        alt: "A stack is deploying: the gate is open, one crate goes through it and water runs downstream",
       },
       parts: [
         generated(
@@ -850,6 +874,7 @@ export function sidebar(): SidebarItem[] {
       items: [
         { slug: "guides/workflow" },
         { slug: "guides/read-only-trial" },
+        { slug: "guides/init" },
         { slug: "guides/configuration" },
         { slug: "guides/credentials" },
         { slug: "guides/example-workflows" },
