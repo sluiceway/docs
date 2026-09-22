@@ -1,0 +1,15 @@
+---
+title: Page not found
+description: There is no page at this address.
+template: splash
+pagefind: false
+sidebar:
+  hidden: true
+---
+
+import SearchButton from "../../components/SearchButton.astro";
+import { route } from "../../lib/routes";
+
+<p class="sw-lead">
+  There is no page at this address. Go to the <a href={route("")}>start page</a><SearchButton>search the docs</SearchButton>.
+</p>
