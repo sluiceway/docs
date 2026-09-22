@@ -160,6 +160,11 @@ export function configReference(schemaJson: string, options: ConfigReferenceOpti
     if (node.default !== undefined) facts.push(`- **Default:** ${code(node.default)}`);
     const values = allowed(node);
     if (values.length > 0) facts.push(`- **Allowed values:** ${values.map(code).join(", ")}`);
+    // A list whose entries are fixed values, such as `notify.events`.
+    const entries = node.items ? allowed(node.items) : [];
+    if (entries.length > 0) {
+      facts.push(`- **Allowed values of each entry:** ${entries.map(code).join(", ")}`);
+    }
     for (const line of constraints(node)) facts.push(`- ${line}`);
     const anchor = options.guideAnchors.get(key.path);
     if (anchor) facts.push(`- **In the guide:** [${key.path}](${options.guideUrl}#${anchor})`);
@@ -184,18 +189,23 @@ interface ActionYml {
 }
 
 /**
- * The modes and the values `true` and `false` in an input or output description, as code:
- * "scan only. true turns the job red" reads "`scan` only. `true` turns the job red", as the
- * action's own reference.md writes it. A mode is code only where it names the mode: before
- * " only." and in the list after "Set by ".
+ * The modes, the values `true` and `false`, input names and config keys in an input or output
+ * description, as code: "scan only. true turns the job red" reads "`scan` only. `true` turns the
+ * job red", as the action's own reference.md writes it. A mode is code only where it names the
+ * mode: in a list of modes that is a sentence of its own ("scan, resolve and apply."), before
+ * " only.", after "One of:", "Set by " and "Leave it out for ". An input name is code when it
+ * has a hyphen, and a key when it has a dot, such as `notify.events` and `sluiceway.yaml`.
  */
-function valuesAsCode(text: string, modes: readonly string[]): string {
+function valuesAsCode(text: string, modes: readonly string[], inputs: readonly string[]): string {
   const mode = modes.join("|");
+  const list = `(?:${mode})(?:(?:, | and )(?:${mode}))*`;
+  const codeModes = (all: string) => all.replace(new RegExp(`\\b(${mode})\\b`, "g"), "`$1`");
+  const named = inputs.filter((name) => name.includes("-")).join("|");
   return text
-    .replace(new RegExp(`(^|\\. )(${mode}) only\\.`, "g"), "$1`$2` only.")
-    .replace(new RegExp(`\\bSet by ((?:${mode})(?:(?:, | and )(?:${mode}))*)\\b`, "g"), (all) =>
-      all.replace(new RegExp(`\\b(${mode})\\b`, "g"), "`$1`"),
-    )
+    .replace(new RegExp(`(^|\\. )${list}(?: only)?\\.`, "g"), codeModes)
+    .replace(new RegExp(`\\b(?:One of: |Set by |Leave it out for )${list}\\b`, "g"), codeModes)
+    .replace(new RegExp(`(^|[\\s(])(${named})(?=$|[\\s.,;:)])`, "g"), "$1`$2`")
+    .replace(/(^|[\s(])([a-z][A-Za-z]*\.[a-z][A-Za-z]*)(?=$|[\s,;:)]|\.(?:\s|$))/g, "$1`$2`")
     .replace(/(^|[\s(])(true|false)(?=$|[\s.,;:)])/g, "$1`$2`");
 }
 
@@ -209,17 +219,18 @@ function modesOf(action: ActionYml): string[] {
 export function actionReference(actionYml: string): string {
   const action = Bun.YAML.parse(actionYml) as ActionYml;
   const modes = modesOf(action);
+  const inputs = Object.keys(action.inputs ?? {});
   const out: string[] = ["## Inputs", "", "Generated from the action's `action.yml`."];
   for (const [name, input] of Object.entries(action.inputs ?? {})) {
     out.push("", `### ${code(name)}`, "");
-    if (input.description) out.push(valuesAsCode(input.description.trim(), modes), "");
+    if (input.description) out.push(valuesAsCode(input.description.trim(), modes, inputs), "");
     out.push(`- **Required:** ${input.required ? "yes" : "no"}`);
     if (input.default !== undefined) out.push(`- **Default:** ${code(input.default)}`);
   }
   out.push("", "## Outputs", "", "Generated from the action's `action.yml`.");
   for (const [name, output] of Object.entries(action.outputs ?? {})) {
     out.push("", `### ${code(name)}`, "");
-    if (output.description) out.push(valuesAsCode(output.description.trim(), modes));
+    if (output.description) out.push(valuesAsCode(output.description.trim(), modes, inputs));
   }
   return out.join("\n");
 }
