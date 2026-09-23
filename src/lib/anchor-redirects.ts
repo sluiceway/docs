@@ -25,6 +25,15 @@ export const ANCHOR_REDIRECTS: Record<string, Record<string, string>> = {
   "not-in-v1": {
     "what-it-does-not-do-yet": "using-the-dashboard#limits",
   },
+  // Headings renamed to say what their section shows.
+  "what-it-looks-like": {
+    "the-parts": "what-it-looks-like#read-the-dashboard-from-the-top",
+  },
+  "the-header": {
+    "the-pictures": "the-header#every-picture-one-per-state",
+    "with-the-destroy-sign": "the-header#signs-for-deletes-and-replaces",
+    "water-steps": "the-header#the-water-rises-in-five-steps",
+  },
   // v0.23.0 made notifications built in: Recipes became "Steps of your own", and the generic
   // webhook recipe became the built-in webhook.
   "guides/notifications": {

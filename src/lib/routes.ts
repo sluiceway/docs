@@ -28,6 +28,8 @@ export function page(id: string): string {
 export const ROUTES = {
   getStarted: page("get-started"),
   configuration: page("guides/configuration"),
+  credentials: page("guides/credentials"),
+  usingTheDashboard: page("using-the-dashboard"),
   personality: page(`guides/configuration#${githubSlug("dashboard.personality")}`),
   why: page("why"),
   whatItLooksLike: page(SLICE_3.whatItLooksLike),
