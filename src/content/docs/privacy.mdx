@@ -13,8 +13,8 @@ import { WAITLIST_URL } from "../../lib/site";
 {/* Every sentence here describes src/lib/analytics.ts and src/lib/analytics-events.ts. A change there is a change here. */}
 
 <p class="sw-lead">
-  These docs count page views and a few clicks with Umami, on our own machine, and store nothing
-  in your browser.
+  These docs count page views and a few clicks with Umami, on our own machine. Counting sets no
+  cookie and stores nothing in your browser.
 </p>
 
 ## What is counted
@@ -50,7 +50,11 @@ Everything is kept until we delete it. Nothing deletes it automatically.
 
 ## What is stored in your browser
 
-Nothing. Umami sets no cookie, and these docs write nothing to your browser's storage.
+Counting sets no cookie and stores nothing in your browser.
+
+The docs themselves keep two settings in your browser, and send neither anywhere: the colour
+theme you pick, in local storage, and which sidebar groups are open, in session storage, which
+your browser clears when you close the tab.
 
 ## Do Not Track
 
