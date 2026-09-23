@@ -27,18 +27,18 @@ import "../../styles/landing.css";
 
 <div class="sw-landing">
 
+## How it works
+
+<Steps items={howItWorks()} html />
+
+{/* The end of the loop: the hero's crates have gone through, and Penny rests. */}
 <section class="sw-landing__calm not-content" aria-label="Every stack in sync">
   <SpeechBubble line={goodNewsLine()} />
   <HeaderPicture
     picture="in-sync"
     alt="Penny, the sluice gate, resting on a calm quay because every stack is in sync"
   />
-  <p class="sw-landing__small">{"The panel above shows crates waiting. This picture shows nothing pending. The header of your dashboard always shows the real state of your stacks."}</p>
 </section>
-
-## How it works
-
-<Steps items={howItWorks()} html />
 
 <WaveRule />
 

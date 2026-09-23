@@ -8,17 +8,23 @@ import Feedback from "../Feedback.astro";
 import SiteFooter from "../Footer.astro";
 
 const { entry, id } = Astro.locals.starlightRoute;
+const splash = entry.data.template === "splash";
 // The thumbs end every docs page, not the landing page or the 404.
-const feedback = entry.data.template !== "splash" && id !== "" && id !== "404";
+const feedback = !splash && id !== "" && id !== "404";
 const source = pageSource(entry.data.source, entry.filePath ?? `src/content/docs/${entry.id}`);
 ---
 
 <footer class="sw-page-footer">
-  <Pagination />
+  {/* The landing page ends on its own "Where to go next", not on the docs' page furniture. */}
+  {!splash && <Pagination />}
   {feedback && <Feedback />}
-  <p class="sw-source">
-    Source: <a href={source.href}><code>{source.path}</code> at <code>{source.ref}</code></a>
-  </p>
+  {
+    !splash && (
+      <p class="sw-source">
+        Source: <a href={source.href}><code>{source.path}</code> at <code>{source.ref}</code></a>
+      </p>
+    )
+  }
   <SiteFooter
     version={VERSION}
     links={[

@@ -2,7 +2,7 @@
    the tokens once; the tokens flip between themes (tokens.css), so these follow. This file is
    unlayered, so it wins over Starlight's layered styles. Follows "A docs page" in
    design-system/30-pages.md: paper ground, drawn outlines, hard offset shadows, a
-   `surface-sunk` sidebar on a `gate` rail, a 72ch text column. */
+   `surface-sunk` sidebar on a `gate` rail, a text column of about 72 characters. */
 
 :root,
 :root[data-theme="light"],
@@ -27,12 +27,13 @@
 
   --sl-color-text: var(--ink);
   --sl-color-text-accent: var(--ink);
-  --sl-color-text-invert: var(--on-pending);
+  --sl-color-text-invert: var(--ink-invert);
   --sl-color-bg: var(--paper);
   --sl-color-bg-nav: var(--surface);
   --sl-color-bg-sidebar: var(--surface-sunk);
   --sl-color-bg-inline-code: var(--surface-sunk);
-  --sl-color-bg-accent: var(--pending);
+  /* Ink, not a signal colour: `pending` and the rest mean a real product state. */
+  --sl-color-bg-accent: var(--ink);
   --sl-color-hairline-light: var(--line-soft);
   --sl-color-hairline: var(--line-soft);
   --sl-color-hairline-shade: var(--line);
@@ -49,7 +50,9 @@
   --sl-line-height-headings: 1.18;
 
   --sl-nav-height: 4rem;
-  --sl-content-width: 72ch;
+  /* `ch` is the width of Inter's "0", about 1.33 average characters: 54ch holds a line of
+     about 72 characters, the measure 30-pages.md asks for. */
+  --sl-content-width: 54ch;
   --sl-sidebar-width: 18rem;
 }
 
@@ -66,9 +69,12 @@ body {
 
 /* ---------------------------------------------------------------- focus */
 
-/* Drawn outside the control with a `paper` gap so it lands on the page ground. Never removed. */
+/* Drawn outside the control with a `paper` gap so it lands on the page ground. Never removed.
+   The transparent outline is invisible here, but forced-colors mode drops every box-shadow and
+   paints the outline in a system colour, so the ring survives High Contrast. */
 :focus-visible {
-  outline: none;
+  outline: 3px solid transparent;
+  outline-offset: 3px;
   box-shadow:
     0 0 0 3px var(--paper),
     0 0 0 6px var(--focus);
@@ -79,7 +85,7 @@ body {
 starlight-theme-select select:focus-visible,
 .sidebar-content a:focus-visible,
 .right-sidebar a:focus-visible {
-  outline: none;
+  outline-color: transparent;
 }
 
 /* ------------------------------------------------------------------ nav */
@@ -87,11 +93,16 @@ starlight-theme-select select:focus-visible,
 header.header {
   border-bottom: var(--border-ink) solid var(--line);
 }
-/* The phone menu button, drawn like every other control. */
+/* The phone menu button, drawn like every other control: a crate, not a circle, and a full
+   44px touch target. */
 button.sl-menu-button {
+  width: 44px;
+  height: 44px;
   border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-crate);
   background: var(--surface);
   color: var(--ink);
+  box-shadow: var(--shadow-press);
 }
 .header .right-group,
 .header .social-icons {
@@ -102,14 +113,20 @@ button.sl-menu-button {
   margin-inline-start: var(--space-2);
 }
 
-/* The theme switch, drawn as the landing page's theme button. */
-starlight-theme-select select {
+/* The `label` style: the theme switch, "On this page" and table headers. */
+starlight-theme-select select,
+.right-sidebar-panel h2,
+.sl-markdown-content th:not(:where(.not-content *)) {
   font-family: var(--font-sans);
   font-size: 13px;
   line-height: 16px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* The theme switch, drawn as the landing page's theme button. */
+starlight-theme-select select {
   color: var(--ink);
   background-color: var(--surface);
   border: var(--border-ink) solid var(--line);
@@ -133,6 +150,20 @@ site-search > button[data-open-modal] {
 site-search > button[data-open-modal]:hover {
   border-color: var(--line);
   color: var(--ink);
+}
+/* The rule above sets its own shadow, which would otherwise win over the focus ring. */
+site-search > button[data-open-modal]:focus-visible {
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 6px var(--focus);
+}
+/* On a phone the search button is an icon: give it the full touch target. */
+@media (max-width: 50rem) {
+  site-search > button[data-open-modal] {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
 }
 site-search > button[data-open-modal] kbd {
   background: var(--surface-sunk);
@@ -164,10 +195,18 @@ site-search dialog {
 .sidebar-content a[aria-current="page"],
 .sidebar-content a[aria-current="page"]:hover,
 .sidebar-content a[aria-current="page"]:focus {
-  background: var(--pending);
-  color: var(--on-pending);
-  border-color: var(--line-solid);
+  background: var(--ink);
+  color: var(--ink-invert);
+  border-color: var(--line);
   font-weight: 800;
+}
+/* Touch targets in the phone menu. */
+@media (pointer: coarse) {
+  .sidebar-content a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
 }
 .sidebar-content .top-level > li > a[aria-current="page"] {
   box-shadow: var(--shadow-press);
@@ -175,13 +214,14 @@ site-search dialog {
 
 /* On this page: `small` in `ink-muted`. */
 .right-sidebar-panel h2 {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 16px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--ink-muted);
+}
+/* The phone's "On this page" toggle, drawn like every other control in the header. */
+mobile-starlight-toc summary .toggle {
+  border: var(--border-ink) solid var(--line);
+  border-radius: var(--radius-crate);
+  background: var(--surface);
+  color: var(--ink);
 }
 .right-sidebar-panel a {
   font-size: 14px;
@@ -198,7 +238,7 @@ site-search dialog {
 
 /* ----------------------------------------------------------- page title */
 
-h1#_top {
+:root:not([data-has-hero]) h1#_top {
   font-size: clamp(28px, 4.2vw, 34px);
   line-height: 1.12;
   font-weight: 800;
@@ -267,8 +307,19 @@ h1#_top {
   padding: 1px 5px;
   white-space: nowrap;
 }
+
+/* A key as a heading, such as `dashboard.title` on the reference: the mono face of code, but
+   none of its chip, so the heading's own size and weight carry the level. */
+.sl-markdown-content :is(h2, h3, h4) > code:not(:where(.not-content *)) {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
 :root[data-theme="dark"] .sl-markdown-content :not(pre) > code:not(:where(.not-content *)) {
   color: var(--crate);
+}
+:root[data-theme="dark"] .sl-markdown-content :is(h2, h3, h4) > code:not(:where(.not-content *)) {
+  color: inherit;
 }
 
 /* Tables: a drawn frame, `line-soft` hairlines, a `label` header row. Never tilted. */
@@ -279,10 +330,21 @@ h1#_top {
   max-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  background: var(--surface);
   border: var(--border-ink) solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-pop);
+  /* Scroll shadows: a soft edge shows on a side with more columns hidden behind it. The
+     `local` covers scroll with the content and hide the `scroll` edges at either end. */
+  --sw-scroll-edge: rgb(31 35 40 / 0.18);
+  background:
+    linear-gradient(to right, var(--surface) 30%, transparent) left / 40px 100% no-repeat local,
+    linear-gradient(to left, var(--surface) 30%, transparent) right / 40px 100% no-repeat local,
+    linear-gradient(to right, var(--sw-scroll-edge), transparent) left / 14px 100% no-repeat scroll,
+    linear-gradient(to left, var(--sw-scroll-edge), transparent) right / 14px 100% no-repeat scroll,
+    var(--surface);
+}
+:root[data-theme="dark"] .sl-markdown-content table:not(:where(.not-content *)) {
+  --sw-scroll-edge: rgb(0 0 0 / 0.6);
 }
 .sl-markdown-content :is(th, td):not(:where(.not-content *)) {
   padding: var(--space-3) var(--space-4);
@@ -299,12 +361,6 @@ h1#_top {
 .sl-markdown-content th:not(:where(.not-content *)) {
   background: var(--surface-sunk);
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 16px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 /* A plain blockquote that is not an alert. */
@@ -346,6 +402,12 @@ h1#_top {
 /* ------------------------------------------------------------ code frames */
 
 /* Never tilted, never wrapped. The frame itself is themed in astro.config.ts. */
+@media (pointer: coarse) {
+  .expressive-code .copy button {
+    width: 44px;
+    height: 44px;
+  }
+}
 .expressive-code .frame {
   transform: none;
 }

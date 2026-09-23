@@ -42,7 +42,7 @@ gets its box once its checks are green.
   changes that no stack claims, such as a lockfile bump, since they may reach any stack.
 - **The <a href={glossary("Bulk box")}>bulk box</a>.** `Deploy all 4 pending stacks`, under the pending rows. A tick on it
   deploys nothing. The next run puts a <a href={glossary("Confirm box")}>confirm box</a> in its place,
-  `Confirm: deploy all 4 pending stacks`, which names the stacks and who asked. Ticking the
+  <code class="sw-code-long">Confirm: deploy all 4 pending stacks</code>, which names the stacks and who asked. Ticking the
   confirm box is what deploys them, as a tick on each row: every stack is judged by its own
   <a href={glossary("Tick rule")}>tick rule</a> and gets its own fresh preview. If a row changes before anyone ticks it, the
   confirm box goes and the bulk box comes back. Under drifted rows the box reads
