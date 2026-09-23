@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs";
 import { markdownToHtml } from "satteri";
 import { HEADER_STATES } from "../../vendor/sluiceway/src/render/dashboard-facts";
 import { WARM } from "../../vendor/sluiceway/src/render/voice";
-import { vendorPath } from "./source";
+import { sourceUrl, vendorPath } from "./source";
 
 function read(path: string): string {
   return readFileSync(vendorPath(path), "utf8");
@@ -49,12 +49,20 @@ export function readmeLead(): string {
   return lead;
 }
 
-/** The sentence above the README's example dashboard, under "What it looks like". */
-export function readmeDashboardIntro(): string {
+/** The paragraph above the README's example dashboard, under "What it looks like": its first sentence and the rest. */
+export function readmeDashboardIntro(): { lead: string; rest: string } {
   const section = readmeSection("What it looks like");
   const intro = section.split(/\n\s*\n/)[0]?.trim();
   if (!intro || intro.startsWith("<")) fail("README.md", 'the sentence under "What it looks like"');
-  return intro;
+  // The first sentence is the page's lead. What follows can link a file of the action by a
+  // path relative to the README, which on this site goes to that file on GitHub at the tag.
+  const cut = intro.search(/\.\s+(?=[A-Z])/);
+  const lead = cut === -1 ? intro : intro.slice(0, cut + 1);
+  const rest = (cut === -1 ? "" : intro.slice(cut + 1).trim()).replace(
+    /\]\((?!https?:|#)([^)]+)\)/g,
+    (_, path: string) => `](${sourceUrl(path)})`,
+  );
+  return { lead, rest };
 }
 
 function readmeSection(heading: string): string {

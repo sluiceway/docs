@@ -7,7 +7,11 @@ import ExampleDashboard from "../../components/ExampleDashboard.astro";
 import { inlineHtml, readmeDashboardIntro } from "../../lib/action-text";
 import { glossary, ROUTES } from "../../lib/routes";
 
-<p class="sw-lead" set:html={inlineHtml(readmeDashboardIntro())} />
+export const intro = readmeDashboardIntro();
+
+<p class="sw-lead" set:html={inlineHtml(intro.lead)} />
+
+{intro.rest && <p set:html={inlineHtml(intro.rest)} />}
 
 <ExampleDashboard />
 
