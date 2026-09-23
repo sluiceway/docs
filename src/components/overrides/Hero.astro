@@ -2,8 +2,9 @@
 // Replaces Starlight's hero on a splash page. Left: the `shout` line from frontmatter
 // `hero.title` (trusted HTML, so a phrase can take the swash), the README's lead read from
 // the submodule, the beta sentence, the buttons from `hero.actions` (the first is primary; a
-// link starting with `/` names a page id of src/lib/pages.ts and gets the base),
-// and the licence and pinned version. Right: Penny's panel, the page's one `shadow-pop-lg`.
+// link starting with `/` names a page id of src/lib/pages.ts and gets the base), and a line
+// naming the release these docs describe, with the changelog and the licence. Right: Penny's
+// panel, the page's one `shadow-pop-lg`.
 //
 // The panel files are copies of design-system/assets/Penny/penny-panel-*.svg in
 // sluiceway/company. They animate themselves and stop under prefers-reduced-motion.
@@ -37,7 +38,9 @@ const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending 
         </div>
       )
     }
-    <p class="sw-hero__small">Apache-2.0 · v{VERSION}</p>
+    <p class="sw-hero__small" data-docs-release>
+      These docs describe Sluiceway v{VERSION} · <a href={page("changelog")}>Changelog</a> · Apache-2.0
+    </p>
   </div>
   <div class="sw-hero__panel">
     <!--
@@ -108,6 +111,10 @@ const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending 
     font-size: 14px;
     line-height: 22px;
     color: var(--ink-muted);
+  }
+  .sw-hero__small a {
+    color: var(--ink-muted);
+    text-underline-offset: 3px;
   }
   .sw-hero__panel {
     justify-self: center;

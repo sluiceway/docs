@@ -1,6 +1,6 @@
 ---
-// Starlight's sidebar, with Penny's mark and the pinned version at its foot, linking to the
-// start page.
+// Starlight's sidebar, with Penny's mark and the release these docs describe at its foot,
+// linking to the start page.
 import Default from "@astrojs/starlight/components/Sidebar.astro";
 import { page } from "../../lib/routes";
 import { VERSION } from "../../lib/source";
@@ -10,7 +10,7 @@ import PennyMark from "../PennyMark.astro";
 <Default />
 <a class="sw-sidebar-foot" href={page("")}>
   <PennyMark size={28} />
-  <span>Sluiceway v{VERSION}</span>
+  <span>Docs for Sluiceway v{VERSION}</span>
 </a>
 
 <style>

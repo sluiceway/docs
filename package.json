@@ -11,10 +11,11 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "typecheck": "bun --bun astro check",
-    "check": "bun run lint && bun run tokens --check && bun run pin && bun run typecheck && bun run build && bun run test",
+    "check": "bun run lint && bun run tokens --check && bun run pin && bun run release && bun run typecheck && bun run build && bun run test",
     "lighthouse": "lhci autorun",
     "links": "bun scripts/check-links.ts",
     "pin": "bun scripts/check-pin.ts",
+    "release": "bun scripts/check-release.ts",
     "serve": "bun scripts/serve.ts",
     "test": "bun test",
     "tokens": "bun scripts/build-tokens.ts"

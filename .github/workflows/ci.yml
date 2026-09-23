@@ -31,7 +31,13 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
+      # `bun run release`, inside the check, asks GitHub for the action's latest release and
+      # warns in the log, as an annotation and in the job summary when the pin is behind. It
+      # never fails the job. The token only lifts the rate limit of that one request: this job
+      # can read contents and nothing else.
       - run: bun run check
+        env:
+          GH_TOKEN: ${{ github.token }}
 
   links:
     # Builds the site under each address it can live at and checks every link and anchor inside
