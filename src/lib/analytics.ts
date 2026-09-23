@@ -1,14 +1,14 @@
-// Analytics with self-hosted Umami, only after the reader allows it. The consent record has
-// the same shape as on the maintainer's own site. Umami's script is added to the page only
-// once consent is in `localStorage`, and `track()` does nothing without it. Do Not Track and
-// Global Privacy Control block everything: no script, no consent bar.
+// Analytics with self-hosted Umami, for every reader. Umami sets no cookie and these docs
+// store nothing in the browser, so there is nothing to ask. Do Not Track blocks everything: the
+// script is never added and no event is sent. The privacy page says the same in words, so a
+// change here is a change there (src/content/docs/privacy.mdx).
 
 /** The Umami website for the docs. Not a secret: every page that loads the script shows it. */
 const DEFAULT_UMAMI_WEBSITE_ID = "7471fe15-3d60-4902-a18a-32dfff6b9dba";
 
 /**
  * `PUBLIC_UMAMI_WEBSITE_ID` overrides the default at build time. An empty string turns
- * analytics off: no script, no consent bar, no footer line.
+ * analytics off: no script and no footer line.
  */
 export const UMAMI_WEBSITE_ID: string =
   import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? DEFAULT_UMAMI_WEBSITE_ID;
@@ -18,13 +18,11 @@ export const ANALYTICS_ENABLED = UMAMI_WEBSITE_ID !== "";
 /** Written this way so that a build with analytics off holds no reference to the host. */
 export const UMAMI_SRC = ANALYTICS_ENABLED ? "https://analytics.robbeverhelst.be/script.js" : "";
 
-/** Where the choice is kept. */
-export const CONSENT_KEY = "cookie-consent";
-
-export interface ConsentRecord {
-  timestamp: string;
-  preferences: { essential: true; analytics: boolean };
-}
+/**
+ * The key an earlier version kept the reader's answer under. Nothing is stored now, and the old
+ * record is removed once so no browser keeps it.
+ */
+export const OLD_CONSENT_KEY = "cookie-consent";
 
 export type EventData = Record<string, string | number>;
 
@@ -40,12 +38,11 @@ declare global {
 
 /** What analytics needs from the browser, so the tests can hand it a fake one. */
 export interface AnalyticsEnv {
-  storage: Pick<Storage, "getItem" | "setItem"> | undefined;
-  navigator: { doNotTrack?: string | null; globalPrivacyControl?: boolean };
+  storage: Pick<Storage, "removeItem"> | undefined;
+  navigator: { doNotTrack?: string | null };
   /** Add a deferred `<script>` with these attributes, and call `onload` once it has run. */
   addScript(attributes: Record<string, string>, onload: () => void): void;
   umami(): Umami | undefined;
-  now(): Date;
 }
 
 export interface AnalyticsConfig {
@@ -57,17 +54,13 @@ export interface AnalyticsConfig {
 
 export interface Analytics {
   readonly enabled: boolean;
-  /** Do Not Track or Global Privacy Control is on. Nothing loads and no bar shows. */
+  /** Do Not Track is on. Nothing loads and nothing is sent. */
   blocked(): boolean;
-  /** The stored answer: true, false, or null before the reader has chosen. */
-  choice(): boolean | null;
   /** Analytics may run on this page. */
   allowed(): boolean;
-  /** Store the reader's answer. Allowing adds the script at once. */
-  choose(analytics: boolean): void;
-  /** Add the script if the reader has allowed it. Call once per page. */
+  /** Add the script, unless analytics is off or blocked. Call once per page. */
   init(): void;
-  /** Send a named event. Without consent it sends nothing and returns false. */
+  /** Send a named event. Off or blocked, it sends nothing and returns false. */
   track(event: string, data?: EventData): boolean;
 }
 
@@ -77,21 +70,8 @@ export function createAnalytics(config: AnalyticsConfig, env: AnalyticsEnv): Ana
   // Events sent while the script loads. They go out once it has run.
   const queue: [string, EventData | undefined][] = [];
 
-  const blocked = () =>
-    env.navigator.doNotTrack === "1" || env.navigator.globalPrivacyControl === true;
-
-  const choice = (): boolean | null => {
-    try {
-      const stored = env.storage?.getItem(CONSENT_KEY);
-      if (!stored) return null;
-      const record = JSON.parse(stored) as Partial<ConsentRecord> | null;
-      return record?.preferences?.analytics === true;
-    } catch {
-      return null;
-    }
-  };
-
-  const allowed = () => enabled && !blocked() && choice() === true;
+  const blocked = () => env.navigator.doNotTrack === "1";
+  const allowed = () => enabled && !blocked();
 
   const load = () => {
     if (state !== "none" || !allowed()) return;
@@ -107,9 +87,7 @@ export function createAnalytics(config: AnalyticsConfig, env: AnalyticsEnv): Ana
       () => {
         state = "ready";
         const umami = env.umami();
-        for (const [event, data] of queue.splice(0)) {
-          if (allowed()) umami?.track(event, data);
-        }
+        for (const [event, data] of queue.splice(0)) umami?.track(event, data);
       },
     );
   };
@@ -117,22 +95,15 @@ export function createAnalytics(config: AnalyticsConfig, env: AnalyticsEnv): Ana
   return {
     enabled,
     blocked,
-    choice,
     allowed,
-    choose(analytics) {
-      const record: ConsentRecord = {
-        timestamp: env.now().toISOString(),
-        preferences: { essential: true, analytics },
-      };
+    init() {
       try {
-        env.storage?.setItem(CONSENT_KEY, JSON.stringify(record));
+        env.storage?.removeItem(OLD_CONSENT_KEY);
       } catch {
-        // Storage is blocked, so the choice cannot be kept and nothing loads.
+        // Storage is blocked, so there is nothing in it to remove.
       }
-      // Turning it off stops events at once; the script is gone on the next page load.
       load();
     },
-    init: load,
     track(event, data) {
       if (!allowed()) return false;
       load();
@@ -161,7 +132,6 @@ function browserEnv(): AnalyticsEnv {
       document.head.append(script);
     },
     umami: () => window.umami,
-    now: () => new Date(),
   };
 }
 

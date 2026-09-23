@@ -3,7 +3,7 @@
 import Pagination from "@astrojs/starlight/components/Pagination.astro";
 import { LANDING_URL } from "../../lib/site";
 import { pageSource, REPO_URL, TAG, VERSION } from "../../lib/source";
-import ConsentBar from "../ConsentBar.astro";
+import Analytics from "../Analytics.astro";
 import Feedback from "../Feedback.astro";
 import SiteFooter from "../Footer.astro";
 
@@ -34,7 +34,7 @@ const source = pageSource(entry.data.source, entry.filePath ?? `src/content/docs
       { label: `Release ${TAG}`, href: `${REPO_URL}/releases/tag/${TAG}` },
     ]}
   />
-  <ConsentBar />
+  <Analytics />
 </footer>
 
 <style>

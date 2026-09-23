@@ -1,0 +1,15 @@
+---
+// Analytics: starts Umami on the page and hooks up the named events, for every reader but one
+// whose browser sends Do Not Track. With analytics off, `init()` adds nothing and every event
+// is dropped.
+---
+
+<script>
+  import { analytics } from "../lib/analytics";
+  import { watchEvents } from "../lib/analytics-events";
+
+  if (analytics) {
+    analytics.init();
+    watchEvents(analytics);
+  }
+</script>
