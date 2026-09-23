@@ -49,7 +49,7 @@ import "../../styles/landing.css";
     Add Sluiceway one step at a time, starting with a check that changes nothing.
   </Card>
   <Card title="Credentials" href={ROUTES.credentials} tilt="left">
-    Load your cloud and state credentials in a step before Sluiceway.
+    Load your cloud and state credentials on Sluiceway's step, or in a step right before it.
   </Card>
   <Card title="Using the dashboard" href={ROUTES.usingTheDashboard} tilt="right">
     Read the rows, tick a box to deploy a stack, and read the job log.
@@ -57,11 +57,11 @@ import "../../styles/landing.css";
 </div>
 
 <div class="sw-landing__guides">
-  <p>The guides, in the order most teams need them:</p>
+  <p>The guides, in order:</p>
   <ul>
     <li><a href={page("guides/workflow")}>The workflow</a></li>
-    <li><a href={page("guides/read-only-trial")}>Start read only</a></li>
     <li><a href={page("guides/init")}>Start with init</a></li>
+    <li><a href={page("guides/read-only-trial")}>Start read only</a></li>
     <li><a href={page("guides/credentials")}>Credentials</a></li>
     <li><a href={page("guides/configuration")}>Configuration</a></li>
     <li><a href={page("guides/example-workflows")}>Example workflows</a></li>
