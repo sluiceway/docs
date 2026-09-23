@@ -420,6 +420,9 @@ export function pages(repoUrl: string, base: string): Page[] {
       },
       parts: [
         sectionPart(README, "How it works", { dropHeading: true }),
+        // Here too, so a reader weighing a deploy tool meets the promises before the guides.
+        // Security shows the credentials promise again, in security.md's words.
+        sectionPart(README, "What it promises"),
         sectionPart(README, "What it does"),
       ],
     },
