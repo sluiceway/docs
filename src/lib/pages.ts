@@ -412,7 +412,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "how-it-works",
       title: "How it works",
       description:
-        "How a scan previews your Pulumi, OpenTofu, Terraform, Helm and Kubernetes manifests stacks, how a tick asks for a deploy, and how the deploy checks it again.",
+        "How a scan previews your Pulumi, OpenTofu, Terraform, Helm or Kubernetes stacks, how a tick asks for a deploy, and how the deploy checks it again.",
       source: README,
       headerPicture: {
         picture: "pending-4",
@@ -893,9 +893,9 @@ export function sidebar(): SidebarItem[] {
       label: "Start",
       items: [
         { label: "Overview", link: "/" },
+        { slug: "get-started" },
         ...(written(SLICE_3.whatItLooksLike) ? [{ slug: SLICE_3.whatItLooksLike }] : []),
         { slug: "how-it-works" },
-        { slug: "get-started" },
         { slug: "using-the-dashboard" },
       ],
     },
@@ -903,12 +903,12 @@ export function sidebar(): SidebarItem[] {
       label: "Guides",
       items: [
         { slug: "guides/workflow" },
-        { slug: "guides/split-workflow" },
         { slug: "guides/read-only-trial" },
         { slug: "guides/init" },
-        { slug: "guides/configuration" },
         { slug: "guides/credentials" },
+        { slug: "guides/configuration" },
         { slug: "guides/example-workflows" },
+        { slug: "guides/split-workflow" },
         { slug: "guides/notifications" },
         { slug: "guides/security" },
       ],

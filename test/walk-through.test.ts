@@ -7,10 +7,10 @@ import { readFileSync } from "node:fs";
 import { TAG } from "../src/lib/source";
 
 const page = readFileSync("dist/what-it-looks-like/index.html", "utf8");
-const parts = page.slice(page.indexOf('id="the-parts"'));
+const parts = page.slice(page.indexOf('id="read-the-dashboard-from-the-top"'));
 const dashboard = page.slice(
   page.indexOf('<figure class="sw-issue'),
-  page.indexOf('id="the-parts"'),
+  page.indexOf('id="read-the-dashboard-from-the-top"'),
 );
 const walk = parts.slice(0, parts.indexOf("</ul>"));
 

@@ -64,15 +64,18 @@ right, where the water runs while a stack deploys. The pending, queued, deployin
 pictures show one crate per pending stack, up to 20. Each picture has a light and a dark file,
 and the dashboard shows the one that matches your GitHub theme.
 
-## The pictures
+## Every picture, one per state
 
 <HeaderGallery pictures={pictures} />
 
-## With the destroy sign
+## Signs for deletes and replaces
 
-When a pending, deploying or queued row replaces a resource, the pending, queued, deploying and
-failing pictures carry the replace sign, an amber warning triangle on a pole in the water. When
-one deletes a resource, they carry the delete sign, an amber diamond with a cross, under it.
+The pending, queued, deploying and failing pictures carry a sign when a pending, queued or
+deploying row changes resources.
+
+- **A replace** adds the replace sign, an amber warning triangle on a pole in the water.
+- **A delete** adds the delete sign, an amber diamond with a cross, under the replace sign.
+
 The signs do not move, and nothing else in the picture changes.
 
 <HeaderGallery
@@ -96,7 +99,7 @@ The signs do not move, and nothing else in the picture changes.
   ]}
 />
 
-## Water steps
+## The water rises in five steps
 
 Behind the closed or jammed gate the water rises in five steps, with one amber mark each on the
 gauge. Behind the open gate of a deploy it stays at one level.
