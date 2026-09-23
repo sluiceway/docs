@@ -55,9 +55,10 @@ export const states = headerStates(pictures.map(({ picture }) => picture));
 
 <p class="sw-lead">
   The header is the picture at the top of the dashboard: Penny, the sluice gate, on a quay in
-  one of {states.count} states. When more than one applies, the first wins, in this order:{" "}
-  {states.order}.
+  one of {states.count} states.
 </p>
+
+When more than one state applies, the first wins, in this order: {states.order}.
 
 Upstream is on the left, where crates pile up while changes are pending. Downstream is on the
 right, where the water runs while a stack deploys. The pending, queued, deploying and failing
@@ -71,7 +72,7 @@ and the dashboard shows the one that matches your GitHub theme.
 ## Signs for deletes and replaces
 
 The pending, queued, deploying and failing pictures carry a sign when a pending, queued or
-deploying row changes resources.
+deploying row has a delete or a replace.
 
 - **A replace** adds the replace sign, an amber warning triangle on a pole in the water.
 - **A delete** adds the delete sign, an amber diamond with a cross, under the replace sign.
