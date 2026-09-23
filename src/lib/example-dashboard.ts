@@ -1,42 +1,37 @@
-// The README's example dashboard, made by the action's own renderer at the pinned tag and
-// rendered the way GitHub renders an issue body.
+// The action's example dashboard, rendered the way GitHub renders an issue body.
 //
-// Bun runs `exampleDashboard()` from the submodule in its own process, so the renderer runs
-// exactly as the action's tests run it, outside Vite. The Markdown it prints is then turned
-// into HTML with GitHub's rules: GFM task lists (boxes shown, disabled), raw HTML such as
+// The action publishes the body as a scan writes it into the issue, made by its own renderer,
+// at `assets/example-dashboard.md` of every release tag (its record 0088). The docs read that
+// file at the pinned tag and turn it into HTML with GitHub's rules: GFM task lists (boxes shown, disabled), raw HTML such as
 // <details>, <kbd> and <sub> kept, GitHub's emoji shortcodes turned into their emoji, and an
 // alert such as the destroy alert's `> [!CAUTION]` shown as a callout, as on every page.
 
-import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { nameToEmoji } from "gemoji";
 import type { Paragraph, PhrasingContent } from "mdast";
 import { defineMdastPlugin, markdownToHtml } from "satteri";
 import { githubAlerts } from "../plugins/github-alerts";
 import { shiftHeadings } from "./headings";
-import { VENDOR_DIR } from "./source";
+import { vendorPath } from "./source";
 
-const SCRIPT =
-  'import { exampleDashboard } from "./test/docs/example-dashboard.ts";' +
-  "process.stdout.write(exampleDashboard());";
+const EXAMPLE_FILE = "assets/example-dashboard.md";
 
-function runRenderer(): string {
+function readExample(): string {
   try {
-    return execFileSync(process.versions.bun ? process.execPath : "bun", ["-e", SCRIPT], {
-      cwd: VENDOR_DIR,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-  } catch (error) {
-    const stderr = (error as { stderr?: string }).stderr ?? "";
-    throw new Error(
-      `vendor/sluiceway/test/docs/example-dashboard.ts did not run at the pinned tag.\n${stderr}`,
-    );
+    return readFileSync(vendorPath(EXAMPLE_FILE), "utf8");
+  } catch {
+    throw new Error(`vendor/sluiceway/${EXAMPLE_FILE} was not found at the pinned tag.`);
   }
 }
 
-// The README folds the dashboard into a <details> with a line saying what is in it. The docs
-// show it open inside an issue frame, so the fold and its line come off.
-const FOLD = /^<details>\n<summary>.*<\/summary>\n\n([\s\S]*)\n\n<\/details>$/;
+// The body's hidden markers say nothing to a reader, so they come off, as in the README's copy.
+function withoutMarkers(markdown: string): string {
+  return markdown
+    .replace(/^<!-- sluiceway:dashboard [^\n]*-->\n\n/, "")
+    .replace(/^ *<!-- \/sluiceway:row -->\n/gm, "")
+    .replace(/ <!-- sluiceway:[^\n]*?-->/g, "")
+    .trim();
+}
 
 const SHORTCODE = /:([a-z0-9_+-]+):/g;
 
@@ -94,6 +89,12 @@ function labelBoxes(html: string): string {
   });
 }
 
+// A row's spinner has an empty alt, because the row's words say it deploys. It is marked
+// hidden from screen readers too, as every decorative image on the site is.
+function decorative(html: string): string {
+  return html.replace(/<img alt=""(?![^>]*aria-hidden)/g, '<img alt="" aria-hidden="true"');
+}
+
 export interface ExampleDashboard {
   /** The picture's file stem, such as `pending-4-deletes`. */
   picture: string;
@@ -104,14 +105,7 @@ export interface ExampleDashboard {
 }
 
 export function exampleDashboard(): ExampleDashboard {
-  const markdown = runRenderer();
-  const fold = FOLD.exec(markdown);
-  if (!fold) {
-    throw new Error(
-      "The example dashboard no longer starts with <details><summary>. Update src/lib/example-dashboard.ts.",
-    );
-  }
-  const body = fold[1] ?? "";
+  const body = withoutMarkers(readExample());
   const html = markdownToHtml(body, { mdastPlugins: [issueBody, githubAlerts] }).html;
   const picture = PICTURE.exec(html);
   if (!picture) {
@@ -122,6 +116,6 @@ export function exampleDashboard(): ExampleDashboard {
   return {
     picture: picture[1] ?? "",
     alt: picture[2] ?? "",
-    html: labelBoxes(shiftHeadings(html.replace(PICTURE, "").trim()).html),
+    html: labelBoxes(decorative(shiftHeadings(html.replace(PICTURE, "").trim()).html)),
   };
 }

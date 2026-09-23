@@ -87,8 +87,8 @@ A plain blockquote stays a blockquote:
 | -------------- | ------------ | ----------------------------------- |
 | `[!NOTE]`      | note         | A fact about how the product works. |
 | `[!TIP]`       | tip          | Something that saves time.          |
-| `[!IMPORTANT]` | pending      | A thing that will bite later.       |
-| `[!WARNING]`   | pending      | A thing that will bite later.       |
+| `[!IMPORTANT]` | pending      | A step that must not be skipped.    |
+| `[!WARNING]`   | pending      | A mistake that fails a later run.   |
 | `[!CAUTION]`   | danger       | A delete or a replace.              |
 
 ## Code
@@ -112,7 +112,7 @@ The `lead` frame:
 <Steps
   items={[
     { title: "A scan previews every stack", body: "Each stack with changes gets a row." },
-    { title: "The dashboard is written", body: "One issue shows every row and its box." },
+    { title: "The dashboard is written", body: "One issue shows every row, and a box on each row with changes." },
     { title: "You tick a box", body: "Sluiceway checks that you may tick that stack." },
     { title: "It previews again and deploys", body: "The stack deploys as its row shows it." },
   ]}
@@ -121,7 +121,7 @@ The `lead` frame:
 ## Cards
 
 <div class="sw-card-grid">
-  <Card title="One place to look" bar>Every stack has one row and one box.</Card>
+  <Card title="One place to look" bar>Every stack has one row, and a stack with changes has a box.</Card>
   <Card title="Previewed twice" tilt="left">A tick previews the stack again before it deploys.</Card>
   <Card title="Named in full" tilt="right" tone="cool">A stack id is always written whole.</Card>
 </div>

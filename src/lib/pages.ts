@@ -420,6 +420,9 @@ export function pages(repoUrl: string, base: string): Page[] {
       },
       parts: [
         sectionPart(README, "How it works", { dropHeading: true }),
+        // Here too, so a reader weighing a deploy tool meets the promises before the guides.
+        // Security shows the credentials promise again, in security.md's words.
+        sectionPart(README, "What it promises"),
         sectionPart(README, "What it does"),
       ],
     },
@@ -427,16 +430,19 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "get-started",
       title: "Get started",
       description:
-        "Add Sluiceway to a repo of infrastructure as code: check your setup, add the workflow, then tell it about your stacks and load your credentials.",
+        "Add Sluiceway to a repo of infrastructure as code: check what you need, run the check, then add the workflow, the tick rule and your credentials.",
       source: README,
       headerPicture: {
         picture: "first-run",
         alt: "The scan found no stacks yet: Penny stands beside an empty channel",
       },
       parts: [
-        sectionPart(README, "Get started", { dropHeading: true }),
-        // Here since the README moved it, so get-started/#requirements keeps working.
+        // First, so a reader checks the runner and tool versions before any step. Here since the
+        // README moved it, so get-started/#requirements keeps working.
         sectionPart("docs/reference.md", "Requirements"),
+        // Under a heading of its own, so the steps do not read as part of Requirements. The id
+        // stays get-started, which links to the README section expect.
+        sectionPart(README, "Get started", { retitle: "The steps" }),
       ],
     },
     {
@@ -455,7 +461,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/workflow",
       title: titleOf("docs/workflow.md"),
       description:
-        "The check, the one-job workflow and what it gives up, and what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
+        "The check, the one-step workflow and what it gives up, and what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
       source: "docs/workflow.md",
       headerPicture: {
         picture: "pending-5",
@@ -527,7 +533,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/example-workflows",
       title: titleOf("docs/example-workflows.md"),
       description:
-        "Complete workflows for a Node monorepo, a secret manager and a cloud with OIDC, ready to copy.",
+        "Complete Pulumi workflows for a Node monorepo, a secret manager and a cloud with OIDC, ready to copy.",
       source: "docs/example-workflows.md",
       headerPicture: {
         picture: "pending-3",
@@ -554,7 +560,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/security",
       title: titleOf("docs/security.md"),
       description:
-        "What a tick promises, who can tick, and how GitHub Environments make the gate stronger.",
+        "What a tick promises, who can tick, and what GitHub Environments add to a deploy.",
       source: "docs/security.md",
       headerPicture: {
         picture: "pending-1",
@@ -730,6 +736,8 @@ export function covered(): Covered[] {
   const slugs = githubSlugs(README);
   return [
     { link: README, page: SLICE_3.overview },
+    // Get started opens on Requirements, so a link to the README section lands on the page top.
+    { link: `${README}#get-started`, page: "get-started" },
     // The index of the action's docs: the sidebar is this site's.
     { link: "docs/README.md", page: SLICE_3.overview },
     { link: "docs/adr", page: "why" },
@@ -935,7 +943,7 @@ export function sidebar(): SidebarItem[] {
     },
     { label: "Known rough edges", items: [{ slug: "onboarding-log" }] },
     {
-      label: "Not yet",
+      label: "Planned and left out",
       items: [{ slug: "roadmap" }, { slug: "not-in-v1" }, { slug: "what-v1-is" }],
     },
     { label: "Changelog", items: [{ slug: "changelog" }] },

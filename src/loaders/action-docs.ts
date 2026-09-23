@@ -133,6 +133,27 @@ function guard(markdown: string): string {
   return markdown.startsWith("---") ? `\n${markdown}` : markdown;
 }
 
+/**
+ * A guide's first paragraph is its one-sentence lead, set as a lead as the site's own pages set
+ * theirs. The other pages read from the action open on a list or a heading, or are records.
+ */
+function lead(page: Page, html: string): string {
+  const guide = page.id.startsWith("guides/") || page.id === "using-the-dashboard";
+  return guide ? html.replace(/^<p>/, '<p class="sw-lead">') : html;
+}
+
+/**
+ * A heading of the action that starts with "Planned" gets the planned StageChip beside it, as
+ * everything planned on the site does. The heading says "planned" in words already, so the chip
+ * is hidden from screen readers rather than read twice.
+ */
+function planned(html: string): string {
+  return html.replace(
+    /(<h[2-4][^>]*>Planned\b[\s\S]*?)(<\/h[2-4]>)/g,
+    '$1 <span class="sw-stage sw-stage--planned" aria-hidden="true">planned</span>$2',
+  );
+}
+
 async function renderPage(
   ctx: LoaderContext,
   page: Page,
@@ -174,7 +195,7 @@ async function renderPage(
   headings.forEach((h, i) => {
     h.depth = shifted.levels[i] ?? h.depth;
   });
-  let joined = shifted.html;
+  let joined = planned(lead(page, shifted.html));
   if (page.termAnchors) joined = termAnchors(joined, headings);
 
   const seen = new Set<string>();

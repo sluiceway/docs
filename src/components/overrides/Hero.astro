@@ -26,7 +26,9 @@ const PANEL_ALT = "Penny, the sluice gate, holding back three crates of pending 
     <!-- Starlight's skip link and table of contents point at this id. -->
     <h1 id="_top" class="sw-hero__shout" data-page-title set:html={title} />
     <p class="sw-hero__lead" set:html={lead} />
-    <p class="sw-hero__beta">Sluiceway is in beta.</p>
+    <p class="sw-hero__beta">
+      Sluiceway is in beta. <a href={`${page("guides/workflow")}#pin-a-commit`}>Pin a release commit</a> to review every update before it runs.
+    </p>
     {
       actions.length > 0 && (
         <div class="sw-hero__actions">

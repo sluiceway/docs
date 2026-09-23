@@ -7,60 +7,61 @@ import ExampleDashboard from "../../components/ExampleDashboard.astro";
 import { inlineHtml, readmeDashboardIntro } from "../../lib/action-text";
 import { glossary, ROUTES } from "../../lib/routes";
 
-<p class="sw-lead" set:html={inlineHtml(readmeDashboardIntro())} />
+export const intro = readmeDashboardIntro();
+
+<p class="sw-lead" set:html={inlineHtml(intro.lead)} />
+
+{intro.rest && <p set:html={inlineHtml(intro.rest)} />}
 
 <ExampleDashboard />
 
 ## Read the dashboard from the top
 
-Each part below is in the order the dashboard draws it.
-
-- **The <a href={glossary("Header")}>header</a>.** Penny with four crates upstream, one per pending stack, and the delete
-  sign, because a pending row deletes resources. A row that replaces a resource would add the
-  replace sign. <a href={ROUTES.theHeader}>The header</a> shows every picture.
-- **The <a href={glossary("Counts line")}>counts line</a>.** How many stacks are pending, deploying, preview failed and in
-  sync, always all four, each behind its <a href={glossary("Count dot")}>count dot</a>, and how many pending stacks
-  destroy resources. Under it, the
+- **The <a href={glossary("Header")}>header</a>.** Penny with four crates upstream, one per pending stack, water running
+  downstream because two stacks deploy, and both signs: a pending row deletes resources and
+  another replaces one. <a href={ROUTES.theHeader}>The header</a> shows every picture.
+- **The <a href={glossary("Counts line")}>counts line</a>.** How many stacks are pending, drifted, deploying, preview failed and in
+  sync, each behind its <a href={glossary("Count dot")}>count dot</a>, and how many pending stacks
+  delete or replace resources. Under it, the
   <a href={glossary("Scan line")}>scan line</a> says which commit the last scan checked out, when, in which run, and when the
   last full scan was.
+- **Deploying.** While a stack deploys, its section comes before every other. `apps/api:prod`
+  deploys, and its row starts with a <a href={glossary("Spinner")}>spinner</a>. `apps/worker:prod` is a
+  <a href={glossary("Queued stack")}>queued stack</a>: it waits for the stack it depends on.
+- **Updates waiting to merge.** This section is there when merge and deploy is on.
+  `platform/ingress-nginx:prod` is an <a href={glossary("Update waiting to merge")}>update waiting to merge</a>: one tick merges its pull
+  request, and its stack is previewed again and deployed. `apps/web:prod` is an
+  <a href={glossary("Update waiting on its checks")}>update waiting on its checks</a>, a line with no box that ends in `waits on its checks`.
+  It gets its box once its checks are green.
 - **The <a href={glossary("Destroy alert")}>destroy alert</a>.** A caution block above the pending rows names every
-  pending stack that deletes or replaces resources, here `apps/legacy-worker:prod`, and in a
-  paragraph of its own every drifted stack with a resource gone outside the code. The deletes
-  themselves stay under that stack's row.
-- **A <a href={glossary("Pending")}>pending</a> row.** `apps/api:prod` has one update waiting. Its row links the preview,
-  names the pull requests that brought the change, links the compare view, and folds the
-  changes under their count. Tick its box to deploy that stack exactly as its row shows it.
+  pending stack that deletes or replaces resources, here `apps/legacy-worker:prod` and
+  `infra/network:prod`, and in a paragraph of its own every drifted stack with a resource gone
+  outside the code. The deletes themselves stay under that stack's row.
+- **A <a href={glossary("Pending")}>pending</a> row.** `apps/billing:prod` has one create and one update waiting. Its row links the
+  preview, names the pull requests that brought the change, links the compare view, and folds
+  the changes under their count. Tick its box to deploy that stack exactly as its row shows it.
 - **A row with deletes.** `apps/legacy-worker:prod` deletes three resources. A
   <a href={glossary("Destroy")}>destroy</a> is listed first, outside the fold, and always carries a warning.
-- **A row with <a href={glossary("Change outside a stack")}>changes outside the stack</a>.** `apps/web:prod` names the pull request its stack claims and counts two
-  changes that no stack claims, such as a lockfile bump, since they may reach any stack.
+- **A row with <a href={glossary("Change outside a stack")}>changes outside the stack</a>.** `apps/web:staging` names the pull requests its stack claims and
+  folds one change that no stack claims, such as a lockfile bump, since it may reach any stack.
+- **A row with a replace.** `infra/network:prod` replaces a subnet, and says which property forces
+  it. The change came from a <a href={glossary("Direct push")}>direct push</a>, so the row names a commit instead of a pull request.
 - **The <a href={glossary("Bulk box")}>bulk box</a>.** `Deploy all 4 pending stacks`, under the pending rows. A tick on it
-  deploys nothing. It asks for a confirm box instead. Under drifted rows the box reads
-  `Repair all N drifted stacks`. There is no bulk box in a section with one row, with deploys
-  off, or on a read-only dashboard.
-- **The <a href={glossary("Confirm box")}>confirm box</a>.** The next run puts
-  <code class="sw-code-long">Confirm: deploy all 4 pending stacks</code> where the bulk box was. It
-  names the stacks and who asked. A tick on the confirm box deploys them, as a tick on each row.
-  Each stack is judged by its own <a href={glossary("Tick rule")}>tick rule</a> and gets its own
-  fresh preview. If a row changes before anyone ticks the confirm box, the confirm box goes and
-  the bulk box comes back.
-- **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count.
-- **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy from the dashboard that ended, newest
-  first, one line each: its <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a>,
-  the date and time in UTC, and a link to its run. A failed deploy is listed too, with its
-  failure reason, and stays listed when a later deploy of its stack clears the <a href={glossary("Failure line")}>failure line</a> on
-  the row. A deploy that went out can have a <a href={glossary("Shipped line")}>shipped line</a> under it, and a full scan adds
-  the <a href={glossary("Outside deploy")}>outside deploys</a> it finds in the tool's own history, which this example does not show.
+  deploys nothing. It asks for a confirm box instead. There is no bulk box in a section with
+  one row, with deploys off, or on a read-only dashboard.
+- **<a href={glossary("Drift")}>Drifted</a> rows.** Real infrastructure changed outside the code. `monitoring/grafana:prod` has
+  a property changed, and `platform/external-dns:prod` has a record gone. Deploying a stack puts
+  it back as its code says.
+- **The <a href={glossary("Confirm box")}>confirm box</a>.** Someone ticked `Repair all 2 drifted stacks`, and the next run put a
+  confirm box where the bulk box was. It names the stacks and who asked. A tick on the confirm
+  box deploys them, as a tick on each row. Each stack is judged by its own
+  <a href={glossary("Tick rule")}>tick rule</a> and gets its own fresh preview. If a row changes before anyone ticks the
+  confirm box, the confirm box goes and the bulk box comes back.
+- **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count, and under them the
+  <a href={glossary("Ignored stack")}>stacks left out by ignore</a>, each with its reason.
+- **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy that ended, newest first, one line each: its
+  <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a>, the date and time in UTC, and a link to its run. A
+  deploy that went out can have a <a href={glossary("Shipped line")}>shipped line</a> under it. A full scan adds the
+  <a href={glossary("Outside deploy")}>outside deploys</a> it finds in the tool's own history, such as `data/postgres:prod` here. A failed
+  deploy stays listed when a later deploy of its stack clears the <a href={glossary("Failure line")}>failure line</a> on the row.
 - **The <a href={glossary("Rescan box")}>rescan box</a>.** Tick it to start a full scan of every stack. It deploys nothing.
-
-## Sections this example leaves out
-
-Two sections can come before Pending.
-
-- **Deploying.** While a stack deploys, its section comes before every other. Each of its rows
-  starts with a <a href={glossary("Spinner")}>spinner</a>, a small moving crate.
-- **Updates waiting to merge.** This section is there when merge and deploy is on. It lists each
-  <a href={glossary("Update waiting to merge")}>pull request that one tick merges and deploys</a>.
-  Under them, each <a href={glossary("Update waiting on its checks")}>update waiting on its checks</a>
-  has a line with no box that ends in `waits on its checks`. The line gets its box once its
-  checks are green.
