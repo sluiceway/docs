@@ -44,6 +44,8 @@ import { ANALYTICS_ENABLED } from "../lib/analytics";
   }
   /* The ring's gap is the slab here, as for the footer's links. */
   .sw-analytics-note__open:focus-visible {
+    outline: 3px solid transparent;
+    outline-offset: 3px;
     box-shadow:
       0 0 0 3px var(--slab),
       0 0 0 6px var(--on-slab);

@@ -15,7 +15,7 @@
   gap: var(--space-5);
 }
 .sw-landing > .sw-landing__calm {
-  margin-top: var(--space-7);
+  margin-top: var(--space-8);
 }
 .sw-landing > h2,
 .sw-landing > .sl-heading-wrapper.level-h2 {
@@ -30,13 +30,6 @@
 .sw-landing__calm .sw-bubble-wrap {
   display: flex;
   justify-content: center;
-}
-.sw-landing__small {
-  margin: 0;
-  text-align: center;
-  font-size: 14px;
-  line-height: 22px;
-  color: var(--ink-muted);
 }
 .sw-landing .sw-hosted {
   margin-top: var(--sw-section);
