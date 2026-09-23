@@ -1,6 +1,6 @@
 // The named events, hooked onto the page with listeners on `document`, so neither Starlight's
 // search nor Expressive Code's copy button is forked. Every event goes through
-// `analytics.track()`, which drops it without consent. No event carries anything personal.
+// `analytics.track()`, which drops it under Do Not Track. No event carries anything personal.
 
 import type { Analytics } from "./analytics";
 

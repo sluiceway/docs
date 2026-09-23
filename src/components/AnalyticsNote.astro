@@ -1,19 +1,19 @@
 ---
-// AnalyticsNote: the footer's one line on what is counted, with the button that reopens the
-// consent bar. Renders nothing while analytics is off.
+// AnalyticsNote: the footer's line on what is counted, linking the privacy page. Renders
+// nothing while analytics is off.
 import { ANALYTICS_ENABLED } from "../lib/analytics";
+
+const privacy = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/privacy/`;
 ---
 
 {
   ANALYTICS_ENABLED && (
     <p class="sw-footer__note sw-analytics-note">
-      Analytics: self-hosted Umami, only if you allow it. It counts page views, searches, copied
-      code, page feedback and outbound clicks. No cookies; your choice is kept in this browser.{" "}
-      <button type="button" class="sw-analytics-note__open" data-sw-consent-open>
-        Analytics settings
-      </button>
+      Self-hosted Umami counts page views, searches, copied code, page feedback and clicks on
+      links to other sites. No cookies, and counting stores nothing in your browser.{" "}
+      <a href={privacy}>Privacy</a>
       <span class="sw-analytics-note__blocked" hidden>
-        Your browser asks sites not to track it, so nothing is counted.
+        {" "}Your browser sends Do Not Track, so nothing is counted.
       </span>
     </p>
   )
@@ -22,34 +22,14 @@ import { ANALYTICS_ENABLED } from "../lib/analytics";
 <script>
   import { analytics } from "../lib/analytics";
 
-  // With Do Not Track or Global Privacy Control on there is nothing to choose.
   if (analytics?.blocked()) {
-    for (const note of document.querySelectorAll(".sw-analytics-note")) {
-      note.querySelector<HTMLElement>("[data-sw-consent-open]")?.setAttribute("hidden", "");
-      note.querySelector<HTMLElement>(".sw-analytics-note__blocked")?.removeAttribute("hidden");
+    for (const note of document.querySelectorAll(".sw-analytics-note__blocked")) {
+      note.removeAttribute("hidden");
     }
   }
 </script>
 
 <style>
-  .sw-analytics-note__open {
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--on-slab);
-    font: inherit;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    cursor: pointer;
-  }
-  /* The ring's gap is the slab here, as for the footer's links. */
-  .sw-analytics-note__open:focus-visible {
-    outline: 3px solid transparent;
-    outline-offset: 3px;
-    box-shadow:
-      0 0 0 3px var(--slab),
-      0 0 0 6px var(--on-slab);
-  }
   .sw-analytics-note [hidden] {
     display: none;
   }

@@ -1,0 +1,66 @@
+---
+title: Privacy
+description: What these docs count with self-hosted Umami, where it is kept, for how long, and how to object.
+headerPicture:
+  picture: in-sync
+  alt: Every stack is in sync, and Penny rests on a calm quay
+sidebar:
+  hidden: true
+---
+
+import { WAITLIST_URL } from "../../lib/site";
+
+{/* Every sentence here describes src/lib/analytics.ts and src/lib/analytics-events.ts. A change there is a change here. */}
+
+<p class="sw-lead">
+  These docs count page views and a few clicks with Umami, on our own machine. Counting sets no
+  cookie and stores nothing in your browser.
+</p>
+
+## What is counted
+
+For each page view, the Umami script sends the page's address without its query string, the
+page title, the address of the page you came from, your screen size and your browser's language.
+The Umami server works out your browser, operating system and device type from your browser's
+user agent, and your country, region and city from your IP address. It does not store the IP
+address.
+
+It also counts these events:
+
+- **A search.** The words you typed into the search box, up to 100 characters, and how many
+  results it found. It is sent once you stop typing for a moment or open a result.
+- **Copied code.** The page, and the title of the code block you copied, or its language.
+- **Page feedback.** The page, and whether you answered yes or no to "Was this page useful?".
+- **A click on a link to another site.** The site's address without the page. For a link to
+  Sluiceway's repository on GitHub or to its Marketplace page, the full address.
+
+{WAITLIST_URL && <p>A click on the footer's link to the hosted version is counted too, as a click on that link and nothing else.</p>}
+
+Umami counts only at the address these docs are published at, so a copy of them running anywhere
+else sends nothing.
+
+## Where it goes
+
+Umami runs on our own machine, at analytics.robbeverhelst.be. What it counts stays there. It is
+not shared with anyone, and nothing leaves that machine.
+
+## How long it is kept
+
+Everything is kept until we delete it. Nothing deletes it automatically.
+
+## What is stored in your browser
+
+Counting sets no cookie and stores nothing in your browser.
+
+The docs themselves keep two settings in your browser, and send neither anywhere: the colour
+theme you pick, in local storage, and which sidebar groups are open, in session storage, which
+your browser clears when you close the tab.
+
+## Do Not Track
+
+If your browser sends Do Not Track, the Umami script is not loaded and nothing is counted.
+
+## How to object
+
+Email [robbe.verhelst@gmail.com](mailto:robbe.verhelst@gmail.com) to object, or to ask for what
+was counted about your visits to be deleted.
