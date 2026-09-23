@@ -13,9 +13,13 @@ import { glossary, ROUTES } from "../../lib/routes";
 
 ## The parts
 
-Read the dashboard from the top. While a stack deploys, which this example does not show, its
-section comes before every other and each of its rows starts with a
-<a href={glossary("Spinner")}>spinner</a>, a small moving crate.
+Read the dashboard from the top. Two sections this example does not show come before Pending.
+While a stack deploys, its section comes before every other and each of its rows starts with a
+<a href={glossary("Spinner")}>spinner</a>, a small moving crate. With merge and deploy on,
+Updates waiting to merge lists each <a href={glossary("Update waiting to merge")}>pull request one tick merges and deploys</a>,
+and under them a line with no box, ending in `waits on its checks`, for each
+<a href={glossary("Update waiting on its checks")}>update waiting on its checks</a>. That line
+gets its box once its checks are green.
 
 - **The <a href={glossary("Header")}>header</a>.** Penny with four crates upstream, one per pending stack, and the delete
   sign, because a pending row deletes resources. A row that replaces a resource would add the
@@ -36,6 +40,14 @@ section comes before every other and each of its rows starts with a
   <a href={glossary("Destroy")}>destroy</a> is listed first, outside the fold, and always carries a warning.
 - **A row with <a href={glossary("Change outside a stack")}>changes outside the stack</a>.** `apps/web:prod` names the pull request its stack claims and counts two
   changes that no stack claims, such as a lockfile bump, since they may reach any stack.
+- **The <a href={glossary("Bulk box")}>bulk box</a>.** `Deploy all 4 pending stacks`, under the pending rows. A tick on it
+  deploys nothing. The next run puts a <a href={glossary("Confirm box")}>confirm box</a> in its place,
+  `Confirm: deploy all 4 pending stacks`, which names the stacks and who asked. Ticking the
+  confirm box is what deploys them, as a tick on each row: every stack is judged by its own
+  <a href={glossary("Tick rule")}>tick rule</a> and gets its own fresh preview. If a row changes before anyone ticks it, the
+  confirm box goes and the bulk box comes back. Under drifted rows the box reads
+  `Repair all N drifted stacks`. A section with one row has no bulk box, and neither has a
+  dashboard with deploys off or a read-only one.
 - **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count.
 - **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy from the dashboard that ended, newest
   first, one line each: its <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a>,

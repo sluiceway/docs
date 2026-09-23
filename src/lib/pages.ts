@@ -443,7 +443,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "using-the-dashboard",
       title: titleOf("docs/using-the-dashboard.md"),
       description:
-        "How to read the dashboard's rows, tick to deploy a stack, read the job log, and the limits to know.",
+        "How to read the dashboard's rows, tick to deploy one stack or confirm a deploy of every pending one, read the job log, and the limits to know.",
       source: "docs/using-the-dashboard.md",
       headerPicture: {
         picture: "pending-4-deletes-replaces",
