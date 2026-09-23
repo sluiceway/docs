@@ -43,3 +43,10 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* A heading that is one long key, such as `stacks[].options.createNamespace`, is wider than a
+   phone. It wraps rather than scroll the page sideways. */
+.sl-markdown-content :is(h2, h3, h4) > code:not(:where(.not-content *)) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

@@ -1,4 +1,4 @@
 [submodule "vendor/sluiceway"]
 	path = vendor/sluiceway
 	url = https://github.com/sluiceway/sluiceway.git
-	branch = v0.25.0
+	branch = v0.26.1

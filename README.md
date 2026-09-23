@@ -25,10 +25,11 @@ Other scripts:
 | `bun run lint` | Checks formatting and lint with Biome. `bun run lint:fix` fixes what it can. |
 | `bun run typecheck` | Runs `astro check`. |
 | `bun run test` | Runs the tests. Some of them read the built site, so build first, with the same `DOCS_SITE` and `DOCS_BASE`. |
-| `bun run check` | Lint, the tokens check, the pin check, typecheck, build and the tests. CI runs this. |
+| `bun run check` | Lint, the tokens check, the pin check, the release check, typecheck, build and the tests. CI runs this. |
 | `bun run links` | Checks every link and anchor inside `dist/`, offline. Run it after a build, with the same `DOCS_SITE` and `DOCS_BASE`. |
 | `bun run lighthouse` | Runs Lighthouse on a production build. See [Search and sharing](#search-and-sharing). |
 | `bun run pin` | Checks that the submodule is at a release tag and that `.gitmodules` names the same tag. |
+| `bun run release` | Warns when the pin is behind the action's latest release. Never fails. See [Updating to a new release of Sluiceway](#updating-to-a-new-release-of-sluiceway). |
 | `bun run tokens` | Writes `src/styles/tokens.css` from `src/styles/tokens.json`. |
 
 The site URL comes from two environment variables: `DOCS_SITE` (default `https://sluiceway.github.io`) and `DOCS_BASE` (default `/docs`).
@@ -75,6 +76,10 @@ The docs read the action's files from a git submodule at `vendor/sluiceway`, che
 When Sluiceway publishes a release, Renovate opens a pull request that moves the submodule and the `branch` line to the new tag. It never picks a commit on `main`, and it never merges on its own: the build is the check, and a person looks at the site before merging.
 
 A weekly workflow (`.github/workflows/freshness.yml`) compares the tag in `.gitmodules` with the action's latest release. While the pin is behind, it keeps one issue open, titled "The docs pin vX.Y.Z; the action released vA.B.C", with the releases in between. It closes the issue once the pin catches up. You can also start it by hand from the Actions tab.
+
+The fast signal is `bun run release`, part of `bun run check`. It asks GitHub for the action's releases and, when the pin is behind, prints a warning that names both versions and the releases in between. In CI the warning is an annotation and a note in the job summary of every pull request. It never fails the build, and when GitHub cannot be reached (offline, a rate limit, a fork) it says so in one line and carries on. `GH_TOKEN` or `GITHUB_TOKEN`, when set, lifts the rate limit.
+
+The start page, the sidebar and the footer say which release the docs describe. The version comes from the submodule's tag, so it always matches the pin.
 
 By hand:
 
