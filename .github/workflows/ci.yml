@@ -86,7 +86,8 @@ jobs:
     # Builds with the production address, serves dist/ the way Pages does (scripts/serve.ts) and
     # runs Lighthouse three times on each URL in lighthouserc.json, as a phone. A median score
     # under 90 for performance, accessibility, best practices or SEO on any URL fails the job.
-    # Nobody answers the consent bar here, so Umami never loads.
+    # Umami's script loads here as for any reader, but it counts only on docs.sluiceway.dev, so
+    # these runs on localhost send nothing.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

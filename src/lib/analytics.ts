@@ -3,20 +3,18 @@
 // script is never added and no event is sent. The privacy page says the same in words, so a
 // change here is a change there (src/content/docs/privacy.mdx).
 
-/** The Umami website for the docs. Not a secret: every page that loads the script shows it. */
-const DEFAULT_UMAMI_WEBSITE_ID = "7471fe15-3d60-4902-a18a-32dfff6b9dba";
+import { UMAMI_SCRIPT_URL } from "./analytics-build";
 
 /**
- * `PUBLIC_UMAMI_WEBSITE_ID` overrides the default at build time. An empty string turns
- * analytics off: no script and no footer line.
+ * The website id, set by astro.config.ts from `umamiWebsiteId()`: the docs' own id, an
+ * override from `PUBLIC_UMAMI_WEBSITE_ID`, or "" when the build ran with `ANALYTICS_OFF=1`.
  */
-export const UMAMI_WEBSITE_ID: string =
-  import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? DEFAULT_UMAMI_WEBSITE_ID;
+export const UMAMI_WEBSITE_ID: string = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID ?? "";
 
 export const ANALYTICS_ENABLED = UMAMI_WEBSITE_ID !== "";
 
 /** Written this way so that a build with analytics off holds no reference to the host. */
-export const UMAMI_SRC = ANALYTICS_ENABLED ? "https://analytics.robbeverhelst.be/script.js" : "";
+export const UMAMI_SRC = ANALYTICS_ENABLED ? UMAMI_SCRIPT_URL : "";
 
 /**
  * The key an earlier version kept the reader's answer under. Nothing is stored now, and the old

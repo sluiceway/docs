@@ -69,6 +69,10 @@ bun scripts/lighthouse-summary.ts
 
 The reports are in `.lighthouseci/`. Set `CHROME_PATH` if Lighthouse cannot find Chrome.
 
+## Analytics
+
+The Umami website id is `DEFAULT_UMAMI_WEBSITE_ID` in `src/lib/analytics-build.ts`, and `PUBLIC_UMAMI_WEBSITE_ID` overrides it at build time. An empty `PUBLIC_UMAMI_WEBSITE_ID` fails the build. To build without analytics, in a fork or locally, set `ANALYTICS_OFF=1` for the build and for `bun test`. `test/analytics-built.test.ts` follows each sampled page's scripts and their imports in `dist/` and fails when the script URL or the id is missing, so analytics cannot go quiet unnoticed.
+
 ## Updating to a new release of Sluiceway
 
 The docs read the action's files from a git submodule at `vendor/sluiceway`, checked out at a release tag. The `branch` line in `.gitmodules` names the same tag, and `bun run pin` fails when the two differ or when the submodule is not at a tag.
