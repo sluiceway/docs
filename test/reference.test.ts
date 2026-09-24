@@ -3,7 +3,13 @@
 import { expect, test } from "bun:test";
 import { readVendor } from "../src/lib/markdown";
 import { githubSlug } from "../src/lib/pages";
-import { actionNames, actionReference, configReference, schemaKeys } from "../src/lib/reference";
+import {
+  actionNames,
+  actionReference,
+  configReference,
+  schemaKeys,
+  schemaSettings,
+} from "../src/lib/reference";
 
 const schemaJson = readVendor("schema/sluiceway.schema.json", "test");
 const actionYml = readVendor("action.yml", "test");
@@ -93,6 +99,23 @@ test("modes and true or false in an action description are code", () => {
   expect(markdown).toContain("`scan` only. `true` turns the job red.");
   expect(markdown).toContain("Set by `scan` and `apply`. `true` when the body changed, `false`");
   expect(markdown).toContain("What this step does. One of: `scan`, `apply`, `check`.");
+});
+
+test("a key of sluiceway.yaml with one of its fixed values is code as a pair", () => {
+  const settings = schemaSettings(schemaJson);
+  expect(settings).toContainEqual({ key: "deploy", values: ["on-tick", "on-merge"] });
+  const markdown = actionReference(
+    [
+      "outputs:",
+      "  matrix:",
+      "    description: >-",
+      "      Set by resolve and scan. One entry for each stack set to deploy: on-merge. A stack",
+      "      set to deploy: on-push is not a thing, and a deploy on merge stays prose.",
+    ].join("\n"),
+    settings,
+  );
+  expect(markdown).toContain("each stack set to `deploy: on-merge`.");
+  expect(markdown).toContain("set to deploy: on-push is not a thing, and a deploy on merge stays");
 });
 
 test("a list of modes, input names and keys in an action description are code", () => {

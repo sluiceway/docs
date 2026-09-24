@@ -11,6 +11,7 @@ import { docsLoader } from "@astrojs/starlight/loaders";
 import type { Loader, LoaderContext } from "astro/loaders";
 import { shiftHeadings } from "../lib/headings";
 import { linkRecords, rewriteLinks, type SiteMap } from "../lib/links";
+import { wrapLongCode } from "../lib/long-code";
 import { plainHeading } from "../lib/markdown";
 import {
   githubSlug,
@@ -206,14 +207,6 @@ async function renderPage(
     seen.add(h.slug);
   }
   return { html: joined, headings };
-}
-
-/**
- * Inline code stays on one line, so a stack id never breaks. The action's pages also quote
- * whole messages as code, which would push the page sideways on a phone: those may wrap.
- */
-function wrapLongCode(html: string): string {
-  return html.replace(/<code>([^<]{33,})<\/code>/g, '<code class="sw-code-long">$1</code>');
 }
 
 /** The ids a part's headings take: GitHub's ids in the whole file, or the renderer's own. */

@@ -18,7 +18,7 @@ import {
   section,
   splitTitle,
 } from "./markdown";
-import { actionReference, configReference } from "./reference";
+import { actionReference, configReference, schemaSettings } from "./reference";
 import { vendorPath } from "./source";
 
 export interface Part {
@@ -255,6 +255,12 @@ export interface DecisionRecord {
   title: string;
   /** "Amended by 0051" and the like, from the lines above the first h2. */
   changes: { kind: string; records: string[] }[];
+  /**
+   * The records this one says it amends or supersedes, from its "Amends 0003, 0018 and 0061"
+   * lead. The index turns them into "Amended by" on those records when the earlier record
+   * does not say so itself.
+   */
+  leads: { kind: "Amended by" | "Superseded by"; records: string[] }[];
 }
 
 const RECORD_FILE = /^(\d{4})-.+\.md$/;
@@ -288,11 +294,20 @@ export function records(): DecisionRecord[] {
             records: plain.match(/\b\d{4}\b/g) ?? [],
           };
         });
+      // "Amends 0003 (the payload key), 0018 and 0061 (the check warns)." The reasons in
+      // parentheses go first, so a number inside them is not read as a record.
+      const leads = top.flatMap((line) => {
+        const lead = /^(?:>\s*)?(Amends|Supersedes)\b([^.]*)/.exec(line.replace(/\([^)]*\)/g, ""));
+        if (!lead) return [];
+        const kind = lead[1] === "Amends" ? ("Amended by" as const) : ("Superseded by" as const);
+        return [{ kind, records: lead[2]?.match(/\b\d{4}\b/g) ?? [] }];
+      });
       return {
         number: RECORD_FILE.exec(file)?.[1] ?? "",
         file: path,
         title: titleOf(path),
         changes,
+        leads,
       };
     });
 }
@@ -560,7 +575,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/security",
       title: titleOf("docs/security.md"),
       description:
-        "What a tick promises, who can tick, and what GitHub Environments add to a deploy.",
+        "What a tick promises, what deploys without a tick, who can tick, and what GitHub Environments add to a deploy.",
       source: "docs/security.md",
       headerPicture: {
         picture: "pending-1",
@@ -607,8 +622,26 @@ export function pages(repoUrl: string, base: string): Page[] {
       },
       parts: [
         sectionPart("docs/reference.md", "Modes"),
-        generated("action.yml", actionReference(readVendor("action.yml", "The reference"))),
+        generated(
+          "action.yml",
+          actionReference(
+            readVendor("action.yml", "The reference"),
+            schemaSettings(readVendor("schema/sluiceway.schema.json", "The reference")),
+          ),
+        ),
       ],
+    },
+    {
+      id: "reference/what-sluiceway-writes",
+      title: titleOf("docs/what-sluiceway-writes.md"),
+      description:
+        "The markers in the dashboard, the deployment records and the result file, documented field by field for scripts and agents, and the rule for what may change.",
+      source: "docs/what-sluiceway-writes.md",
+      headerPicture: {
+        picture: "deploying-1",
+        alt: "A stack is deploying, 1 stack is pending: the gate is open, one crate goes through it and one waits upstream",
+      },
+      parts: [wholeFile("docs/what-sluiceway-writes.md")],
     },
     {
       id: "reference/glossary",
@@ -785,7 +818,7 @@ function recordIndex(list: DecisionRecord[], base: string): string {
     return r ? `[${n}](${base}/${recordId(r)}/)` : n;
   };
   const rows = list.map((r) => {
-    const changes = r.changes
+    const changes = [...r.changes, ...changesFromLeads(r, list)]
       .map((c) => [c.kind, c.records.map(link).join(", ")].filter(Boolean).join(" "))
       .join("; ");
     return `| ${link(r.number)} | ${r.title.replace(/\|/g, "\\|")} | ${changes} |`;
@@ -797,6 +830,28 @@ function recordIndex(list: DecisionRecord[], base: string): string {
     "|---|---|---|",
     ...rows,
   ].join("\n");
+}
+
+/**
+ * "Amended by 0095" for a record that 0095 says it amends but that has no such line itself.
+ * Record 0095 amends seven records and none of them says so; 0096 amends four and all four
+ * do. The index says the same for both. A number that is not a record is left alone.
+ */
+export function changesFromLeads(
+  record: DecisionRecord,
+  all: DecisionRecord[],
+): DecisionRecord["changes"] {
+  const said = new Set(record.changes.flatMap((c) => c.records.map((n) => `${c.kind} ${n}`)));
+  const out: DecisionRecord["changes"] = [];
+  for (const later of all) {
+    for (const lead of later.leads) {
+      if (!lead.records.includes(record.number) || said.has(`${lead.kind} ${later.number}`)) {
+        continue;
+      }
+      out.push({ kind: lead.kind, records: [later.number] });
+    }
+  }
+  return out;
 }
 
 // Where links land.
@@ -926,6 +981,7 @@ export function sidebar(): SidebarItem[] {
       items: [
         { slug: "reference/sluiceway-yaml" },
         { slug: "reference/action" },
+        { slug: "reference/what-sluiceway-writes" },
         { slug: "reference/glossary" },
         ...(written(SLICE_3.theHeader) ? [{ slug: SLICE_3.theHeader }] : []),
       ],
