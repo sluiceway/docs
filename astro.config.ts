@@ -2,6 +2,7 @@ import { satteri } from "@astrojs/markdown-satteri";
 import sitemap from "@astrojs/sitemap";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
+import { umamiWebsiteId } from "./src/lib/analytics-build";
 import { codeTheme } from "./src/lib/code-theme";
 import { sidebar } from "./src/lib/pages";
 import { UNLISTED } from "./src/lib/site";
@@ -14,12 +15,19 @@ import { githubAlerts } from "./src/plugins/github-alerts";
 const site = process.env.DOCS_SITE || "https://sluiceway.github.io";
 const base = process.env.DOCS_BASE ?? "/docs";
 
+// Throws on an empty PUBLIC_UMAMI_WEBSITE_ID, so analytics never goes off by accident.
+// ANALYTICS_OFF=1 turns it off on purpose. The page scripts read the result, not the variable.
+const umamiId = umamiWebsiteId(process.env);
+
 const root = base.replace(/\/$/, "");
 const unlisted = new Set(UNLISTED.map((id) => `${root}/${id}/`));
 
 export default defineConfig({
   site,
   base,
+  vite: {
+    define: { "import.meta.env.PUBLIC_UMAMI_WEBSITE_ID": JSON.stringify(umamiId) },
+  },
   markdown: {
     processor: satteri({ mdastPlugins: [githubAlerts] }),
   },
