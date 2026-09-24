@@ -43,6 +43,27 @@ export function schemaKeys(schema: SchemaNode, prefix = ""): SchemaKey[] {
   return keys;
 }
 
+/** A key of the schema with fixed values, such as `deploy` with `on-tick` and `on-merge`. */
+export interface Setting {
+  /** The key's own name, without its path. */
+  key: string;
+  values: string[];
+}
+
+/**
+ * Every key of the schema whose values are fixed, by its own name: `deploy` with `on-tick`
+ * and `on-merge`. An action.yml description that names a key with one of its values, as
+ * "set to deploy: on-merge", shows the pair as code.
+ */
+export function schemaSettings(schemaJson: string): Setting[] {
+  return schemaKeys(JSON.parse(schemaJson))
+    .map((key) => ({
+      key: key.path.split(".").pop()?.replace(/\[\]$/, "") ?? "",
+      values: allowed(key.node).filter((v): v is string => typeof v === "string"),
+    }))
+    .filter((s) => s.key && s.values.length > 0);
+}
+
 function code(value: unknown): string {
   const text = typeof value === "string" ? value : JSON.stringify(value);
   const ticks = text.includes("`") ? "``" : "`";
@@ -194,17 +215,25 @@ interface ActionYml {
  * job red", as the action's own reference.md writes it. A mode is code only where it names the
  * mode: in a list of modes that is a sentence of its own ("scan, resolve and apply."), before
  * " only.", after "One of:", "Set by " and "Leave it out for ". An input name is code when it
- * has a hyphen, and a key when it has a dot, such as `notify.events` and `sluiceway.yaml`.
+ * has a hyphen, and a key when it has a dot, such as `notify.events` and `sluiceway.yaml`. A
+ * key of sluiceway.yaml with one of its fixed values, "deploy: on-merge", is code as a pair.
  */
-function valuesAsCode(text: string, modes: readonly string[], inputs: readonly string[]): string {
+function valuesAsCode(
+  text: string,
+  modes: readonly string[],
+  inputs: readonly string[],
+  settings: readonly Setting[],
+): string {
   const mode = modes.join("|");
   const list = `(?:${mode})(?:(?:, | and )(?:${mode}))*`;
   const codeModes = (all: string) => all.replace(new RegExp(`\\b(${mode})\\b`, "g"), "`$1`");
   const named = inputs.filter((name) => name.includes("-")).join("|");
+  const pairs = settings.map((s) => `${s.key}: (?:${s.values.join("|")})`).join("|");
   return text
     .replace(new RegExp(`(^|\\. )${list}(?: only)?\\.`, "g"), codeModes)
     .replace(new RegExp(`\\b(?:One of: |Set by |Leave it out for )${list}\\b`, "g"), codeModes)
     .replace(new RegExp(`(^|[\\s(])(${named})(?=$|[\\s.,;:)])`, "g"), "$1`$2`")
+    .replace(pairs ? new RegExp(`(^|[\\s(])(${pairs})(?=$|[\\s.,;:)])`, "g") : /$^/, "$1`$2`")
     .replace(/(^|[\s(])([a-z][A-Za-z]*\.[a-z][A-Za-z]*)(?=$|[\s,;:)]|\.(?:\s|$))/g, "$1`$2`")
     .replace(/(^|[\s(])(true|false)(?=$|[\s.,;:)])/g, "$1`$2`");
 }
@@ -216,21 +245,23 @@ function modesOf(action: ActionYml): string[] {
 }
 
 /** The inputs and outputs of action.yml. */
-export function actionReference(actionYml: string): string {
+export function actionReference(actionYml: string, settings: readonly Setting[] = []): string {
   const action = Bun.YAML.parse(actionYml) as ActionYml;
   const modes = modesOf(action);
   const inputs = Object.keys(action.inputs ?? {});
   const out: string[] = ["## Inputs", "", "Generated from the action's `action.yml`."];
   for (const [name, input] of Object.entries(action.inputs ?? {})) {
     out.push("", `### ${code(name)}`, "");
-    if (input.description) out.push(valuesAsCode(input.description.trim(), modes, inputs), "");
+    if (input.description)
+      out.push(valuesAsCode(input.description.trim(), modes, inputs, settings), "");
     out.push(`- **Required:** ${input.required ? "yes" : "no"}`);
     if (input.default !== undefined) out.push(`- **Default:** ${code(input.default)}`);
   }
   out.push("", "## Outputs", "", "Generated from the action's `action.yml`.");
   for (const [name, output] of Object.entries(action.outputs ?? {})) {
     out.push("", `### ${code(name)}`, "");
-    if (output.description) out.push(valuesAsCode(output.description.trim(), modes, inputs));
+    if (output.description)
+      out.push(valuesAsCode(output.description.trim(), modes, inputs, settings));
   }
   return out.join("\n");
 }

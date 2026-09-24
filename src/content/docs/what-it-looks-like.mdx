@@ -27,7 +27,9 @@ export const intro = readmeDashboardIntro();
   last full scan was.
 - **Deploying.** While a stack deploys, its section comes before every other. `apps/api:prod`
   deploys, and its row starts with a <a href={glossary("Spinner")}>spinner</a>. `apps/worker:prod` is a
-  <a href={glossary("Queued stack")}>queued stack</a>: it waits for the stack it depends on.
+  <a href={glossary("Queued stack")}>queued stack</a>: it waits for the stack it depends on. Both rows say
+  `ticked by`. A stack set to <a href={glossary("Deploy on merge")}>deploy on merge</a> would say
+  `deploying on merge · merged by` instead, which this example does not show.
 - **Updates waiting to merge.** This section is there when merge and deploy is on.
   `platform/ingress-nginx:prod` is an <a href={glossary("Update waiting to merge")}>update waiting to merge</a>: one tick merges its pull
   request, and its stack is previewed again and deployed. `apps/web:prod` is an
@@ -60,7 +62,8 @@ export const intro = readmeDashboardIntro();
 - **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count, and under them the
   <a href={glossary("Ignored stack")}>stacks left out by ignore</a>, each with its reason.
 - **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy that ended, newest first, one line each: its
-  <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a>, the date and time in UTC, and a link to its run. A
+  <a href={glossary("Result dot")}>result dot</a>, the stack id, its <a href={glossary("Ticker")}>ticker</a> (or `merged by` for a deploy on merge),
+  the date and time in UTC, and a link to its run. A
   deploy that went out can have a <a href={glossary("Shipped line")}>shipped line</a> under it. A full scan adds the
   <a href={glossary("Outside deploy")}>outside deploys</a> it finds in the tool's own history, such as `data/postgres:prod` here. A failed
   deploy stays listed when a later deploy of its stack clears the <a href={glossary("Failure line")}>failure line</a> on the row.

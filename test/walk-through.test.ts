@@ -40,6 +40,12 @@ describe("the walk-through", () => {
     expect(at).toEqual([...at].sort((a, b) => a - b));
   });
 
+  test("says how a deploy on merge reads on a row and in the trail, linked to the glossary", () => {
+    expect(parts).toMatch(/<code[^>]*>deploying on merge · merged by<\/code>/);
+    expect(parts).toMatch(/<code[^>]*>merged by<\/code>/);
+    expect(parts).toContain("reference/glossary/#deploy-on-merge");
+  });
+
   test("covers the line of an update waiting on its checks, linked to the glossary", () => {
     expect(parts).toMatch(/<code[^>]*>waits on its checks<\/code>/);
     expect(parts).toContain("reference/glossary/#update-waiting-on-its-checks");

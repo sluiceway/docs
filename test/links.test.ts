@@ -2,7 +2,7 @@
 
 import { describe, expect, test } from "bun:test";
 import { linkRecords, resolveLink, rewriteLinks } from "../src/lib/links";
-import { pages, recordId, records, siteMap, urlFor } from "../src/lib/pages";
+import { changesFromLeads, pages, recordId, records, siteMap, urlFor } from "../src/lib/pages";
 import { REPO_URL, TAG } from "../src/lib/source";
 
 const url = urlFor("/docs");
@@ -143,5 +143,46 @@ describe("linkRecords", () => {
   test("links record numbers at the start of a table cell", () => {
     const out = linkRecords("<td>0053, the adapter research</td>", { urls, recordsContext: true });
     expect(out).toBe(`<td>${link("0053")}, the adapter research</td>`);
+  });
+});
+
+describe("the records index", () => {
+  const record = (number: string, changes = "", leads = "") => ({
+    number,
+    file: `docs/adr/${number}-x.md`,
+    title: "x",
+    changes: changes ? [{ kind: "Amended by", records: changes.split(" ") }] : [],
+    leads: leads ? [{ kind: "Amended by" as const, records: leads.split(" ") }] : [],
+  });
+
+  test("says Amended by on a record a later one amends but that does not say so", () => {
+    const early = record("0003");
+    const said = record("0009", "0096");
+    const all = [early, said, record("0095", "", "0003 0009"), record("0096", "", "0003 0009")];
+    expect(changesFromLeads(early, all)).toEqual([
+      { kind: "Amended by", records: ["0095"] },
+      { kind: "Amended by", records: ["0096"] },
+    ]);
+    expect(changesFromLeads(said, all)).toEqual([{ kind: "Amended by", records: ["0095"] }]);
+  });
+
+  test("reads the leads of the real records", () => {
+    const all = records();
+    const find = (n: string) => all.find((r) => r.number === n);
+    expect(find("0095")?.leads).toEqual([
+      {
+        kind: "Amended by",
+        records: ["0003", "0018", "0025", "0054", "0056", "0091", "0061"],
+      },
+    ]);
+    expect(find("0096")?.leads).toEqual([
+      { kind: "Amended by", records: ["0003", "0009", "0041", "0061"] },
+    ]);
+    // 0003 says it is amended by 0096 and not by 0095: the index adds 0095 alone.
+    const early = find("0003");
+    expect(early).toBeDefined();
+    if (!early) return;
+    expect(early.changes.some((c) => c.records.includes("0096"))).toBe(true);
+    expect(changesFromLeads(early, all)).toEqual([{ kind: "Amended by", records: ["0095"] }]);
   });
 });
