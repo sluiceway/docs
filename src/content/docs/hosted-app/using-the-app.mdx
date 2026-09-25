@@ -95,6 +95,10 @@ on GitHub.
 Ticking and Rescan from the app work in a repo whose `sluiceway.yaml` names `sluiceway[bot]` in
 `recordWriters`, and in any other repo they open the dashboard on GitHub.
 
+You can also tick and rescan from a terminal, or have a coding agent do it with a token you
+make: <a href={page("hosted-app/command-line")}>the command line</a> asks the app, which judges
+it by the same rules.
+
 ## Rescan
 
 **Rescan** in the top bar asks for a <a href={glossary("Full scan")}>full scan</a>: of the repo
@@ -131,6 +135,9 @@ The Audit tab lists one line per deploy, newest first: when, the repo, the stack
 who merged, the commit, and the result in the trail's words. A deploy outside the dashboard is
 flagged in red, "outside the dashboard", and names nobody, because the tool's history never says
 who.
+
+A tick from <a href={page("hosted-app/command-line")}>the command line</a> counts as the person
+whose token it used, and its line says "via the command line".
 
 Filter by repo, by stack or to the flagged lines only. Each filter is a plain link, so a filtered
 log has an address you can paste into a ticket. **CSV** downloads what the page shows, with the
