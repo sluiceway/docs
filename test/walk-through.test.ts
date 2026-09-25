@@ -51,8 +51,13 @@ describe("the walk-through", () => {
     expect(parts).toContain("reference/glossary/#update-waiting-on-its-checks");
   });
 
+  test("says what a cancelled deploy's row reads, as settle writes it", () => {
+    expect(walk).toMatch(/<code[^>]*>no preview since its deploy ended<\/code>/);
+    expect(walk).toContain('reference/glossary/#failure-line"');
+  });
+
   test("names the lines the example does not draw, linked to the glossary", () => {
-    for (const term of ["scan-running-line", "cost-line", "policy"]) {
+    for (const term of ["scan-running-line", "cost-line", "policy", "preview-failure"]) {
       expect(walk).toContain(`reference/glossary/#${term}"`);
     }
   });
