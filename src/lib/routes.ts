@@ -2,7 +2,7 @@
 // id from src/lib/pages.ts and goes through its `urlFor`, so the base is added the same way
 // everywhere. A page id that pages.ts does not define stops the build.
 
-import { githubSlug, pages, SLICE_3, urlFor } from "./pages";
+import { githubSlug, HOSTED_APP, pages, SLICE_3, urlFor } from "./pages";
 import { REPO_URL } from "./source";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -17,6 +17,7 @@ export function page(id: string): string {
     SLICE_3.overview,
     SLICE_3.whatItLooksLike,
     SLICE_3.theHeader,
+    ...Object.values(HOSTED_APP),
   ]);
   const path = id.split("#")[0] ?? "";
   if (!known.has(path)) {

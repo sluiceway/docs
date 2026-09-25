@@ -1,0 +1,94 @@
+---
+title: What the app keeps and never keeps
+description: The app keeps stack-level facts only, never a resource name, diff, value or cloud credential, never deploys on its own, and GitHub stays the source.
+sidebar:
+  label: What the app keeps
+headerPicture:
+  picture: in-sync
+  alt: Every stack is in sync, and Penny rests on a calm quay
+---
+
+import { glossary, page } from "../../../lib/routes";
+
+<p class="sw-lead">
+  The app keeps a timeline, not a map of your infrastructure. It holds no cloud credential, it
+  cannot deploy on its own, and GitHub stays the source of truth.
+</p>
+
+## What it keeps
+
+Facts at the level of a stack, read from what the action publishes: the dashboard's
+<a href={glossary("Marker")}>markers</a>, the <a href={glossary("Deployment record")}>deployment records</a>
+and the workflow runs. See <a href={page("reference/what-sluiceway-writes")}>What Sluiceway writes</a>
+for that shape.
+
+- **Per stack**: its stack id, its row state, how many resources it deletes or replaces, drift
+  and resources gone outside the code, and whether its box is ticked.
+- **Per deploy**: the stack, who ticked or who merged, which commit, which run, how it ended, when,
+  and whether it was an outside deploy.
+- **Per tick in the app**: who, which stack, when, and how it was judged, in one word.
+- **Per scan**: when it started, its commit, when its dashboard was written, and how many stacks
+  it drew drifted.
+- **Per merge**, for Insights: the merge commit and when it was merged.
+- **Per rescan asked in the app**: who asked, when, and the run it started.
+- **Per repo**: why its onboarding pull request could not be opened, and why its first scan
+  failed, each as one word from the app's fixed list.
+
+## What it never keeps
+
+- **No resource name, property path, diff or value.** Not in its database, not in its pages, not
+  in the pull requests it opens. A row in the app shows counts, and the changes are on GitHub.
+- **No text of a row, an issue title or a status description**, and of a merged pull request
+  nothing but its commit and time: no number, title, description, branch or author.
+- **None of your repo's files.** For the onboarding pull request and to explain a failed first
+  scan, the app reads a copy of the repo into a temporary directory and removes it when it is
+  done, whether it worked or failed. The app refuses a copy larger than 100 MB.
+- **No token of yours.** Signing in reads who you are and which installations you may see, and
+  the token is dropped. Nobody who broke into Sluiceway could act as you.
+- **No card, email, address, business name or tax id.** Stripe keeps those. The app keeps your
+  plan, what Stripe says about the subscription, when the period ends, and Stripe's ids.
+
+## No cloud credential, ever
+
+The app never holds, asks for or supplies a cloud or infrastructure credential. Your credentials
+stay in your runners, set up as <a href={page("guides/credentials")}>Credentials and your own tooling</a>
+describes. The app does not ask GitHub for permission to read your secrets, and the onboarding
+pull request names the secrets a stack needs without ever seeing one.
+
+## It never causes a deploy on its own
+
+The app cannot deploy anything. Your runner does, as it does without the app.
+
+- **A deploy starts from a person's tick**, on the dashboard or in the app, judged with the
+  action's own tick rule, the same code your workflow uses.
+- **Only on a repo that names the app** in <a href={page("hosted-app/install#the-recordwriters-line")}>`recordWriters`</a>,
+  a line of `sluiceway.yaml` that goes through review.
+- **The app opens a record and starts your workflow.** Your runner then previews the stack again
+  and deploys only when the fresh preview gives the diff hash the person approved. A change that
+  moved in between is refused.
+- **A stack that deletes or replaces resources** still waits for a person's tick.
+
+Nothing else the app does starts a deploy. A rescan runs a scan. Edit mode and the onboarding
+pull request are pull requests, and a person merges them.
+
+## GitHub is the source of truth
+
+The app is a view of what GitHub holds, and catches up with it.
+
+- **Your workflow keeps working without the app.** Installing the app changes nothing in it and
+  turns nothing off. When you tick on the dashboard, your workflow judges and deploys the tick
+  itself, whatever the app does. When both act on the same tick, whoever opens the deployment
+  record first has it, and the other finds the record open and does nothing more.
+- **When the app is down, nothing is lost.** On every start it reads each repo again since the
+  last point it saw: the dashboard, the deployment records and the workflow runs. GitHub sends
+  the webhooks it missed again too. A downtime delays what the app shows and never loses it.
+- **What the app shows follows GitHub.** A dashboard written again, a record closed, a repo
+  removed from the installation: the app brings its facts up to date. A repo the installation no
+  longer covers keeps its lines in the audit log.
+
+## If you stop using the app
+
+Uninstall it from GitHub's settings for the installation. Your dashboards, your workflow and
+your deploys go on as before. Everything edit mode wrote is a documented key of
+`sluiceway.yaml` that the action reads on its own, so the dashboard looks the same. Take
+`sluiceway[bot]` out of `recordWriters` when you no longer want the app to open records.

@@ -1,0 +1,106 @@
+---
+title: Plans and adopted repos
+description: What counts toward a plan, what happens to the repos past it, choosing active repos in Settings, and billing and cancelling through Stripe.
+headerPicture:
+  picture: pending-5
+  alt: 5 stacks are pending, five crates wait upstream of Penny
+---
+
+import Callout from "../../../components/Callout.astro";
+import { page } from "../../../lib/routes";
+
+<p class="sw-lead">
+  A plan decides two numbers: how many adopted repos the app shows whole, and how far back the
+  audit log goes. Every feature is on every plan, and nothing about deploying depends on one.
+</p>
+
+| Plan | Adopted repos | History |
+| --- | --- | --- |
+| Free | 5 | 30 days |
+| Team | 25 | 13 months |
+| Team Plus | 100 | 3 years |
+
+The prices are on the <a href="https://sluiceway.dev/pricing">pricing page</a>.
+
+A plan belongs to an installation: one org, or one personal account, on GitHub.
+
+## What counts
+
+An **adopted repo** is a repo the app is installed on that has a dashboard: the action has run a
+scan there. Only adopted repos count.
+
+A repo without a dashboard never counts, so you can install the app on a whole org at no cost.
+It is listed under Not set up yet, with its onboarding pull request, and counts from the moment
+its first scan writes the dashboard.
+
+Edit mode does not count either: it shows one repo at a time.
+
+## Active repos, and the ones past the line
+
+Your plan's number of adopted repos are **active**: the app shows them whole, on the org view,
+their own pages, Insights and the audit log.
+
+Which ones is your choice. On the org's **Settings** tab, under Active repos, pick up to your
+plan's number. The places you leave open go to the busiest repos: the most stacks not in sync,
+then the most stacks, then by name. With no choice, the busiest are active. Anyone who can see
+the installation can choose, because the choice changes what the app shows and nothing else.
+Clear the choice to go back to the busiest.
+
+The adopted repos past the line are listed greyed out, in a group of their own called Past the
+free tier, or past your plan's name:
+
+- **The org view** lists each by name with its state counts, and no stacks or rows.
+- **Their own pages** are not shown, so Rescan for them opens the dashboard on GitHub.
+- **The audit log** says how many lines each one has, and not the lines. The CSV holds what the
+  page shows.
+- **Insights** name each one with its deploys, and do not count them.
+
+<Callout kind="note" title="Nothing about deploying changes">
+  A repo past the line keeps its dashboard on GitHub, and it works as always: scans, ticks and
+  deploys go on exactly as they did. The app keeps its facts, and shows them again as soon as
+  the repo is active.
+</Callout>
+
+## History
+
+The audit log shows the deploys inside your plan's history, and its last sentence says how far
+back that is and on which plan. Nothing is deleted at the line: when your plan grows, the older
+lines are shown again.
+
+Insights always cover the last 12 weeks against the 12 before, on every plan.
+
+## Upgrade
+
+An admin of the org on GitHub, or the person whose personal account it is, can change the plan.
+Everyone else who can see the installation sees the plan, its numbers and its price, and one
+sentence that says who can change it. The app checks with GitHub every time someone changes the
+plan.
+
+**Upgrade** is on the Settings tab, and in place of the pricing link beside the repos past the
+line. Choose a plan, monthly or yearly, and pay on Stripe's Checkout page. There is no trial.
+
+- **VAT**: Stripe works out the tax from your billing address. A business in the EU can enter
+  its VAT id.
+- **A promotion code** goes in on the Checkout page. A code that brings the price to 0 needs no
+  card, and the Plan section names the code.
+
+You come back to Settings, which says Stripe is confirming the payment until it has.
+
+## Change or cancel
+
+**Manage billing** on the Settings tab opens Stripe's customer portal. Change between Team and
+Team Plus or monthly and yearly, update your card, read your invoices, or cancel there.
+
+When you cancel, or a payment fails, your plan holds until the end of the period you paid for,
+and the installation falls back to Free after it. Nothing is deleted: the app shows what Free
+shows, and shows the rest again if a plan starts again. Settings says when your plan renews or
+ends, and what then happens.
+
+To pay by invoice, write to <a href="mailto:hello@sluiceway.dev">hello@sluiceway.dev</a>. An
+invoice plan is changed the same way.
+
+## See also
+
+- <a href={page("hosted-app/using-the-app#settings")}>Settings</a>, in Using the app.
+- <a href={page("hosted-app/what-the-app-keeps")}>What the app keeps and never keeps</a>, including
+  what Stripe keeps and the app does not.

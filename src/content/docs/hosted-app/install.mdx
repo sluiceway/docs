@@ -1,0 +1,185 @@
+---
+title: Install the app
+description: Install the Sluiceway GitHub App, merge the onboarding pull request it opens, add your secrets, and choose whether ticks can go through the app.
+headerPicture:
+  picture: first-run
+  alt: No stacks yet, Penny stands beside an empty channel
+---
+
+import Callout from "../../../components/Callout.astro";
+import Steps from "../../../components/Steps.astro";
+import { page } from "../../../lib/routes";
+
+<p class="sw-lead">
+  The Sluiceway app is a GitHub App that installs beside the action. It shows every stack of
+  every repo it covers in one place, and opens one pull request per repo to set Sluiceway up.
+</p>
+
+The app does not replace the action. Your workflow keeps running in your runners, with your
+credentials, and the dashboard issue in each repo keeps working as it does without the app.
+
+<Steps
+  items={[
+    {
+      title: "You install the app and pick repos",
+      body: "Install it from github.com/apps/sluiceway on an org or a personal account, for every repo or for a few.",
+    },
+    {
+      title: "The app opens one pull request per repo",
+      body: "On each repo with no dashboard yet, it opens the onboarding pull request: the workflow, a first sluiceway.yaml where one is needed, and what each stack needs.",
+    },
+    {
+      title: "You add the secrets it names",
+      body: "The pull request names the exact secrets each stack needs. Adding them is your step, and stays yours.",
+    },
+    {
+      title: "You merge it",
+      body: "The first scan previews every stack and creates the dashboard issue, and the repo shows up on the org view.",
+    },
+  ]}
+/>
+
+## Install
+
+Open <a href="https://github.com/apps/sluiceway">the Sluiceway app on GitHub</a>, choose
+**Install**, pick the org or account, and choose all repos or only some. You can change the
+repos later in GitHub's settings for the installation, and the app's Settings tab links there.
+
+Then sign in at <a href="https://app.sluiceway.dev/">app.sluiceway.dev</a> with GitHub. You see
+the installations of the orgs and accounts you belong to, and nothing else.
+
+Installing the app on repos that have no dashboard costs nothing: only repos with a dashboard
+count toward your plan. See <a href={page("hosted-app/plans")}>Plans and adopted repos</a>.
+
+### What GitHub asks you to accept
+
+These are the permissions the app asks for, and what each one is used for.
+
+| Permission | Access | What for |
+| --- | --- | --- |
+| Metadata | Read | Required by GitHub for every app. |
+| Issues | Read and write | Reading the dashboard and its edit history. Writing the dashboard when a tick goes through the app, and the comment when a tick is refused. |
+| Deployments | Read and write | Reading the deployment records. Opening a record for a tick that goes through the app. |
+| Actions | Read and write | Reading workflow runs. Starting your Sluiceway workflow for a tick or a rescan that goes through the app. |
+| Contents | Read and write | Reading the repo for the onboarding pull request, and `sluiceway.yaml` at a commit. Writing one branch with one commit for a pull request the app opens. |
+| Pull requests | Read and write | Opening the onboarding pull request and the pull requests of edit mode. Reading when a merged pull request was merged, for Insights. |
+| Members (organization) | Read | Checking that a person is an admin of the org before they change the plan. |
+
+The app does not ask for Secrets. It never reads your secrets, their names or their values.
+
+## The onboarding pull request
+
+When the app is installed on a repo with no dashboard, it opens one pull request there, on the
+branch `sluiceway/onboarding`. It is written by the action's own
+<a href={page("guides/init")}>init and check</a>, run over a copy of the repo's default branch,
+so it says exactly what adding the action by hand would give you.
+
+It holds:
+
+- **The workflow** at `.github/workflows/deploy-dashboard.yml`, which runs `sluiceway/sluiceway@v0`.
+- **A first `sluiceway.yaml`**, only when init writes one, and the export script for an env file
+  of secret references, only when init found one.
+- **The `recordWriters` line**, which lets ticks go through the app. See
+  [below](#the-recordwriters-line).
+
+Its description lists:
+
+- the stacks the check found, what an `ignore` entry leaves out, and what root module discovery
+  left out and why;
+- the dashboard the repo would get, folded. Every stack is drawn in sync there, because none has
+  been previewed yet, and the first scan replaces it;
+- per stack, the credentials it needs and the ways to provide them, with links to the repo's
+  Actions secrets settings, and what the workflow does not provide yet;
+- what init says is still for a person to do, and the whole summary of the check, folded.
+
+It names secrets and never holds a value.
+
+A person merges it. The app never merges anything, and never pushes to your default branch.
+
+### When there is no pull request
+
+A repo that has a dashboard already gets no pull request, and neither does one where the app's
+onboarding pull request is still open: the org view links that one.
+
+When the app cannot open the pull request, the org view says why in one sentence under the repo.
+The reasons are ones only you can change: the repo is empty, it is too large to read, a workflow
+in it runs Sluiceway already, init found no stack, `sluiceway.yaml` is not valid, discovery could
+not work out the stacks, or GitHub did not answer. The app does not try again on its own. Fix
+the repo and press the button on the org view or the repo's page to ask again.
+
+A repo where init found no stack is listed on the org view in one quiet line, "No stacks found
+in", and you can ask for the pull request from its page once you add stacks.
+
+## The secrets step stays yours
+
+The app never holds, asks for or supplies a cloud credential. Before you merge:
+
+1. **Add the secrets the pull request names** in the repo's Actions secrets settings, or provide
+   them another way from <a href={page("guides/credentials")}>Credentials and your own tooling</a>.
+2. **Point the workflow at a self-hosted runner** when your infrastructure cannot be reached from
+   GitHub's runners, such as a cluster on a private network. See
+   <a href={page("guides/workflow#self-hosted-runners")}>Self-hosted runners</a>.
+
+Then merge. The first scan previews every stack, creates the dashboard issue, and the repo moves
+from Not set up yet to the stacks on the org view.
+
+### When the first scan fails
+
+The app explains a failed first scan in one sentence with one link to the page that fixes it.
+
+On the repo's page, for each stack whose preview failed and that never deployed, it says one of:
+
+- a credential the stack needs is not provided by the workflow;
+- the stack needs a cluster, and the scan ran on a GitHub-hosted runner that cannot see it;
+- a credential may be missing, where the check cannot see into a step that might provide it;
+- or that the facts do not explain it, and the reason is in the summary of the run.
+
+On the org view, for a repo whose first scan failed before it wrote a dashboard, it says where
+the run stopped: in a step before Sluiceway's, where a secret the pull request names is likely
+not set yet; in Sluiceway's own step, with what to check on a self-hosted or a hosted runner; or
+before the run started, when an Actions policy does not allow the action.
+
+The app cannot read the names of your secrets, so it says "likely" where it cannot know.
+
+## The recordWriters line
+
+The pull request adds the app to `recordWriters` in `sluiceway.yaml`, in the file init writes or
+in the one the repo has, with a comment that says what it allows:
+
+```yaml title="sluiceway.yaml"
+# The Sluiceway app may open deployment records that this repo's workflow
+# deploys, after judging the tick with the same rule the action uses.
+recordWriters:
+  - sluiceway[bot]
+```
+
+Every other key, comment and writer in the file stays as it was. A file that names the app
+already is not changed, and the description says so.
+
+<a href={page("guides/configuration#recordwriters")}>`recordWriters`</a> lists the logins whose
+deployment records your workflow deploys. With `sluiceway[bot]` on it:
+
+- **You can tick a box and ask for a rescan from the app.** The app judges the tick with the
+  action's own tick rule and your permission on the repo, opens the deployment record, and
+  starts your workflow. See <a href={page("hosted-app/using-the-app#tick-from-the-app")}>Tick from the app</a>.
+- **A tick on the dashboard issue gets its row written by the app**, usually before your workflow
+  has started. Your workflow's run then previews the stack again and deploys only when the fresh
+  preview gives the same diff hash and value fingerprint, as for any tick.
+
+Both also need ticking through the app to be switched on for the hosted app, which Sluiceway
+does for every installation at once. Until then the line allows nothing yet, and every tick is
+left to your workflow.
+
+It allows nothing else. The app cannot deploy a stack nobody ticked, and a stack that deletes
+or replaces resources still waits for a person's tick.
+
+Without the line, the app judges no tick on that repo and every tick is left to your workflow, as
+it is without the app. The org view says so under the repo in one sentence. You can add the line
+later from the app's Settings tab or from edit mode, each of which opens a one-line pull request,
+and take it out the same way.
+
+<Callout kind="note" title="The list is the repo's reviewed word">
+  The tick rule cannot judge a bot, which has no access level of its own. That is why an app has
+  to be named in `sluiceway.yaml`, where a change goes through review, rather than allowed by a
+  setting in the app.
+</Callout>
