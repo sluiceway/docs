@@ -10,8 +10,8 @@ import Callout from "../../../components/Callout.astro";
 import { page } from "../../../lib/routes";
 
 <p class="sw-lead">
-  A plan decides two numbers: how many adopted repos the app shows whole, and how far back the
-  audit log goes. Every feature is on every plan, and nothing about deploying depends on one.
+  A plan decides how many adopted repos the app shows whole, how far back the audit log goes,
+  and whether a second approver can hold a deploy. Every other feature is on every plan.
 </p>
 
 | Plan | Adopted repos | History |
@@ -19,6 +19,12 @@ import { page } from "../../../lib/routes";
 | Free | 5 | 30 days |
 | Team | 25 | 13 months |
 | Team Plus | 100 | 3 years |
+
+A required second approver is on Team and Team Plus: you add Sluiceway as a custom deployment
+protection rule on a GitHub environment, and GitHub holds each deploy job there until someone
+other than the ticker approves it in the app. GitHub offers custom protection rules on GitHub
+Enterprise and on public repos only. On Free the app approves such a job at once, so no deploy
+waits.
 
 The prices are on the <a href="https://sluiceway.dev/pricing">pricing page</a>.
 
