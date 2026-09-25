@@ -8,6 +8,7 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { PAGE_REDIRECTS } from "../src/lib/anchor-redirects";
 import { SHARE_IMAGE } from "../src/lib/share-image";
 import { UNLISTED } from "../src/lib/site";
 
@@ -36,11 +37,15 @@ interface Built {
   images: Record<string, string | null>[];
 }
 
+// The old URL of a moved page is a redirect with no title of its own: anchor-redirects.test.ts
+// checks it.
+const REDIRECTS = new Set(Object.keys(PAGE_REDIRECTS).map((id) => join(DIST, id, "index.html")));
+
 function htmlFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) return name === "pagefind" ? [] : htmlFiles(path);
-    return name.endsWith(".html") ? [path] : [];
+    return name.endsWith(".html") && !REDIRECTS.has(path) ? [path] : [];
   });
 }
 
@@ -299,5 +304,18 @@ describe("sitemap and robots.txt", () => {
   test("robots.txt allows everything and names the sitemap", () => {
     const robots = readFileSync(join(DIST, "robots.txt"), "utf8");
     expect(robots).toBe(`User-agent: *\nAllow: /\n\nSitemap: ${ROOT}sitemap-index.xml\n`);
+  });
+});
+
+describe("code blocks", () => {
+  test("a Rego block is highlighted, from the grammar in src/lib/grammars", () => {
+    const page = readFileSync(join(DIST, "guides/policies/index.html"), "utf8");
+    const block = page.slice(page.indexOf('data-language="rego"'));
+    expect(block.length).toBeGreaterThan(0);
+    // Plain text would be one span for the whole line; the grammar makes `package` a keyword.
+    const firstLine = block.slice(0, block.indexOf("</div></div>"));
+    expect(firstLine).toMatch(
+      /<span style="--0:#[0-9A-Fa-f]{6};--1:#[0-9A-Fa-f]{6}">package<\/span>/,
+    );
   });
 });

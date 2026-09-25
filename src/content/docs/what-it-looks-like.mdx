@@ -24,7 +24,8 @@ export const intro = readmeDashboardIntro();
   sync, each behind its <a href={glossary("Count dot")}>count dot</a>, and how many pending stacks
   delete or replace resources. Under it, the
   <a href={glossary("Scan line")}>scan line</a> says which commit the last scan checked out, when, in which run, and when the
-  last full scan was.
+  last full scan was. While a scan runs, a <a href={glossary("Scan-running line")}>scan-running line</a> under it says
+  since when and links the run, which this example does not show.
 - **Deploying.** While a stack deploys, its section comes before every other. `apps/api:prod`
   deploys, and its row starts with a <a href={glossary("Spinner")}>spinner</a>. `apps/worker:prod` is a
   <a href={glossary("Queued stack")}>queued stack</a>: it waits for the stack it depends on. Both rows say
@@ -42,6 +43,9 @@ export const intro = readmeDashboardIntro();
 - **A <a href={glossary("Pending")}>pending</a> row.** `apps/billing:prod` has one create and one update waiting. Its row links the
   preview, names the pull requests that brought the change, links the compare view, and folds
   the changes under their count. Tick its box to deploy that stack exactly as its row shows it.
+  With cost estimates on, an OpenTofu or Terraform row has a <a href={glossary("Cost line")}>cost line</a> under its first
+  line, and a row whose change fails a <a href={glossary("Policy")}>policy</a> has no box and names the policy instead.
+  This example shows neither.
 - **A row with deletes.** `apps/legacy-worker:prod` deletes three resources. A
   <a href={glossary("Destroy")}>destroy</a> is listed first, outside the fold, and always carries a warning.
 - **A row with <a href={glossary("Change outside a stack")}>changes outside the stack</a>.** `apps/web:staging` names the pull requests its stack claims and

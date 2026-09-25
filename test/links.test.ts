@@ -178,11 +178,32 @@ describe("the records index", () => {
     expect(find("0096")?.leads).toEqual([
       { kind: "Amended by", records: ["0003", "0009", "0041", "0061"] },
     ]);
-    // 0003 says it is amended by 0096 and not by 0095: the index adds 0095 alone.
+    // 0003 says it is amended by 0096 and not by 0095, 0102, 0104 or 0109, whose own leads name
+    // it: the index adds those four and not 0096 again.
     const early = find("0003");
     expect(early).toBeDefined();
     if (!early) return;
     expect(early.changes.some((c) => c.records.includes("0096"))).toBe(true);
-    expect(changesFromLeads(early, all)).toEqual([{ kind: "Amended by", records: ["0095"] }]);
+    expect(changesFromLeads(early, all)).toEqual(
+      ["0095", "0102", "0104", "0109"].map((n) => ({ kind: "Amended by", records: [n] })),
+    );
+  });
+
+  test("a date in a lead is not a record", () => {
+    const all = records();
+    const dated = all.find((r) => r.number === "0047");
+    expect(dated?.changes).toContainEqual({ kind: "Amended, 2026-09-22", records: [] });
+    for (const r of all) {
+      for (const c of r.changes) for (const n of c.records) expect(n).not.toBe("2026");
+    }
+  });
+
+  test("the records renumbered at v0.31.0 have numbers of their own", () => {
+    const all = records();
+    expect(all.find((r) => r.number === "0098")?.title).toBe(
+      "A queued row starts with the crate standing still",
+    );
+    expect(all.filter((r) => r.number === "0092")).toHaveLength(1);
+    expect(all.filter((r) => r.number === "0093")).toHaveLength(1);
   });
 });

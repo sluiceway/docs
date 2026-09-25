@@ -286,12 +286,18 @@ export function records(): DecisionRecord[] {
             .replace(/\s*\([^)]*\)/g, "")
             .replace(/ again\b/, "")
             .trim();
+          // A year in a date, as in record 0047's "Amended, 2026-09-22", is not a record: such a
+          // lead names no record, and the index shows it as it is written.
+          const numbers = plain.match(/\b\d{4}\b(?!-)/g) ?? [];
           return {
-            kind: plain
-              .replace(/\s*\b\d{4}\b.*$/, "")
-              .replace(/,$/, "")
-              .trim(),
-            records: plain.match(/\b\d{4}\b/g) ?? [],
+            kind:
+              numbers.length === 0
+                ? plain
+                : plain
+                    .replace(/\s*\b\d{4}\b.*$/, "")
+                    .replace(/,$/, "")
+                    .trim(),
+            records: numbers,
           };
         });
       // "Amends 0003 (the payload key), 0018 and 0061 (the check warns)." The reasons in
@@ -388,6 +394,12 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
     picture: "queued-20-deletes-replaces",
     alt: "Queued behind dependencies, 20 stacks are pending, some delete or replace resources: a ticked crate is tied up at the closed gate, twenty crates wait behind it, and the replace and delete signs stand on their pole",
   },
+  // The queued row's crate stands still, as the queued header's ticked crate does at the closed
+  // gate. Like 0063, the record shows the header the row spinner belongs to.
+  "0098": {
+    picture: "queued-0",
+    alt: "Queued behind dependencies: a ticked crate is tied up at the closed gate",
+  },
 };
 
 export function recordId(record: Pick<DecisionRecord, "file">): string {
@@ -476,7 +488,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/workflow",
       title: titleOf("docs/workflow.md"),
       description:
-        "The check, the one-step workflow and what it gives up, and what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
+        "The check and its pull request preview, the one-step workflow, and what merge and deploy, stack dependencies, self-hosted runners and GitHub Environments add.",
       source: "docs/workflow.md",
       headerPicture: {
         picture: "pending-5",
@@ -488,7 +500,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/split-workflow",
       title: titleOf("docs/split-workflow.md"),
       description:
-        "The same loop as four jobs, for credentials that only read in scans, an environment per stack, and issue edits that start no job with credentials.",
+        "The same loop as four jobs, for credentials that only read in scans, an environment per stack, deploy windows, and issue edits that start no job holding them.",
       source: "docs/split-workflow.md",
       headerPicture: {
         picture: "deploying-4",
@@ -524,7 +536,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/configuration",
       title: titleOf("docs/configuration.md"),
       description:
-        "Every key of sluiceway.yaml, from who may tick to the opt-in drift check, with examples and the messages it gives.",
+        "Every key of sluiceway.yaml, from who may tick to deploy windows, policies and the cost line, with examples and the messages it gives.",
       source: "docs/configuration.md",
       headerPicture: {
         picture: "pending-1",
@@ -533,10 +545,22 @@ export function pages(repoUrl: string, base: string): Page[] {
       parts: [wholeFile("docs/configuration.md")],
     },
     {
+      id: "guides/policies",
+      title: titleOf("docs/policies.md"),
+      description:
+        "Rego policies that Conftest runs against the preview of every pending stack, how to write one, and what a failed one does to the row.",
+      source: "docs/policies.md",
+      headerPicture: {
+        picture: "pending-2-deletes",
+        alt: "2 stacks are pending, some delete resources: two crates wait upstream and the delete sign stands on a pole in the water",
+      },
+      parts: [wholeFile("docs/policies.md")],
+    },
+    {
       id: "guides/credentials",
       title: titleOf("docs/credentials.md"),
       description:
-        "How your workflow loads credentials for the tool, with recipes for the usual places they live.",
+        "How your workflow loads credentials for the tool, or names an env file that Sluiceway loads and masks, with recipes, and what the check says is missing.",
       source: "docs/credentials.md",
       headerPicture: {
         picture: "deploying-0",
@@ -575,7 +599,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "guides/security",
       title: titleOf("docs/security.md"),
       description:
-        "What a tick promises, what deploys without a tick, who can tick, and what GitHub Environments add to a deploy.",
+        "What a tick promises, what deploys without a tick, who can tick, what GitHub Environments add, and what policies and a pull request preview can reach.",
       source: "docs/security.md",
       headerPicture: {
         picture: "pending-1",
@@ -585,7 +609,7 @@ export function pages(repoUrl: string, base: string): Page[] {
         preamble("docs/security.md"),
         // The README's other promises are on this page already, in security.md's words.
         listItems(README, "What it promises", [
-          "It never holds your credentials, and there is no backend.",
+          "Your credentials stay in your runners, and there is no backend.",
         ]),
         fromFirstH2("docs/security.md"),
       ],
@@ -635,7 +659,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       id: "reference/what-sluiceway-writes",
       title: titleOf("docs/what-sluiceway-writes.md"),
       description:
-        "The markers in the dashboard, the deployment records and the result file, documented field by field for scripts and agents, and the rule for what may change.",
+        "The dashboard's markers, the deployment records and the result file, field by field for scripts and agents, how to open a record yourself, and what may change.",
       source: "docs/what-sluiceway-writes.md",
       headerPicture: {
         picture: "deploying-1",
@@ -970,6 +994,7 @@ export function sidebar(): SidebarItem[] {
         { slug: "guides/init" },
         { slug: "guides/credentials" },
         { slug: "guides/configuration" },
+        { slug: "guides/policies" },
         { slug: "guides/example-workflows" },
         { slug: "guides/split-workflow" },
         { slug: "guides/notifications" },

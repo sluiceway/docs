@@ -5,7 +5,7 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ANCHOR_REDIRECTS, redirectFor } from "../src/lib/anchor-redirects";
+import { ANCHOR_REDIRECTS, PAGE_REDIRECTS, redirectFor } from "../src/lib/anchor-redirects";
 import { urlFor } from "../src/lib/pages";
 
 const DIST = "dist";
@@ -51,6 +51,18 @@ describe("the map", () => {
   test("a page without moved headings has no map", () => {
     expect(html("guides/workflow")).not.toContain("sw-anchor-redirects");
   });
+});
+
+describe("the moved pages", () => {
+  for (const [from, to] of Object.entries(PAGE_REDIRECTS)) {
+    test(`${from} sends the visitor to ${to}`, () => {
+      // The new page is a real page, and the old URL is only a redirect to it, with the base.
+      expect(html(to)).toContain("<main");
+      const old = html(from);
+      expect(old).toContain(`http-equiv="refresh" content="0;url=${url(to)}"`);
+      expect(old).not.toContain("<main");
+    });
+  }
 });
 
 describe("redirectFor", () => {

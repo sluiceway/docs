@@ -9,6 +9,7 @@
         "http://localhost:4321/guides/workflow/",
         "http://localhost:4321/guides/configuration/",
         "http://localhost:4321/guides/notifications/",
+        "http://localhost:4321/guides/policies/",
         "http://localhost:4321/reference/sluiceway-yaml/",
         "http://localhost:4321/reference/what-sluiceway-writes/",
         "http://localhost:4321/using-the-dashboard/",
