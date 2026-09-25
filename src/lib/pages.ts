@@ -8,6 +8,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import GithubSlugger, { slug as githubSlugOne } from "github-slugger";
+import { commandLineExamples } from "./command-line";
 import type { SiteMap } from "./links";
 import {
   blocks,
@@ -88,6 +89,12 @@ export const HOSTED_APP = {
   keeps: "hosted-app/what-the-app-keeps",
   plans: "hosted-app/plans",
 } as const;
+
+/**
+ * The command line's page, in the Hosted app section after Using the app: most of its commands
+ * talk to the app. It is read from the action's docs/command-line.md, not written here.
+ */
+export const COMMAND_LINE = "hosted-app/command-line";
 
 /**
  * Whether one of slice 3's pages is in src/content/docs yet. Until it is, the sidebar leaves it
@@ -629,6 +636,28 @@ export function pages(repoUrl: string, base: string): Page[] {
       ],
     },
     {
+      id: COMMAND_LINE,
+      title: titleOf("docs/command-line.md"),
+      sidebarLabel: "Command line",
+      description:
+        "Install the sluiceway command, sign in with a token from the app, then check status, tick, rescan and change settings, with --json and exit codes for agents.",
+      source: "docs/command-line.md",
+      headerPicture: {
+        picture: "deploying-2",
+        alt: "A stack is deploying, 2 stacks are pending: the gate is open, one crate goes through it and two wait upstream",
+      },
+      parts: [
+        preamble("docs/command-line.md"),
+        sectionPart("docs/command-line.md", "Install it"),
+        sectionPart("docs/command-line.md", "Sign in to the app"),
+        sectionPart("docs/command-line.md", "The commands"),
+        // Before the exit codes, so a reader has seen the answers the table talks about.
+        generated("docs/command-line.md", commandLineExamples()),
+        sectionPart("docs/command-line.md", "For agents and scripts"),
+        sectionPart("docs/command-line.md", "Where it connects"),
+      ],
+    },
+    {
       id: "reference/sluiceway-yaml",
       title: "sluiceway.yaml",
       sidebarLabel: "sluiceway.yaml",
@@ -1017,7 +1046,13 @@ export function sidebar(): SidebarItem[] {
     },
     {
       label: "Hosted app",
-      items: Object.values(HOSTED_APP).map((slug) => ({ slug })),
+      items: [
+        HOSTED_APP.install,
+        HOSTED_APP.using,
+        COMMAND_LINE,
+        HOSTED_APP.keeps,
+        HOSTED_APP.plans,
+      ].map((slug) => ({ slug })),
     },
     {
       label: "Reference",
