@@ -79,6 +79,17 @@ export const SLICE_3 = {
 };
 
 /**
+ * The pages about the hosted app, in sidebar order. They are written in src/content/docs: the
+ * action has no Markdown about the app.
+ */
+export const HOSTED_APP = {
+  install: "hosted-app/install",
+  using: "hosted-app/using-the-app",
+  keeps: "hosted-app/what-the-app-keeps",
+  plans: "hosted-app/plans",
+} as const;
+
+/**
  * Whether one of slice 3's pages is in src/content/docs yet. Until it is, the sidebar leaves it
  * out and links to it go to GitHub, so no link points at a page that is not built.
  */
@@ -1003,6 +1014,10 @@ export function sidebar(): SidebarItem[] {
         { slug: "guides/notifications" },
         { slug: "guides/security" },
       ],
+    },
+    {
+      label: "Hosted app",
+      items: Object.values(HOSTED_APP).map((slug) => ({ slug })),
     },
     {
       label: "Reference",
