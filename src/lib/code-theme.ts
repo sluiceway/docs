@@ -2,9 +2,20 @@
 // CodeBlock colours three things only: keys in `crate-deep`, strings and values in
 // `water-deep`, comments in `ink-muted`. Everything else is `ink` on `surface-sunk`.
 
+import type { LanguageRegistration } from "shiki";
 import tokens from "../styles/tokens.json" with { type: "json" };
+import rego from "./grammars/rego.tmLanguage.json" with { type: "json" };
 
 type ThemeId = "light" | "dark";
+
+/**
+ * Languages the action's docs fence that Shiki's bundle does not know. Rego, for the policies
+ * page, comes from the grammar of the Open Policy Agent's VS Code extension (Apache-2.0), see
+ * grammars/README.md. Without it the build warns and shows the block as plain text.
+ */
+export function extraLanguages(): LanguageRegistration[] {
+  return [rego as unknown as LanguageRegistration];
+}
 
 function color(name: string, theme: ThemeId): string {
   const token = tokens.color.tokens.find((t) => t.name === name);

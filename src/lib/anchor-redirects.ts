@@ -60,3 +60,16 @@ export function redirectFor(
   if (!id || has(id)) return undefined;
   return Object.hasOwn(map, id) ? map[id] : undefined;
 }
+
+/**
+ * Pages that moved to a new id, old id to new id. Astro writes a page at the old URL that
+ * sends the visitor on. The test checks every target against the built site.
+ */
+export const PAGE_REDIRECTS: Record<string, string> = {
+  // v0.31.0 gave the second record of each duplicated number its own: 0092 and 0093 were
+  // each two records, and the two about the example and the queued crate became 0097 and 0098.
+  "why/0092-the-readme-example-keeps-its-picture-open-and-breaks-its-lines-as-an-issue-does":
+    "why/0097-the-readme-example-keeps-its-picture-open-and-breaks-its-lines-as-an-issue-does",
+  "why/0093-a-queued-row-starts-with-the-crate-standing-still":
+    "why/0098-a-queued-row-starts-with-the-crate-standing-still",
+};

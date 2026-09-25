@@ -138,6 +138,29 @@ test("a list of modes, input names and keys in an action description are code", 
   expect(markdown).toContain("the events `notify.events` in `sluiceway.yaml` lists.");
 });
 
+test("a list of modes that goes on with a condition, and an input set to true, are code", () => {
+  const markdown = actionReference(
+    [
+      "inputs:",
+      "  mode:",
+      '    description: "One of: auto, scan, apply, check."',
+      "  backend:",
+      "    description: check only.",
+      "  pull-request-preview:",
+      "    description: check only.",
+      "  env-file:",
+      "    description: >-",
+      "      scan, apply, auto, and check with backend: true or pull-request-preview: true. A file",
+      "      of lines. Set it to true when the file exists.",
+    ].join("\n"),
+  );
+  expect(markdown).toContain(
+    "`scan`, `apply`, `auto`, and `check` with `backend: true` or `pull-request-preview: true`. A file",
+  );
+  // An input's name alone stays code as before, and so does true alone.
+  expect(markdown).toContain("Set it to `true` when");
+});
+
 test("a description for two tools, or per value of the key, is one item per lead", () => {
   const schema = {
     properties: {

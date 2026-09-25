@@ -129,6 +129,13 @@ crate on its way through the gate. It comes from the same release tag as the hea
 says only that the row's deploy is on its way, not the state of the dashboard, so it is not in
 the pictures above.
 
+## A running scan is a line, not a picture
+
+While a scan runs, the <a href={glossary("Scan-running line")}>scan-running line</a> under the
+scan line says so and links the run, from the scan's first write until it writes the body. The
+header keeps the state of the last scan: a scan that is running is not a state of the stacks,
+and no picture is drawn for it.
+
 ## Without the header
 
 With <a href={ROUTES.personality}><code>dashboard.personality: false</code></a>{" "}

@@ -214,9 +214,10 @@ interface ActionYml {
  * description, as code: "scan only. true turns the job red" reads "`scan` only. `true` turns the
  * job red", as the action's own reference.md writes it. A mode is code only where it names the
  * mode: in a list of modes that is a sentence of its own ("scan, resolve and apply."), before
- * " only.", after "One of:", "Set by " and "Leave it out for ". An input name is code when it
- * has a hyphen, and a key when it has a dot, such as `notify.events` and `sluiceway.yaml`. A
- * key of sluiceway.yaml with one of its fixed values, "deploy: on-merge", is code as a pair.
+ * " only." or " with ", after "One of:", "Set by " and "Leave it out for ". An input name is
+ * code when it has a hyphen, and a key when it has a dot, such as `notify.events` and
+ * `sluiceway.yaml`. A key of sluiceway.yaml with one of its fixed values, "deploy: on-merge", is
+ * code as a pair, and so is an input set to true or false, "backend: true".
  */
 function valuesAsCode(
   text: string,
@@ -225,15 +226,18 @@ function valuesAsCode(
   settings: readonly Setting[],
 ): string {
   const mode = modes.join("|");
-  const list = `(?:${mode})(?:(?:, | and )(?:${mode}))*`;
+  const list = `(?:${mode})(?:(?:, | and |, and )(?:${mode}))*`;
   const codeModes = (all: string) => all.replace(new RegExp(`\\b(${mode})\\b`, "g"), "`$1`");
   const named = inputs.filter((name) => name.includes("-")).join("|");
-  const pairs = settings.map((s) => `${s.key}: (?:${s.values.join("|")})`).join("|");
+  const pairs = [
+    ...settings.map((s) => `${s.key}: (?:${s.values.join("|")})`),
+    ...(inputs.length > 0 ? [`(?:${inputs.join("|")}): (?:true|false)`] : []),
+  ].join("|");
   return text
-    .replace(new RegExp(`(^|\\. )${list}(?: only)?\\.`, "g"), codeModes)
+    .replace(new RegExp(`(^|\\. )${list}(?:(?: only)?\\.| with )`, "g"), codeModes)
     .replace(new RegExp(`\\b(?:One of: |Set by |Leave it out for )${list}\\b`, "g"), codeModes)
-    .replace(new RegExp(`(^|[\\s(])(${named})(?=$|[\\s.,;:)])`, "g"), "$1`$2`")
     .replace(pairs ? new RegExp(`(^|[\\s(])(${pairs})(?=$|[\\s.,;:)])`, "g") : /$^/, "$1`$2`")
+    .replace(new RegExp(`(^|[\\s(])(${named})(?=$|[\\s.,;:)])`, "g"), "$1`$2`")
     .replace(/(^|[\s(])([a-z][A-Za-z]*\.[a-z][A-Za-z]*)(?=$|[\s,;:)]|\.(?:\s|$))/g, "$1`$2`")
     .replace(/(^|[\s(])(true|false)(?=$|[\s.,;:)])/g, "$1`$2`");
 }

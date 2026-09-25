@@ -3,7 +3,8 @@ import sitemap from "@astrojs/sitemap";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import { umamiWebsiteId } from "./src/lib/analytics-build";
-import { codeTheme } from "./src/lib/code-theme";
+import { PAGE_REDIRECTS } from "./src/lib/anchor-redirects";
+import { codeTheme, extraLanguages } from "./src/lib/code-theme";
 import { sidebar } from "./src/lib/pages";
 import { UNLISTED } from "./src/lib/site";
 // Importing the pin here makes every command fail at once when the submodule is missing or
@@ -25,6 +26,11 @@ const unlisted = new Set(UNLISTED.map((id) => `${root}/${id}/`));
 export default defineConfig({
   site,
   base,
+  // A page whose id moved keeps its old URL working. Astro puts the base in front of the old
+  // URL itself, and not in front of the new one.
+  redirects: Object.fromEntries(
+    Object.entries(PAGE_REDIRECTS).map(([from, to]) => [`/${from}/`, `${root}/${to}/`]),
+  ),
   vite: {
     define: { "import.meta.env.PUBLIC_UMAMI_WEBSITE_ID": JSON.stringify(umamiId) },
   },
@@ -67,6 +73,7 @@ export default defineConfig({
       },
       expressiveCode: {
         themes: [codeTheme("dark"), codeTheme("light")],
+        shiki: { langs: extraLanguages() },
         styleOverrides: {
           borderRadius: "10px",
           borderWidth: "2.4px",

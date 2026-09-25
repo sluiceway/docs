@@ -50,6 +50,12 @@ describe("the walk-through", () => {
     expect(parts).toMatch(/<code[^>]*>waits on its checks<\/code>/);
     expect(parts).toContain("reference/glossary/#update-waiting-on-its-checks");
   });
+
+  test("names the lines the example does not draw, linked to the glossary", () => {
+    for (const term of ["scan-running-line", "cost-line", "policy"]) {
+      expect(walk).toContain(`reference/glossary/#${term}"`);
+    }
+  });
 });
 
 describe("the start page", () => {
