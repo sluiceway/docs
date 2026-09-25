@@ -6,7 +6,6 @@ headerPicture:
   alt: A stack is deploying and 3 are pending, the gate is open and one crate goes through it
 ---
 
-import Callout from "../../../components/Callout.astro";
 import { glossary, page, ROUTES } from "../../../lib/routes";
 
 <p class="sw-lead">
@@ -93,10 +92,8 @@ Some boxes stay on GitHub, drawn as the same square but linking to the dashboard
 A <a href={glossary("Read-only dashboard")}>read-only dashboard</a> has no boxes, in the app or
 on GitHub.
 
-<Callout kind="note" title="Ticking and Rescan in the app are switched on for everyone at once">
-  Sluiceway switches ticking and Rescan in the app on for the hosted app as a whole. While they
-  are off, every box and Rescan open the dashboard on GitHub, where a tick works as always.
-</Callout>
+Ticking and Rescan from the app work in a repo whose `sluiceway.yaml` names `sluiceway[bot]` in
+`recordWriters`, and in any other repo they open the dashboard on GitHub.
 
 ## Rescan
 

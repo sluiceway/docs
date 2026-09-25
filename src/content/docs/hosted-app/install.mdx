@@ -166,9 +166,8 @@ deployment records your workflow deploys. With `sluiceway[bot]` on it:
   has started. Your workflow's run then previews the stack again and deploys only when the fresh
   preview gives the same diff hash and value fingerprint, as for any tick.
 
-Both also need ticking through the app to be switched on for the hosted app, which Sluiceway
-does for every installation at once. Until then the line allows nothing yet, and every tick is
-left to your workflow.
+Ticking and Rescan from the app work in a repo whose `sluiceway.yaml` names `sluiceway[bot]` in
+`recordWriters`, and in any other repo they open the dashboard on GitHub.
 
 It allows nothing else. The app cannot deploy a stack nobody ticked, and a stack that deletes
 or replaces resources still waits for a person's tick.
