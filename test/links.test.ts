@@ -189,6 +189,19 @@ describe("the records index", () => {
     );
   });
 
+  test("a lead's records end where the list ends", () => {
+    const all = records();
+    // "Amends 0004 and 0035 (…), 0027 (…) Promise 4 of 0014 holds": no full stop before
+    // "Promise", and 0113 keeps 0014's promise rather than amending it.
+    expect(all.find((r) => r.number === "0113")?.leads).toEqual([
+      { kind: "Amended by", records: ["0004", "0035", "0027"] },
+    ]);
+    const fourteen = all.find((r) => r.number === "0014");
+    expect(fourteen).toBeDefined();
+    if (!fourteen) return;
+    expect(changesFromLeads(fourteen, all).flatMap((c) => c.records)).not.toContain("0113");
+  });
+
   test("a date in a lead is not a record", () => {
     const all = records();
     const dated = all.find((r) => r.number === "0047");

@@ -30,7 +30,10 @@ export const intro = readmeDashboardIntro();
   deploys, and its row starts with a <a href={glossary("Spinner")}>spinner</a>. `apps/worker:prod` is a
   <a href={glossary("Queued stack")}>queued stack</a>: it waits for the stack it depends on. Both rows say
   `ticked by`. A stack set to <a href={glossary("Deploy on merge")}>deploy on merge</a> would say
-  `deploying on merge · merged by` instead, which this example does not show.
+  `deploying on merge · merged by` instead, which this example does not show. When a deploy is
+  cancelled or rejected, its row turns into a <a href={glossary("Preview failure")}>preview failure</a> within seconds, says
+  `no preview since its deploy ended`, and carries its <a href={glossary("Failure line")}>failure line</a> until the next
+  scan previews the stack.
 - **Updates waiting to merge.** This section is there when merge and deploy is on.
   `platform/ingress-nginx:prod` is an <a href={glossary("Update waiting to merge")}>update waiting to merge</a>: one tick merges its pull
   request, and its stack is previewed again and deployed. `apps/web:prod` is an

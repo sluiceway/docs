@@ -301,12 +301,15 @@ export function records(): DecisionRecord[] {
           };
         });
       // "Amends 0003 (the payload key), 0018 and 0061 (the check warns)." The reasons in
-      // parentheses go first, so a number inside them is not read as a record.
+      // parentheses go first, so a number inside them is not read as a record. The records are
+      // the list joined by commas and "and", and it ends at the first other word: record 0113
+      // writes "0027 (…) Promise 4 of 0014 holds" with no full stop, and 0014 is not amended.
       const leads = top.flatMap((line) => {
         const lead = /^(?:>\s*)?(Amends|Supersedes)\b([^.]*)/.exec(line.replace(/\([^)]*\)/g, ""));
         if (!lead) return [];
         const kind = lead[1] === "Amends" ? ("Amended by" as const) : ("Superseded by" as const);
-        return [{ kind, records: lead[2]?.match(/\b\d{4}\b/g) ?? [] }];
+        const list = /^\s*\d{4}\b(?:\s*(?:,\s*(?:and\s+)?|and\s+)\d{4}\b)*/.exec(lead[2] ?? "");
+        return [{ kind, records: list?.[0].match(/\b\d{4}\b/g) ?? [] }];
       });
       return {
         number: RECORD_FILE.exec(file)?.[1] ?? "",
