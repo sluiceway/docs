@@ -1,0 +1,94 @@
+---
+// Starlight's header with Go to console, as on the landing page's nav: the one thing in the
+// bar that looks pressable. From 50rem it sits between the links and the theme switch; below
+// that Starlight moves the links and the switch into the menu, and the button stays in the
+// bar beside search, so it is there at every width. Below 500px the wordmark is read out but
+// not shown (SiteTitle), which leaves room for it on a 320px phone.
+import LanguageSelect from "@astrojs/starlight/components/LanguageSelect.astro";
+import Search from "@astrojs/starlight/components/Search.astro";
+import ThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
+import { CONSOLE_URL } from "../../lib/site";
+import Button from "../Button.astro";
+import SiteTitle from "./SiteTitle.astro";
+import SocialIcons from "./SocialIcons.astro";
+---
+
+<div class="header">
+  <div class="title-wrapper sl-flex">
+    <SiteTitle />
+  </div>
+  <div class="sl-flex print:hidden search-wrapper">
+    <Search />
+    <Button href={CONSOLE_URL} size="sm" class="sw-console sw-console--bar">Go to console</Button>
+  </div>
+  <div class="sl-hidden md:sl-flex print:hidden right-group">
+    <div class="sl-flex social-icons">
+      <SocialIcons />
+    </div>
+    <Button href={CONSOLE_URL} size="sm" class="sw-console">Go to console</Button>
+    <ThemeSelect />
+    <LanguageSelect />
+  </div>
+</div>
+
+<style>
+  .header {
+    display: flex;
+    gap: var(--sl-nav-gap);
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+  }
+  .title-wrapper {
+    overflow: clip;
+    padding: 0.25rem;
+    margin: -0.25rem;
+    min-width: 0;
+  }
+  .search-wrapper {
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .right-group,
+  .social-icons {
+    gap: var(--space-2);
+    align-items: center;
+  }
+  .right-group {
+    gap: var(--space-3);
+  }
+  .sw-console {
+    white-space: nowrap;
+  }
+  /* The copy in the bar is for a phone; from 50rem the one in the right group shows. */
+  @media (min-width: 50rem) {
+    .sw-console--bar {
+      display: none;
+    }
+    :global(:root[data-has-sidebar]) {
+      --__sidebar-pad: calc(2 * var(--sl-nav-pad-x));
+    }
+    :global(:root:not([data-has-toc])) {
+      --__toc-width: 0rem;
+    }
+    .header {
+      --__sidebar-width: max(0rem, var(--sl-content-inline-start, 0rem) - var(--sl-nav-pad-x));
+      --__main-column-fr: calc(
+        (
+            100% + var(--__sidebar-pad, 0rem) - var(--__toc-width, var(--sl-sidebar-width)) -
+              (2 * var(--__toc-width, var(--sl-nav-pad-x))) - var(--sl-content-inline-start, 0rem) -
+              var(--sl-content-width)
+          ) / 2
+      );
+      display: grid;
+      grid-template-columns:
+        minmax(
+          calc(var(--__sidebar-width) + max(0rem, var(--__main-column-fr) - var(--sl-nav-gap))),
+          auto
+        )
+        1fr
+        auto;
+      align-content: center;
+    }
+  }
+</style>

@@ -50,6 +50,9 @@
   --sl-line-height-headings: 1.18;
 
   --sl-nav-height: 4rem;
+  /* The phone menu button's 44px touch target, so Starlight centres it in the bar and keeps
+     the header clear of it. */
+  --sl-menu-button-size: 44px;
   /* `ch` is the width of Inter's "0", about 1.33 average characters: 54ch holds a line of
      about 72 characters, the measure 30-pages.md asks for. */
   --sl-content-width: 54ch;
@@ -93,24 +96,31 @@ starlight-theme-select select:focus-visible,
 header.header {
   border-bottom: var(--border-ink) solid var(--line);
 }
-/* The phone menu button, drawn like every other control: a crate, not a circle, and a full
-   44px touch target. */
+/* The phone menu button, drawn as the landing page's Menu: a crate, not a circle, outlined
+   but without a shadow, so Go to console stays the one thing in the bar that looks pressable.
+   A full 44px touch target. */
 button.sl-menu-button {
-  width: 44px;
-  height: 44px;
+  align-items: center;
+  justify-content: center;
   border: var(--border-ink) solid var(--line);
   border-radius: var(--radius-crate);
   background: var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow-press);
+  box-shadow: none;
 }
-.header .right-group,
-.header .social-icons {
-  gap: var(--space-2);
+button.sl-menu-button:hover {
+  background: var(--surface-sunk);
 }
+/* The header draws no rule between the links and the rest, as the landing page's nav. */
 .header .social-icons::after {
-  border-inline-end: var(--border-ink) solid var(--line-soft);
-  margin-inline-start: var(--space-2);
+  content: none;
+}
+/* The phone menu's last row: the links and the theme switch on one line. */
+.mobile-preferences {
+  align-items: center;
+}
+.mobile-preferences .social-icons {
+  gap: var(--space-2);
 }
 
 /* The `label` style: the theme switch, "On this page" and table headers. */
@@ -125,14 +135,17 @@ starlight-theme-select select,
   text-transform: uppercase;
 }
 
-/* The theme switch, drawn as the landing page's theme button. */
+/* The theme switch, quiet as the landing page's: no outline and no shadow, in `ink-muted`. */
 starlight-theme-select select {
-  color: var(--ink);
-  background-color: var(--surface);
-  border: var(--border-ink) solid var(--line);
+  color: var(--ink-muted);
+  background-color: transparent;
+  border: 0;
   border-radius: var(--radius-crate);
-  box-shadow: var(--shadow-press);
   padding-block: var(--space-2);
+}
+starlight-theme-select select:hover {
+  background-color: var(--surface-sunk);
+  color: var(--ink);
 }
 starlight-theme-select select {
   /* Room for the uppercase, letter-spaced label beside the icon and caret. */
@@ -145,7 +158,8 @@ site-search > button[data-open-modal] {
   border-radius: var(--radius-crate);
   background: var(--surface);
   color: var(--ink-muted);
-  box-shadow: var(--shadow-press);
+  /* Outlined as a field, without a shadow: Go to console is the pressable thing. */
+  box-shadow: none;
 }
 site-search > button[data-open-modal]:hover {
   border-color: var(--line);
@@ -163,6 +177,19 @@ site-search > button[data-open-modal]:focus-visible {
     min-width: 44px;
     min-height: 44px;
     justify-content: center;
+  }
+}
+/* Between 50rem and 60rem the links, Go to console and the theme switch take the room the
+   search box had, so search is the icon it is on a phone. */
+@media (min-width: 50rem) and (max-width: 60rem) {
+  site-search > button[data-open-modal] {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  site-search > button[data-open-modal] > :is(span, kbd) {
+    /* biome-ignore lint/complexity/noImportantStyles: Starlight's script sets the shortcut's display inline. */
+    display: none !important;
   }
 }
 site-search > button[data-open-modal] kbd {
