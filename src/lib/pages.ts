@@ -80,6 +80,16 @@ export const SLICE_3 = {
 };
 
 /**
+ * The pages that open Getting started, written in src/content/docs. The page that adds the
+ * action by hand is read from the action, under `runTheActionYourself`.
+ */
+export const GET_STARTED = {
+  withTheApp: "get-started",
+  runTheActionYourself: "get-started/run-the-action-yourself",
+  together: "get-started/the-app-and-the-action",
+} as const;
+
+/**
  * The pages about the hosted app, in sidebar order. They are written in src/content/docs: the
  * action has no Markdown about the app.
  */
@@ -475,16 +485,24 @@ export function pages(repoUrl: string, base: string): Page[] {
       ],
     },
     {
-      id: "get-started",
-      title: "Get started",
+      id: GET_STARTED.runTheActionYourself,
+      title: "Run the action yourself",
       description:
-        "Add Sluiceway to a repo of infrastructure as code: check what you need, run the check, then add the workflow, the tick rule and your credentials.",
+        "Add Sluiceway to a repo without the app: check what you need, run the check, then add the workflow, the tick rule and your credentials.",
       source: README,
       headerPicture: {
         picture: "first-run",
         alt: "The scan found no stacks yet: Penny stands beside an empty channel",
       },
       parts: [
+        generated(
+          README,
+          [
+            "The action runs on its own, with no app installed and nothing hosted: the same scans, the same ticks and the same deploys, in your runners with your credentials, and the dashboard issue is the only dashboard. It is the path for a team that grants no third-party app, or that wants to set every step up by hand.",
+            "",
+            `With the app, [one pull request](${base}/${GET_STARTED.withTheApp}/) holds the workflow and a first \`sluiceway.yaml\`, and the console guides the rest. [How the app and the action work together](${base}/${GET_STARTED.together}/) says what the app adds and what stays the same.`,
+          ].join("\n"),
+        ),
         // First, so a reader checks the runner and tool versions before any step. Here since the
         // README moved it, so get-started/#requirements keeps working.
         sectionPart("docs/reference.md", "Requirements"),
@@ -836,8 +854,9 @@ export function covered(): Covered[] {
   const slugs = githubSlugs(README);
   return [
     { link: README, page: SLICE_3.overview },
-    // Get started opens on Requirements, so a link to the README section lands on the page top.
-    { link: `${README}#get-started`, page: "get-started" },
+    // Run the action yourself opens on Requirements, so a link to the README section lands on
+    // the page top.
+    { link: `${README}#get-started`, page: GET_STARTED.runTheActionYourself },
     // The index of the action's docs: the sidebar is this site's.
     { link: "docs/README.md", page: SLICE_3.overview },
     { link: "docs/adr", page: "why" },
@@ -1023,7 +1042,9 @@ export function sidebar(): SidebarItem[] {
       label: "Start",
       items: [
         { label: "Overview", link: "/" },
-        { slug: "get-started" },
+        { slug: GET_STARTED.withTheApp },
+        { slug: GET_STARTED.runTheActionYourself },
+        { slug: GET_STARTED.together },
         ...(written(SLICE_3.whatItLooksLike) ? [{ slug: SLICE_3.whatItLooksLike }] : []),
         { slug: "how-it-works" },
         { slug: "using-the-dashboard" },

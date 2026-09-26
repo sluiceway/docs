@@ -1,0 +1,75 @@
+---
+title: How the app and the action work together
+description: The app picks a tick up by webhook and starts your workflow, which deploys in your runners with your credentials, and ticks still deploy when the app is down.
+sidebar:
+  label: The app and the action
+headerPicture:
+  picture: deploying-0
+  alt: A stack is deploying, the gate is open, one crate goes through it and water runs downstream
+---
+
+import { glossary, page, ROUTES } from "../../../lib/routes";
+
+<p class="sw-lead">
+  The action does the work: it scans, previews and deploys, in your GitHub Actions, with your
+  credentials. The app sets it up, makes a tick start sooner, and adds the console. It never
+  replaces the action.
+</p>
+
+## Where deploys run
+
+Every deploy runs in your own GitHub Actions, on your runners, with your own cloud credentials,
+with or without the app. The app holds no cloud credential, never asks for one, and runs no
+infrastructure as code: it never previews or deploys a stack. See
+<a href={page("hosted-app/what-the-app-keeps")}>What the app keeps and never keeps</a>.
+
+## A tick with the app
+
+When you tick a box on the dashboard issue:
+
+1. **GitHub sends the app a webhook**, and the app picks the tick up within about a second.
+2. **The app judges the tick** with the action's own code: the same
+   <a href={glossary("Tick rule")}>tick rule</a> your workflow uses, and your permission on the
+   repo, read live from GitHub.
+3. **The app opens the <a href={glossary("Deployment record")}>deployment record</a>** with you
+   as the ticker, and starts your workflow.
+4. **Your workflow deploys the record.** It previews the stack again and deploys only when the
+   fresh preview gives the diff hash you approved. A change that moved in between is refused.
+
+A tick in the console, or from the command line, takes the same path from step 2.
+
+## The fallback: the action's own resolve
+
+The action judges ticks itself, as it always has. The edit of the issue starts your workflow, and
+its `resolve` step checks who ticked, opens the record and deploys it, about 20 seconds after the
+tick. With the app installed, that step stays in place as the fallback.
+
+- **When the app has opened the record first**, `resolve` finds it open and does nothing more, so
+  the stack deploys once.
+- **When the app is down**, ticks on the issue still deploy, at the old speed. A down app costs a
+  tick nothing but the time it saves.
+
+Nothing needs to change in your workflow for either path. See
+<a href={page("guides/workflow")}>The workflow</a> for what each event runs.
+
+## What recordWriters allows
+
+Ticks from the console and the command line go through the app alone, so the workflow has to
+accept the records the app opens. That takes one line in `sluiceway.yaml`, which the onboarding
+pull request adds:
+
+```yaml title="sluiceway.yaml"
+recordWriters:
+  - sluiceway[bot]
+```
+
+Without it, the app judges no tick on that repo: ticks on the issue deploy through the action's
+own `resolve`, and a box in the console opens the dashboard on GitHub. See
+<a href={page("hosted-app/install#the-recordwriters-line")}>The recordWriters line</a>.
+
+## The action alone
+
+Without the app, you get the same deploys, with the dashboard issue as the only dashboard: no
+console, no org view, and ticks that start at the action's own speed. It is the path for a team
+that grants no third-party app. <a href={ROUTES.runTheActionYourself}>Run the action yourself</a>
+sets it up step by step.

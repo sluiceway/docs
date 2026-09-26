@@ -1,0 +1,102 @@
+---
+title: Get started
+description: Install the Sluiceway GitHub App, merge the pull request it opens with the workflow and a first sluiceway.yaml, and let the console guide the rest.
+headerPicture:
+  picture: first-run
+  alt: The scan found no stacks yet, Penny stands beside an empty channel
+---
+
+import Callout from "../../components/Callout.astro";
+import Steps from "../../components/Steps.astro";
+import { page, ROUTES } from "../../lib/routes";
+
+<p class="sw-lead">
+  Install the Sluiceway GitHub App. It opens one pull request per repo that adds the workflow
+  and a first <code>sluiceway.yaml</code>, and the console guides you through the rest.
+</p>
+
+The app is the action, set up for you, with a console. Every deploy still runs in your own
+GitHub Actions, with your own cloud credentials. The app holds no cloud credential and runs no
+infrastructure as code. It is free for 5 repos.
+
+<Steps
+  items={[
+    {
+      title: "You install the app and pick repos",
+      body: "Install it from github.com/apps/sluiceway on an org or a personal account, for every repo or for a few.",
+    },
+    {
+      title: "The app opens the onboarding pull request",
+      body: "On each repo with no dashboard yet: the workflow, a starter sluiceway.yaml, and the secrets each stack needs, by name.",
+    },
+    {
+      title: "You add the secrets and merge",
+      body: "Adding the secrets is your step. The first scan then previews every stack and writes the dashboard issue.",
+    },
+    {
+      title: "You tick a box",
+      body: "On the dashboard issue or in the console. Your workflow previews the stack again and deploys it.",
+    },
+  ]}
+/>
+
+## Install the app
+
+Open <a href="https://github.com/apps/sluiceway">the Sluiceway app on GitHub</a>, choose
+**Install**, pick the org or account, and choose all repos or only some. You can change the repos
+later in GitHub's settings for the installation.
+
+Then sign in at <a href="https://console.sluiceway.dev/">console.sluiceway.dev</a> with GitHub.
+The console lists every repo of the installation. A repo with no dashboard yet is under Not set up
+yet, with its onboarding pull request.
+
+Only repos with a dashboard count toward your plan, so installing on a whole org costs nothing.
+The Free plan covers 5 of them. See <a href={page("hosted-app/plans")}>Plans and adopted repos</a>.
+
+## Merge the onboarding pull request
+
+The pull request is written by the action's own init and check, so it holds what adding the
+action by hand would give you:
+
+- **The workflow** at `.github/workflows/deploy-dashboard.yml`, which runs `sluiceway/sluiceway@v0`.
+- **A starter `sluiceway.yaml`**, or one line added to the one the repo has: `sluiceway[bot]` in
+  `recordWriters`, so ticks can go through the app.
+- **Its description**: the stacks the check found, the dashboard the repo would get, and per
+  stack the credentials it needs, as names, with a link to the repo's Actions secrets settings.
+
+Before you merge, add the secrets it names, or load them another way from
+<a href={page("guides/credentials")}>Credentials and your own tooling</a>. When your
+infrastructure cannot be reached from GitHub's runners, point the workflow at a
+<a href={page("guides/workflow#self-hosted-runners")}>self-hosted runner</a>.
+
+Then merge. The push of that merge starts the first scan: it previews every stack and writes the
+dashboard issue with one row per stack. Nothing deploys until someone ticks a box. The console
+moves the repo from Not set up yet to its stacks, and when the first scan fails it says why in one
+sentence, with a link to the page that fixes it.
+
+<a href={page("hosted-app/install")}>Install the app</a> has the permissions GitHub asks you to
+accept, everything the pull request holds, and what to do when there is none.
+
+<Callout kind="note" title="Decide who may deploy before you merge">
+  A tick asks for a deploy of that stack, production included. Without a tick rule, anyone with
+  write access to the repo can tick. Narrow it with <code>tickers</code> in
+  <code>sluiceway.yaml</code>, or gate the deploy job with a GitHub Environment. See{" "}
+  <a href={page("guides/security#who-can-tick")}>Who can tick</a>.
+</Callout>
+
+## Tick
+
+Tick a stack's box on the dashboard issue, or in the console on the repo's Dashboard tab. The app
+picks the tick up within about a second, judges it with the action's own tick rule, opens the
+deployment record and starts your workflow. Your runner previews the stack again and deploys only
+when the change is the one you ticked.
+
+<a href={ROUTES.usingTheDashboard}>Using the dashboard</a> explains the rows and the boxes, and
+<a href={page("hosted-app/using-the-app")}>Using the app</a> the console.
+
+## Without the app
+
+The action runs on its own too: the same deploys, with the dashboard issue as the only dashboard.
+<a href={ROUTES.runTheActionYourself}>Run the action yourself</a> takes you through it step by
+step. <a href={ROUTES.appAndAction}>How the app and the action work together</a> says what the
+app adds, and what happens to a tick when the app is down.
