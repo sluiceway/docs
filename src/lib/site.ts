@@ -14,3 +14,6 @@ export const UNLISTED = ["404", "style-check"];
 
 /** The landing page, which the header and footer link to as "Sluiceway". */
 export const LANDING_URL = "https://sluiceway.dev/";
+
+/** The hosted app, where a person signs in with GitHub. The header's one button goes there. */
+export const CONSOLE_URL = "https://console.sluiceway.dev";

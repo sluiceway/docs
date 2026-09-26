@@ -64,6 +64,7 @@ export default defineConfig({
       ],
       sidebar: sidebar(),
       components: {
+        Header: "./src/components/overrides/Header.astro",
         SiteTitle: "./src/components/overrides/SiteTitle.astro",
         SocialIcons: "./src/components/overrides/SocialIcons.astro",
         Footer: "./src/components/overrides/Footer.astro",
