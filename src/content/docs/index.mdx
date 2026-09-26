@@ -46,7 +46,7 @@ import "../../styles/landing.css";
 
 <div class="sw-card-grid">
   <Card title="Get started" href={ROUTES.getStarted} bar>
-    Add Sluiceway one step at a time, starting with a check that changes nothing.
+    Install the GitHub App. It opens one pull request with the workflow and a first <code>sluiceway.yaml</code>, and the console guides the rest.
   </Card>
   <Card title="Credentials" href={ROUTES.credentials} tilt="left">
     Load your cloud and state credentials on Sluiceway's step or in a step right before it, or name an env file that Sluiceway reads and masks.
@@ -57,6 +57,7 @@ import "../../styles/landing.css";
 </div>
 
 <div class="sw-landing__guides">
+  <p>Without the app, <a href={ROUTES.runTheActionYourself}>run the action yourself</a>: the same deploys, with the issue as the only dashboard. <a href={ROUTES.appAndAction}>How the app and the action work together</a> says what each one does.</p>
   <p>The guides, in order:</p>
   <ul>
     <li><a href={page("guides/workflow")}>The workflow</a></li>

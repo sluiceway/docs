@@ -20,6 +20,10 @@ export const ANCHOR_REDIRECTS: Record<string, Record<string, string>> = {
     "4-load-your-credentials": "guides/credentials",
     "start-read-only": "guides/read-only-trial",
     "pin-a-commit": "guides/workflow#pin-a-commit",
+    // Getting started leads with the app since 2026-09-26, and the steps without it moved to a
+    // page of their own.
+    requirements: "get-started/run-the-action-yourself#requirements",
+    "get-started": "get-started/run-the-action-yourself#get-started",
   },
   // v0.12.0 moved the README's "What it does not do yet" into the Limits of the dashboard's use.
   "not-in-v1": {

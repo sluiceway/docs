@@ -12,14 +12,18 @@ const blob = `${REPO_URL}/blob/${TAG}`;
 describe("resolveLink", () => {
   const cases: [from: string, href: string, want: string][] = [
     // A section of another file that a page shows, from docs/.
-    ["docs/workflow.md", "reference.md#requirements", "/docs/get-started/#requirements"],
+    [
+      "docs/workflow.md",
+      "reference.md#requirements",
+      "/docs/get-started/run-the-action-yourself/#requirements",
+    ],
     [
       "docs/security.md",
       "workflow.md#with-github-environments",
       "/docs/guides/workflow/#with-github-environments",
     ],
     // A README section shown without its heading lands on the page itself.
-    ["docs/workflow.md", "../README.md#get-started", "/docs/get-started/"],
+    ["docs/workflow.md", "../README.md#get-started", "/docs/get-started/run-the-action-yourself/"],
     // A file's h1 is the page title: a link to it lands on the page, as on GitHub.
     ["docs/read-only-trial.md", "workflow.md#the-workflow", "/docs/guides/workflow/"],
     // Whole files, and headings in them.
