@@ -19,7 +19,10 @@ const CONFIG = {
  * A fake browser: records every script added, every event Umami receives, and every write to
  * storage. It starts with an old consent record in storage, as a returning reader's has.
  */
-function fakeBrowser(navigator: AnalyticsEnv["navigator"] = {}) {
+function fakeBrowser(
+  navigator: AnalyticsEnv["navigator"] = {},
+  screen: AnalyticsEnv["screen"] = { width: 1920, height: 1080 },
+) {
   const store = new Map<string, string>([[OLD_CONSENT_KEY, '{"preferences":{"analytics":true}}']]);
   const writes: string[] = [];
   const scripts: Record<string, string>[] = [];
@@ -34,6 +37,7 @@ function fakeBrowser(navigator: AnalyticsEnv["navigator"] = {}) {
       },
     },
     navigator,
+    screen,
     addScript(attributes, onload) {
       scripts.push(attributes);
       onloads.push(onload);
@@ -129,6 +133,43 @@ describe("Do Not Track", () => {
   });
 });
 
+describe("a program rather than a person", () => {
+  const HEADLESS =
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/140.0.0.0 Safari/537.36";
+
+  test.each([
+    ["a browser driven by automation", fakeBrowser({ webdriver: true })],
+    ["a headless browser", fakeBrowser({ userAgent: HEADLESS })],
+    ["a bot", fakeBrowser({ userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1)" })],
+    ["a screen of exactly 800x600", fakeBrowser({}, { width: 800, height: 600 })],
+    ["a screen of exactly 1024x1024", fakeBrowser({}, { width: 1024, height: 1024 })],
+  ])("%s gets no script and sends no events", (_, browser) => {
+    const analytics = createAnalytics(CONFIG, browser.env);
+    expect(analytics.automated()).toBe(true);
+    expect(analytics.allowed()).toBe(false);
+    // Not Do Not Track: the page does not tell a program its browser sends it.
+    expect(analytics.blocked()).toBe(false);
+    analytics.init();
+    expect(analytics.track("search", { query: "scan", results: 4 })).toBe(false);
+    browser.runScripts();
+    expect(browser.scripts).toEqual([]);
+    expect(browser.events).toEqual([]);
+  });
+
+  test("a person's browser is not one", () => {
+    const analytics = createAnalytics(
+      CONFIG,
+      fakeBrowser({
+        webdriver: false,
+        userAgent:
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+      }).env,
+    );
+    expect(analytics.automated()).toBe(false);
+    expect(analytics.allowed()).toBe(true);
+  });
+});
+
 describe("the build's website id", () => {
   test("is the docs' own by default", () => {
     expect(umamiWebsiteId({})).toBe(DEFAULT_UMAMI_WEBSITE_ID);
@@ -218,5 +259,10 @@ describe("the privacy page", () => {
 
   test("names Do Not Track as what stops the counting", () => {
     expect(page).toContain("If your browser sends Do Not Track, the Umami script is not loaded");
+  });
+
+  test("says automated visitors are not counted", () => {
+    expect(page).toContain("## Automated visitors");
+    expect(page).toContain("exactly 800 by 600 or 1024 by 1024");
   });
 });

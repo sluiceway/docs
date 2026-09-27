@@ -1,9 +1,11 @@
 // Analytics with self-hosted Umami, for every reader. Umami sets no cookie and these docs
 // store nothing in the browser, so there is nothing to ask. Do Not Track blocks everything: the
-// script is never added and no event is sent. The privacy page says the same in words, so a
+// script is never added and no event is sent. So does a visit from a program rather than a
+// person, by the rule in ./automated.ts. The privacy page says the same in words, so a
 // change here is a change there (src/content/docs/privacy.mdx).
 
 import { UMAMI_SCRIPT_URL } from "./analytics-build";
+import { isAutomated } from "./automated";
 
 /**
  * The website id, set by astro.config.ts from `umamiWebsiteId()`: the docs' own id, an
@@ -37,7 +39,8 @@ declare global {
 /** What analytics needs from the browser, so the tests can hand it a fake one. */
 export interface AnalyticsEnv {
   storage: Pick<Storage, "removeItem"> | undefined;
-  navigator: { doNotTrack?: string | null };
+  navigator: { doNotTrack?: string | null; webdriver?: boolean; userAgent?: string };
+  screen: { width: number; height: number };
   /** Add a deferred `<script>` with these attributes, and call `onload` once it has run. */
   addScript(attributes: Record<string, string>, onload: () => void): void;
   umami(): Umami | undefined;
@@ -54,11 +57,13 @@ export interface Analytics {
   readonly enabled: boolean;
   /** Do Not Track is on. Nothing loads and nothing is sent. */
   blocked(): boolean;
+  /** A bot, a crawler, a headless browser or a link preview. Nothing loads and nothing is sent. */
+  automated(): boolean;
   /** Analytics may run on this page. */
   allowed(): boolean;
-  /** Add the script, unless analytics is off or blocked. Call once per page. */
+  /** Add the script, unless analytics is off, blocked or automated. Call once per page. */
   init(): void;
-  /** Send a named event. Off or blocked, it sends nothing and returns false. */
+  /** Send a named event. Off, blocked or automated, it sends nothing and returns false. */
   track(event: string, data?: EventData): boolean;
 }
 
@@ -69,7 +74,13 @@ export function createAnalytics(config: AnalyticsConfig, env: AnalyticsEnv): Ana
   const queue: [string, EventData | undefined][] = [];
 
   const blocked = () => env.navigator.doNotTrack === "1";
-  const allowed = () => enabled && !blocked();
+  const automated = () =>
+    isAutomated({
+      webdriver: env.navigator.webdriver === true,
+      userAgent: env.navigator.userAgent ?? "",
+      screen: env.screen,
+    });
+  const allowed = () => enabled && !blocked() && !automated();
 
   const load = () => {
     if (state !== "none" || !allowed()) return;
@@ -93,6 +104,7 @@ export function createAnalytics(config: AnalyticsConfig, env: AnalyticsEnv): Ana
   return {
     enabled,
     blocked,
+    automated,
     allowed,
     init() {
       try {
@@ -122,6 +134,7 @@ function browserEnv(): AnalyticsEnv {
   return {
     storage,
     navigator: navigator as AnalyticsEnv["navigator"],
+    screen: { width: window.screen.width, height: window.screen.height },
     addScript(attributes, onload) {
       const script = document.createElement("script");
       script.defer = true;

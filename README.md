@@ -71,7 +71,7 @@ The reports are in `.lighthouseci/`. Set `CHROME_PATH` if Lighthouse cannot find
 
 ## Analytics
 
-The Umami website id is `DEFAULT_UMAMI_WEBSITE_ID` in `src/lib/analytics-build.ts`, and `PUBLIC_UMAMI_WEBSITE_ID` overrides it at build time. An empty `PUBLIC_UMAMI_WEBSITE_ID` fails the build. To build without analytics, in a fork or locally, set `ANALYTICS_OFF=1` for the build and for `bun test`. `test/analytics-built.test.ts` follows each sampled page's scripts and their imports in `dist/` and fails when the script URL or the id is missing, so analytics cannot go quiet unnoticed.
+Umami is not loaded for a program rather than a person: a browser driven by automation, a user agent that names a bot, crawler, spider, headless browser or link preview, or a screen of exactly 800x600 or 1024x1024 (`src/lib/automated.ts`, the same rule as in sluiceway/landing and sluiceway/app). The Umami website id is `DEFAULT_UMAMI_WEBSITE_ID` in `src/lib/analytics-build.ts`, and `PUBLIC_UMAMI_WEBSITE_ID` overrides it at build time. An empty `PUBLIC_UMAMI_WEBSITE_ID` fails the build. To build without analytics, in a fork or locally, set `ANALYTICS_OFF=1` for the build and for `bun test`. `test/analytics-built.test.ts` follows each sampled page's scripts and their imports in `dist/` and fails when the script URL or the id is missing, so analytics cannot go quiet unnoticed.
 
 ## Updating to a new release of Sluiceway
 
