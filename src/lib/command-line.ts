@@ -198,6 +198,93 @@ export const EXAMPLES: ExampleGroup[] = [
     ],
   },
   {
+    heading: "`sluiceway preview`",
+    intro:
+      "Every change of the stack's preview, read from its preview page on GitHub through the app: the policies, the changes with each path whole and the values `dashboard.showValues` shows, and the drift. A destroy is in capitals. With `--json`, the app's answer as it came.",
+    examples: [
+      {
+        command: "sluiceway preview infra apps/api:prod",
+        words: [
+          "apps/api:prod in acme/infra: 1 update, 1 replace",
+          "Preview page: https://github.com/acme/infra/runs/48213301, of 0a1b2c3, written at 2026-09-26T08:00:00.000Z",
+          "",
+          "Policies",
+          "  warning  tags · the queue has no team tag",
+          "",
+          "Changes",
+          "  REPLACE  aws:rds/instance:Instance  main · forced by engineVersion · also changes tags.team",
+          "  update  aws:lambda/function:Function  api · memorySize 128 → 256, timeout nothing → 30",
+          "  create + import  aws:sqs/queue:Queue  jobs",
+          "",
+          "Outside the code",
+          "  changed  aws:ec2/securityGroup:SecurityGroup  web · ingress[0].cidrBlocks[0]",
+        ].join("\n"),
+        exit: 0,
+      },
+      {
+        command: "sluiceway preview infra apps/api:prod --json",
+        schema: "Preview",
+        json: {
+          stack: "apps/api:prod",
+          repo: "acme/infra",
+          page: {
+            name: "sluiceway / apps/api:prod",
+            url: "https://github.com/acme/infra/runs/48213301",
+            sha: "0a1b2c3d4e5f60718293a4b5c6d7e8f901234567",
+            at: "2026-09-26T08:00:00.000Z",
+          },
+          title: "apps/api:prod: 1 update, 1 replace",
+          policies: [
+            { result: "warning", namespace: "tags", message: "the queue has no team tag" },
+          ],
+          changes: [
+            {
+              action: "replace",
+              tracking: null,
+              type: "aws:rds/instance:Instance",
+              name: "main",
+              properties: ["engineVersion", "tags.team"],
+              forcedBy: ["engineVersion"],
+              values: [],
+            },
+            {
+              action: "update",
+              tracking: null,
+              type: "aws:lambda/function:Function",
+              name: "api",
+              properties: ["memorySize", "timeout"],
+              forcedBy: [],
+              values: [
+                { path: "memorySize", old: "128", new: "256" },
+                { path: "timeout", old: null, new: "30" },
+              ],
+            },
+            {
+              action: "create",
+              tracking: "import",
+              type: "aws:sqs/queue:Queue",
+              name: "jobs",
+              properties: [],
+              forcedBy: [],
+              values: [],
+            },
+          ],
+          drift: [
+            {
+              action: "changed",
+              type: "aws:ec2/securityGroup:SecurityGroup",
+              name: "web",
+              properties: ["ingress[0].cidrBlocks[0]"],
+            },
+          ],
+          unlisted: 0,
+          unread: 0,
+        },
+        exit: 0,
+      },
+    ],
+  },
+  {
     heading: "`sluiceway tick`",
     intro:
       "Ticks the stack as you and stops once the app shows the deployment record. With `--json` the answer is two of the app's: `tick`, what the tick came to, and `deploy`, the record as the app showed it. The audit log's line for it says `via the command line`.",
