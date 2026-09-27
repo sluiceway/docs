@@ -50,7 +50,9 @@ import PennyMark from "./PennyMark.astro";
             ? "Thanks."
             : analytics?.blocked()
               ? "Thanks. Your browser sends Do Not Track, so this was not sent."
-              : "Thanks. Analytics is off, so this was not sent.";
+              : analytics?.automated()
+                ? "Thanks. This browser looks automated, so this was not sent."
+                : "Thanks. Analytics is off, so this was not sent.";
           // The pressed button is gone, so keyboard focus moves to the reply.
           if (hadFocus) reply.focus();
         }

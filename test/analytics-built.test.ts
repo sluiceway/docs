@@ -129,6 +129,10 @@ describe(ON ? "analytics on" : "analytics off (ANALYTICS_OFF=1)", () => {
         expect(allScripts(graph)).toContain("doNotTrack");
       });
 
+      test(`${page} checks for an automated browser before loading`, () => {
+        expect(allScripts(graph)).toContain("webdriver");
+      });
+
       test(`${page} carries the footer note`, () => {
         expect(graph.html).toContain("sw-analytics-note");
       });
