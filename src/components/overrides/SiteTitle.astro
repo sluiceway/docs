@@ -53,4 +53,15 @@ const { siteTitleHref } = Astro.locals.starlightRoute;
     font-weight: 800;
     letter-spacing: -0.02em;
   }
+  /* Read out but not shown below 500px, as on the landing page, so Go to console fits. */
+  @media (max-width: 499.98px) {
+    .sw-site-title__word {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
 </style>
