@@ -658,7 +658,7 @@ export function pages(repoUrl: string, base: string): Page[] {
       title: titleOf("docs/command-line.md"),
       sidebarLabel: "Command line",
       description:
-        "Install the sluiceway command, sign in with a token from the app, then check status, tick, rescan and change settings, with --json and exit codes for agents.",
+        "Install the sluiceway command, sign in with an app token, then read status and previews, tick, rescan and change settings, with --json and exit codes.",
       source: "docs/command-line.md",
       headerPicture: {
         picture: "deploying-2",

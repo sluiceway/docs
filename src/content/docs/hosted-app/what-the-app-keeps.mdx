@@ -38,6 +38,9 @@ for that shape.
 
 - **No resource name, property path, diff or value.** Not in its database, not in its pages, not
   in the pull requests it opens. A row in the app shows counts, and the changes are on GitHub.
+  When <a href={page("hosted-app/command-line")}>`sluiceway preview`</a> asks for a stack's
+  changes, the app reads its preview page from GitHub at that moment, hands it on, and keeps
+  none of it.
 - **No text of a row, an issue title or a status description**, and of a merged pull request
   nothing but its commit and time: no number, title, description, branch or author.
 - **None of your repo's files.** For the onboarding pull request and to explain a failed first

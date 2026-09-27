@@ -64,6 +64,7 @@ These are the permissions the app asks for, and what each one is used for.
 | Deployments | Read and write | Reading the deployment records. Opening a record for a tick that goes through the app. |
 | Actions | Read and write | Reading workflow runs. Starting your Sluiceway workflow for a tick or a rescan that goes through the app. |
 | Contents | Read and write | Reading the repo for the onboarding pull request, and `sluiceway.yaml` at a commit. Writing one branch with one commit for a pull request the app opens. |
+| Checks | Read | Reading a stack's preview page when `sluiceway preview` asks for it, to hand it on. Until an org accepts it, `preview` fails there and says so. |
 | Pull requests | Read and write | Opening the onboarding pull request and the pull requests of edit mode. Reading when a merged pull request was merged, for Insights. |
 | Members (organization) | Read | Checking that a person is an admin of the org before they change the plan. |
 
