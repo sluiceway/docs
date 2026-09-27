@@ -69,11 +69,11 @@ const STACKS = [
   },
 ];
 
-const ORG = { login: "acme", kind: "organization", page: "https://app.sluiceway.dev/acme" };
+const ORG = { login: "acme", kind: "organization", page: "https://console.sluiceway.dev/acme" };
 
 const REPO_LINE = {
   name: "acme/infra",
-  page: "https://app.sluiceway.dev/acme/infra",
+  page: "https://console.sluiceway.dev/acme/infra",
   dashboard: "https://github.com/acme/infra/issues/7",
   stacks: 4,
   counts: COUNTS,
@@ -91,7 +91,7 @@ export const EXAMPLES: ExampleGroup[] = [
       {
         command: "sluiceway login",
         words: [
-          "Signed in to https://app.sluiceway.dev as alice, for acme, with the token laptop, which works until 2026-12-25T00:00:00Z.",
+          "Signed in to https://console.sluiceway.dev as alice, for acme, with the token laptop, which works until 2026-12-25T00:00:00Z.",
           "The token is kept in the macOS keychain.",
         ].join("\n"),
         exit: 0,
@@ -99,7 +99,7 @@ export const EXAMPLES: ExampleGroup[] = [
       {
         command: "sluiceway login --json < token.txt",
         json: {
-          app: "https://app.sluiceway.dev",
+          app: "https://console.sluiceway.dev",
           login: "alice",
           org: "acme",
           token: { name: "laptop", expiresAt: "2026-12-25T00:00:00Z" },
@@ -219,7 +219,7 @@ export const EXAMPLES: ExampleGroup[] = [
             sentence: "The tick of network:prod is asked: the deployment record is open.",
             deployment: {
               id: 4242,
-              status: "https://app.sluiceway.dev/api/v1/orgs/acme/repos/infra/deployments/4242",
+              status: "https://console.sluiceway.dev/api/v1/orgs/acme/repos/infra/deployments/4242",
             },
             dashboard: DASHBOARD,
           },
@@ -343,8 +343,8 @@ export const EXAMPLES: ExampleGroup[] = [
       {
         command: "sluiceway logout",
         words: [
-          "Signed out of https://app.sluiceway.dev: the token is gone from the macOS keychain.",
-          "It still works until it expires. Revoke it on https://app.sluiceway.dev/settings/tokens to stop it now.",
+          "Signed out of https://console.sluiceway.dev: the token is gone from the macOS keychain.",
+          "It still works until it expires. Revoke it on https://console.sluiceway.dev/settings/tokens to stop it now.",
         ].join("\n"),
         exit: 0,
       },
@@ -364,7 +364,7 @@ export const EXAMPLES: ExampleGroup[] = [
         command: "sluiceway status --json",
         json: {
           error:
-            "Not signed in to https://app.sluiceway.dev. Make a token on https://app.sluiceway.dev/settings/tokens, then run sluiceway login.",
+            "Not signed in to https://console.sluiceway.dev. Make a token on https://console.sluiceway.dev/settings/tokens, then run sluiceway login.",
           code: "not-signed-in",
           exit: 3,
         },
