@@ -21,8 +21,9 @@ export const intro = readmeDashboardIntro();
   downstream because two stacks deploy, and both signs: a pending row deletes resources and
   another replaces one. <a href={ROUTES.theHeader}>The header</a> shows every picture.
 - **The <a href={glossary("Counts line")}>counts line</a>.** How many stacks are pending, drifted, deploying, preview failed and in
-  sync, each behind its <a href={glossary("Count dot")}>count dot</a>, and how many pending stacks
-  delete or replace resources. Under it, the
+  sync, each behind its <a href={glossary("Count dot")}>count dot</a>, how many pending stacks
+  delete or replace resources, and, only when there is one, how many stacks are
+  <a href={glossary("Busy stack")}>busy</a>. Under it, the
   <a href={glossary("Scan line")}>scan line</a> says which commit the last scan checked out, when, in which run, and when the
   last full scan was. While a scan runs, a <a href={glossary("Scan-running line")}>scan-running line</a> under it says
   since when and links the run, which this example does not show.
@@ -66,6 +67,13 @@ export const intro = readmeDashboardIntro();
   box deploys them, as a tick on each row. Each stack is judged by its own
   <a href={glossary("Tick rule")}>tick rule</a> and gets its own fresh preview. If a row changes before anyone ticks the
   confirm box, the confirm box goes and the bulk box comes back.
+- **Preview failed and Busy.** A stack whose preview failed twice in one scan, after its
+  <a href={glossary("Second try")}>second try</a>, sits under Preview failed. Its row has no
+  box, says why, and links the run whose job log holds the tool's own words. A
+  <a href={glossary("Busy stack")}>busy stack</a>, one whose lock another update held on both
+  tries, sits under Busy. Its row starts with `busy:`, names the reason,
+  `another update holds the stack's lock`, and says that the next scan previews it. Nothing is
+  wrong with it, and the header does not turn failing. This example shows neither section.
 - **<a href={glossary("In sync")}>In sync</a>.** The stacks with nothing to deploy, folded under their count, and under them the
   <a href={glossary("Ignored stack")}>stacks left out by ignore</a>, each with its reason.
 - **Recently deployed, the <a href={glossary("Trail")}>trail</a>.** Every deploy that ended, newest first, one line each: its

@@ -1,23 +1,33 @@
 ---
-// CountsLine: the dashboard's counts, in the dashboard's own order. A zero keeps its pill.
+// CountsLine: the dashboard's counts, in the dashboard's own order. A zero keeps its pill,
+// except busy, which the dashboard shows only when a stack is busy, with the white dot of a
+// zero (record 0117).
 interface Props {
-  counts: { pending?: number; deploying?: number; failed?: number; "in-sync"?: number };
+  counts: {
+    pending?: number;
+    deploying?: number;
+    failed?: number;
+    "in-sync"?: number;
+    busy?: number;
+  };
 }
 
-const ORDER = ["pending", "deploying", "failed", "in-sync"] as const;
+const ORDER = ["pending", "deploying", "failed", "in-sync", "busy"] as const;
 const WORD = {
   pending: "pending",
   deploying: "deploying",
   failed: "preview failed",
   "in-sync": "in sync",
+  busy: "busy",
 } as const;
 
 const { counts } = Astro.props;
+const shown = ORDER.filter((k) => k !== "busy" || (counts.busy ?? 0) > 0);
 ---
 
 <div class="sw-counts not-content">
   {
-    ORDER.map((k) => {
+    shown.map((k) => {
       const n = counts[k] ?? 0;
       return (
         <span class:list={["sw-count", `sw-count--${k}`, { "sw-count--zero": n === 0 }]}>
