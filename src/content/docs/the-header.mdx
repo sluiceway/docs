@@ -43,11 +43,11 @@ export const pictures = [
   },
   {
     picture: "failing-0",
-    alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
+    alt: "A preview or a deploy failed: the gate is stuck half open over a log, with a red lamp",
   },
   {
     picture: "failing-4",
-    alt: "Something failed, 4 stacks are pending: four crates wait behind the gate, which is stuck half open over a log",
+    alt: "A preview or a deploy failed, 4 stacks are pending: four crates wait behind the gate, which is stuck half open over a log",
   },
 ];
 
@@ -58,7 +58,9 @@ export const states = headerStates(pictures.map(({ picture }) => picture));
   one of {states.count} states.
 </p>
 
-When more than one state applies, the first wins, in this order: {states.order}.
+When more than one state applies, the first wins, in this order: {states.order}. A
+<a href={glossary("Busy stack")}>busy stack</a>, one whose lock another update held when the
+scan ran, makes no header failing: nothing is wrong with it, and the next scan previews it.
 
 Upstream is on the left, where crates pile up while changes are pending. Downstream is on the
 right, where the water runs while a stack deploys. The pending, queued, deploying and failing
@@ -95,10 +97,20 @@ The signs do not move, and nothing else in the picture changes.
     },
     {
       picture: "failing-4-deletes-replaces",
-      alt: "Something failed, 4 stacks are pending, some changes delete or replace resources: the gate is stuck over a log and both signs stand in the water",
+      alt: "A preview or a deploy failed, 4 stacks are pending, some changes delete or replace resources: the gate is stuck over a log and both signs stand in the water",
     },
   ]}
 />
+
+## The alt text says it in words
+
+Where the picture does not load, and in a screen reader, the header is its alt text. It names
+the state and the pending count, `Sluiceway: 4 stacks are pending`, and a sign adds its fact,
+`, some changes delete or replace resources`. A failing header names what failed and how many,
+in the numbers of the counts line under it: `Sluiceway: 1 preview failed`,
+`Sluiceway: 2 previews and 1 deploy failed`. The picture is the same jam for any number, so its
+own label stays `Sluiceway: something failed`. No picture shows a busy stack, so the alt text
+names it last: `, 1 stack is busy`.
 
 ## The water rises in five steps
 

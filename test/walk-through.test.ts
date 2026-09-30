@@ -56,8 +56,21 @@ describe("the walk-through", () => {
     expect(walk).toContain('reference/glossary/#failure-line"');
   });
 
+  test("says what a busy stack's row reads, as the dashboard writes it", () => {
+    expect(walk).toMatch(/<code[^>]*>busy:<\/code>/);
+    expect(walk).toMatch(/<code[^>]*>another update holds the stack(?:'|&#39;|’)s lock<\/code>/);
+    expect(walk).toContain('reference/glossary/#busy-stack"');
+  });
+
   test("names the lines the example does not draw, linked to the glossary", () => {
-    for (const term of ["scan-running-line", "cost-line", "policy", "preview-failure"]) {
+    for (const term of [
+      "scan-running-line",
+      "cost-line",
+      "policy",
+      "preview-failure",
+      "second-try",
+      "busy-stack",
+    ]) {
       expect(walk).toContain(`reference/glossary/#${term}"`);
     }
   });

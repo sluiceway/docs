@@ -375,7 +375,7 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
   // The header states, and bad news wins: the state that wins over all the others.
   "0031": {
     picture: "failing-0",
-    alt: "Something failed: the gate is stuck half open over a log, with a red lamp",
+    alt: "A preview or a deploy failed: the gate is stuck half open over a log, with a red lamp",
   },
   // The files named by role: the first of them, the scan that found nothing yet.
   "0033": {
@@ -418,7 +418,7 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
   // nine pending stacks and one failed preview showed two crates behind the jam.
   "0066": {
     picture: "failing-9",
-    alt: "Something failed, 9 stacks are pending: nine crates wait behind the gate, which is stuck half open over a log",
+    alt: "1 preview failed, 9 stacks are pending: nine crates wait behind the gate, which is stuck half open over a log",
   },
   // A delete sign next to the replace sign, up to 20 crates, and the queued state: all three.
   "0075": {
@@ -430,6 +430,13 @@ export const RECORD_PICTURES: Record<string, HeaderPicture> = {
   "0098": {
     picture: "queued-0",
     alt: "Queued behind dependencies: a ticked crate is tied up at the closed gate",
+  },
+  // The failing header's alt text names what failed and how many. The dashboard the record
+  // came from had one failed preview, nothing pending and every other stack in sync: the jam
+  // with no crate behind it.
+  "0118": {
+    picture: "failing-0",
+    alt: "1 preview failed: the gate is stuck half open over a log, with a red lamp",
   },
 };
 
