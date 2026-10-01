@@ -57,6 +57,10 @@ count toward your plan. See <a href={page("hosted-app/plans")}>Plans and adopted
 
 These are the permissions the app asks for, and what each one is used for.
 
+This table is being corrected: the app's registration on GitHub is being fixed for Workflows,
+Checks and Members, and the table will follow what GitHub shows on a real install, so until
+then go by GitHub's own screen where the two differ.
+
 | Permission | Access | What for |
 | --- | --- | --- |
 | Metadata | Read | Required by GitHub for every app. |
@@ -170,7 +174,8 @@ deployment records your workflow deploys. With `sluiceway[bot]` on it:
   preview gives the same diff hash and value fingerprint, as for any tick.
 
 Ticking and Rescan from the app work in a repo whose `sluiceway.yaml` names `sluiceway[bot]` in
-`recordWriters`, and in any other repo they open the dashboard on GitHub.
+`recordWriters`. In any other repo a box opens the dashboard on GitHub, and the rescan box is
+there too.
 
 It allows nothing else. The app cannot deploy a stack nobody ticked, and a stack that deletes
 or replaces resources still waits for a person's tick.
