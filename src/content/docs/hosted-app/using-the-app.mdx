@@ -14,8 +14,9 @@ import { glossary, page, ROUTES } from "../../../lib/routes";
 </p>
 
 Sign in at <a href="https://console.sluiceway.dev/">console.sluiceway.dev</a> with GitHub. The app reads
-which installations you may see once, when you sign in, and keeps no token of yours. A session
-lasts eight hours, so a change of your membership on GitHub shows at your next sign-in.
+which installations and repos you may see when you sign in, and keeps no token of yours. A
+session lasts 30 days from the last day you used it. While you use it, the app asks GitHub
+again every hour, so a change of your membership on GitHub shows within the hour.
 
 The top bar shows where you are, an org or one of its repos, and switches between them. An org
 has the tabs Overview, Insights, Audit and Settings. A repo has Dashboard, Insights and Audit.
@@ -32,10 +33,10 @@ The org's Overview tab is every stack of every repo the app covers, at `console.
   sync, folded. Or By repo, one panel per repo.
 
 A row is one link to its repo. It says what the dashboard's row says, without the changes: the
-state, how many resources it deletes or replaces, drift outside the code, and the stack's last
-deploy with who <a href={glossary("Ticker")}>ticked</a> it or merged it, the commit and the run.
-A deploy the dashboard's trail lists as an <a href={glossary("Outside deploy")}>outside deploy</a>
-is marked "deployed outside the dashboard".
+state, how many resources it deletes or replaces, drift outside the code, and how the stack's
+last deploy ended, with who <a href={glossary("Ticker")}>ticked</a> it or merged it. A deploy the
+dashboard's trail lists as an <a href={glossary("Outside deploy")}>outside deploy</a> is marked
+"deployed outside the dashboard", with its short commit, and names nobody.
 
 Under the stacks:
 
@@ -50,7 +51,9 @@ Under the stacks:
 
 The Dashboard tab is the repo's dashboard issue drawn again, in the same order, with the same
 headings and sentences, <a href={ROUTES.theHeader}>Penny's header</a> included. The app draws
-it with the action's own renderer, at the version these docs describe, from the facts it keeps.
+it with the action's own renderer, from the facts it keeps. It carries a release of the action
+of its own, which can be older than the one these docs describe, so a sentence that a newer
+release words differently reads in the console as that older release wrote it.
 
 The app keeps no diff, so a pending or drifted row is drawn the way a
 <a href={glossary("Redact")}>redacted</a> row is: its counts and no change lines. The changes
@@ -93,7 +96,8 @@ A <a href={glossary("Read-only dashboard")}>read-only dashboard</a> has no boxes
 on GitHub.
 
 Ticking and Rescan from the app work in a repo whose `sluiceway.yaml` names `sluiceway[bot]` in
-`recordWriters`, and in any other repo they open the dashboard on GitHub.
+`recordWriters`. In any other repo a box opens the dashboard on GitHub, and the rescan box is
+there too.
 
 You can also tick and rescan from a terminal, or have a coding agent do it with a token you
 make: <a href={page("hosted-app/command-line")}>the command line</a> asks the app, which judges
@@ -109,13 +113,17 @@ The app starts your workflow, which runs a full scan, and the rescan box on the 
 unticked. A rescan deploys nothing, so it is asked at once, with no Undo. The toast says "Asked
 GitHub to scan" and the repo's name. Asking again while that scan runs starts nothing new.
 
-On a repo that does not name the app in `recordWriters`, and on one past your plan, Rescan opens
-the dashboard on GitHub, where the rescan box is.
+The button is drawn only where the app can ask for the scan. A repo that does not name the app
+in `recordWriters`, and one past your plan, has no Rescan on its own pages: its rescan box is on
+its dashboard on GitHub. The org's Rescan menu lists every adopted repo, one that the app scans
+as "Rescans here" and any other as "Rescan on GitHub", which is a link to that dashboard.
 
 ## Insights
 
-Insights, for an org or for one repo, cover the last 12 weeks, from Monday in UTC, each number
-against the 12 weeks before.
+Insights, for an org or for one repo, cover a window you choose: 12 weeks, and 6 months or
+1 year where your plan's history covers them. Weeks start on Monday in UTC, and each number is
+set against the same span before it. On Free the app keeps 30 days of history, so only the last
+weeks have their numbers.
 
 - **Lead time**: from the merge of a pull request to the deploy of its merge commit, the median.
   A deploy of a commit with no merged pull request, such as a direct push, is not measured.
@@ -125,7 +133,8 @@ against the 12 weeks before.
 
 Four charts show lead time per week, deploys per week, stacks drifted per week, and where the
 time goes between a merge and its deploy: to the scan, to the preview, waiting for a tick, and
-the deploy itself. The org's Insights end with one row per repo.
+the deploy itself. The org's Insights end with a table of the repos that had deploys in the
+window, and one sentence that names the repos with none.
 
 A number the facts cannot give says "Not measured yet" in one sentence, with no number.
 
@@ -133,17 +142,21 @@ A number the facts cannot give says "Not measured yet" in one sentence, with no 
 
 The Audit tab lists one line per deploy, newest first: when, the repo, the stack, who ticked or
 who merged, the commit, and the result in the trail's words. A deploy outside the dashboard is
-flagged in red, "outside the dashboard", and names nobody, because the tool's history never says
-who.
+flagged in bold after its result, "⚠ outside the dashboard", and names nobody, because the tool's
+history never says who.
 
 A tick from <a href={page("hosted-app/command-line")}>the command line</a> counts as the person
 whose token it used, and its line says "via the command line".
 
-Filter by repo, by stack or to the flagged lines only. Each filter is a plain link, so a filtered
-log has an address you can paste into a ticket. **CSV** downloads what the page shows, with the
-same filters, the time in UTC and the whole commit.
+The buttons above the log filter it: every deploy, the flagged lines only, and from the org, one
+repo. There is no button for one stack: add `?stack=` and the stack id to the address. Every
+filter is part of the address, so a filtered log can be pasted into a ticket. **Download CSV**
+downloads what the page shows, with the same filters, the time in UTC and the whole commit.
 
-The log goes back as far as your plan's history, and its last sentence says how far.
+The log shows one month at a time, the newest first, with **Older** and **Newer** under it. It
+goes back as far as your plan's history, and its last sentence says how far. What is older than
+that is deleted each night: see
+<a href={page("hosted-app/what-the-app-keeps#how-long-it-keeps-it")}>How long it keeps it</a>.
 
 ## Edit mode
 
@@ -154,10 +167,25 @@ the settings of the block you select beside it. Every change redraws the dashboa
 Every setting is a documented key of `sluiceway.yaml` that the action reads without the app. What
 you build keeps working exactly the same if you stop using the app.
 
-- **The dashboard**: `dashboard.title`, `personality` (Penny's header), `redact`, `showValues`,
-  `recentlyDeployed`, `timeZone` and `readOnly`, and `drift.enabled`.
+Select a block of the dashboard, and its own settings open:
+
+- **Header picture**: `personality`, Penny's header and voice.
+- **Title** and **Counts line**: `dashboard.title`, and whether a count of 0 is shown.
+- **A section**: drag it to move it, and turn it on or off where the action has a key for that.
+  Pending and Preview failed cannot be hidden.
+- **Pending**: Row detail, which is how much a pending row shows, the Caution that names
+  destroys, the Deploy all box, and `showValues`.
+- **Drifted**: the Repair all box.
+- **In sync**: the `ignore` list with its reasons.
+- **Recently deployed**: `recentlyDeployed` and `timeZone`.
+- **Rescan box** and **Footer**: each on or off.
+
+Under **The whole dashboard** are the settings that belong to no block:
+
+- **The dashboard**: `dashboard.title`, `redact`, `readOnly` and `drift.enabled`.
+- **Templates**, below.
 - **Who may tick**: `tickers`, and `recordWriters` as the app on the list or off it.
-- **Stacks**: per stack, `deploy` and `tickers`, and the `ignore` list with its reasons.
+- **Stacks**: per stack, `deploy` and `tickers`.
 
 A setting at its default takes its key out of the file. See
 <a href={page("guides/configuration")}>Configuration</a> for what each key does.
@@ -167,16 +195,23 @@ A setting at its default takes its key out of the file. See
 A template is a named set of those keys, applied in one click over the settings you have, and
 adjusted after. It touches no key it does not name.
 
-- **Minimal**: `personality` off, rows redacted, and the last 3 deploys in the trail.
-- **Classic**: every dashboard key and drift at the action's defaults.
-- **Ops desk**: the last 30 deploys in the trail and drift on. Set your time zone yourself.
+- **Minimal**: `personality` off, a pending row cut to its first line and what must be seen,
+  the In sync section off, no count of 0, and the last 3 deploys in the trail.
+- **Classic**: every dashboard key, the layout and drift at the action's defaults.
+- **Ops desk**: the last 30 deploys in the trail, drift on, every line of a pending row and
+  every count. Set your time zone yourself.
 
-### Save opens a pull request
+No template turns `redact` on. To keep resource names and values off the issue, set Redact
+yourself, under The dashboard.
 
-**Save** opens one pull request on the branch `sluiceway/dashboard`, from the commit the dashboard
-was scanned at. It changes `sluiceway.yaml` and nothing else, keeps every other key and every
-comment as they were, and its description names each change and shows the dashboard as it will
-look. A person merges it, and the next scan draws the dashboard that way.
+### A change is a pull request
+
+A bar above the dashboard counts your changes, with **Discard** and **Review pull request**.
+Review shows the pull request before it exists: its title, its branch, `sluiceway/dashboard`,
+and the diff of `sluiceway.yaml`. **Open the pull request** then opens it, from the commit the
+dashboard was scanned at. It changes `sluiceway.yaml` and nothing else, keeps every other key and
+every comment as they were, and its description names each change and shows the dashboard as it
+will look. A person merges it, and the next scan draws the dashboard that way.
 
 The app never changes the file behind anyone's back. While a pull request from edit mode is open,
 the app names it rather than open a second one. When the file moved on the default branch since
@@ -193,5 +228,10 @@ The org's Settings tab holds what the app decides, and nothing that belongs in `
 - **Active repos**: which adopted repos your plan shows.
 - **The installation**: the repos the app is installed on, with a link to GitHub's page to change
   them.
-- **Access per repo**: whether each adopted repo names the app in `recordWriters`, with a button
-  that opens the one-line pull request to add it or take it out.
+- **The app's access**: whether each adopted repo names the app in `recordWriters`, with a button
+  that opens the pull request to add it or take it out.
+- **Second approver**: what your plan does with the Sluiceway protection rule, and who may
+  approve. See <a href={page("hosted-app/plans")}>Plans and adopted repos</a>.
+- **Delete everything**, last and apart: an admin of the org, or the person whose account it is,
+  deletes all the app keeps of the installation at once. See
+  <a href={page("hosted-app/what-the-app-keeps#if-you-stop-using-the-app")}>If you stop using the app</a>.

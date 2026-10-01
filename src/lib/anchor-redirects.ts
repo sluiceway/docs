@@ -33,6 +33,10 @@ export const ANCHOR_REDIRECTS: Record<string, Record<string, string>> = {
   "what-it-looks-like": {
     "the-parts": "what-it-looks-like#read-the-dashboard-from-the-top",
   },
+  // Edit mode has no Save: the button is Review pull request (2026-10-01).
+  "hosted-app/using-the-app": {
+    "save-opens-a-pull-request": "hosted-app/using-the-app#a-change-is-a-pull-request",
+  },
   "the-header": {
     "the-pictures": "the-header#every-picture-one-per-state",
     "with-the-destroy-sign": "the-header#signs-for-deletes-and-replaces",

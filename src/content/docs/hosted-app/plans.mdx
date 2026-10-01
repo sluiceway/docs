@@ -56,24 +56,33 @@ The adopted repos past the line are listed greyed out, in a group of their own c
 free tier, or past your plan's name:
 
 - **The org view** lists each by name with its state counts, and no stacks or rows.
-- **Their own pages** are not shown, so Rescan for them opens the dashboard on GitHub.
+- **Their own pages** show the repo's name, its state counts, **Open the dashboard on GitHub**
+  and **Choose the active repos**, and no stacks. Their rescan box is on that dashboard.
 - **The audit log** says how many lines each one has, and not the lines. The CSV holds what the
   page shows.
 - **Insights** name each one with its deploys, and do not count them.
 
 <Callout kind="note" title="Nothing about deploying changes">
   A repo past the line keeps its dashboard on GitHub, and it works as always: scans, ticks and
-  deploys go on exactly as they did. The app keeps its facts, and shows them again as soon as
-  the repo is active.
+  deploys go on exactly as they did. The app keeps its facts as it does for an active repo, and
+  shows them again as soon as the repo is active.
 </Callout>
 
 ## History
 
 The audit log shows the deploys inside your plan's history, and its last sentence says how far
-back that is and on which plan. Nothing is deleted at the line: when your plan grows, the older
-lines are shown again.
+back that is and on which plan. What is older than your plan's history is deleted, each night.
+A bigger plan keeps more from the day it starts. It does not bring back lines that were deleted
+before it.
 
-Insights always cover the last 12 weeks against the 12 before, on every plan.
+One thing is kept whatever its age: the newest state of each stack, with its last deploy, so
+the Overview tab can always draw the row.
+
+Insights cover 12 weeks against the 12 before, and 6 months or 1 year on a plan whose history
+covers them. On Free only the last 30 days have their numbers.
+
+<a href={page("hosted-app/what-the-app-keeps#how-long-it-keeps-it")}>How long it keeps it</a>
+has every window in one list.
 
 ## Upgrade
 
@@ -87,8 +96,8 @@ line. Choose a plan, monthly or yearly, and pay on Stripe's Checkout page. There
 
 - **VAT**: Stripe works out the tax from your billing address. A business in the EU can enter
   its VAT id.
-- **A promotion code** goes in on the Checkout page. A code that brings the price to 0 needs no
-  card, and the Plan section names the code.
+- **A promotion code** goes in on the Checkout page of a monthly plan. The yearly Checkout takes
+  none. A code that brings the price to 0 needs no card, and the Plan section names the code.
 
 You come back to Settings, which says Stripe is confirming the payment until it has.
 
@@ -98,9 +107,11 @@ You come back to Settings, which says Stripe is confirming the payment until it 
 Team Plus or monthly and yearly, update your card, read your invoices, or cancel there.
 
 When you cancel, or a payment fails, your plan holds until the end of the period you paid for,
-and the installation falls back to Free after it. Nothing is deleted: the app shows what Free
-shows, and shows the rest again if a plan starts again. Settings says when your plan renews or
-ends, and what then happens.
+and the installation falls back to Free after it. The app then shows what Free shows, and
+keeps the wider history for 30 days more. Start a paid plan again within those 30 days and
+nothing is lost. After them, the lines older than Free's history are deleted. A move to a
+smaller plan keeps its wider history for 30 days in the same way. Settings says when your plan
+renews or ends, and the day the older lines are deleted.
 
 To pay by invoice, write to <a href="mailto:hello@sluiceway.dev">hello@sluiceway.dev</a>. An
 invoice plan is changed the same way.

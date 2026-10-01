@@ -51,6 +51,28 @@ for that shape.
 - **No card, email, address, business name or tax id.** Stripe keeps those. The app keeps your
   plan, what Stripe says about the subscription, when the period ends, and Stripe's ids.
 
+## How long it keeps it
+
+- **History**: deploys, ticks, rescans and merges are kept for your plan's history, which is 30
+  days on Free, 13 months on Team and 3 years on Team Plus. What is older is deleted each night.
+- **The newest state of each stack** is kept whatever its age: its last deploy, a deployment
+  record that is still open, and the newest scan of its repo.
+- **A plan that narrows**, by falling back to Free or moving to a smaller plan, keeps its wider
+  history for 30 days. A paid plan that starts again within them loses nothing. After them,
+  what the new plan does not keep is deleted.
+- **A repo taken out of the installation**: its facts are kept for 30 days, then deleted.
+- **An uninstalled app**: everything of the installation is kept for 30 days, then deleted.
+- **Delete everything**, in the org's Settings, deletes it all at once.
+- **Backups**: the database is backed up each night, and a backup is kept for up to 12 months.
+  Deleted data leaves the backups as they age out.
+
+After a deletion the app keeps the account's name on GitHub and the date, to confirm the
+deletion when you ask.
+
+The <a href="https://sluiceway.dev/terms">terms</a> and the
+<a href="https://sluiceway.dev/privacy">privacy policy</a> say the same, with what is kept
+about a person: sessions, tokens and logs.
+
 ## No cloud credential, ever
 
 The app never holds, asks for or supplies a cloud or infrastructure credential. Your credentials
@@ -86,8 +108,8 @@ The app is a view of what GitHub holds, and catches up with it.
   last point it saw: the dashboard, the deployment records and the workflow runs. GitHub sends
   the webhooks it missed again too. A downtime delays what the app shows and never loses it.
 - **What the app shows follows GitHub.** A dashboard written again, a record closed, a repo
-  removed from the installation: the app brings its facts up to date. A repo the installation no
-  longer covers keeps its lines in the audit log.
+  removed from the installation: the app brings its facts up to date. The facts of a repo the
+  installation no longer covers are kept for 30 days, then deleted.
 
 ## If you stop using the app
 
@@ -95,3 +117,9 @@ Uninstall it from GitHub's settings for the installation. Your dashboards, your 
 your deploys go on as before. Everything edit mode wrote is a documented key of
 `sluiceway.yaml` that the action reads on its own, so the dashboard looks the same. Take
 `sluiceway[bot]` out of `recordWriters` when you no longer want the app to open records.
+
+The app keeps what it has of the installation for 30 days after the uninstall, then deletes it.
+To have it gone at once, use **Delete everything**, the last section of the org's Settings tab,
+in place of uninstalling: an admin of the org, or the person whose account it is, confirms by
+typing the org's name, the app deletes everything it keeps of the installation, and then
+uninstalls itself. While Stripe still charges a plan, it asks you to cancel the plan first.

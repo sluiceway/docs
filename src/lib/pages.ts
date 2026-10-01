@@ -275,6 +275,57 @@ function generated(from: string, markdown: string): Part {
   return { from, markdown, headings: [] };
 }
 
+// The steps of "Run the action yourself".
+
+/** The README paragraph about a first scan that goes wrong, by its bold opening. */
+const FIRST_SCAN = "Before the first scan";
+
+/**
+ * The README's "Get started" section as a page a reader can follow. The README writes its
+ * steps as paragraphs that each open on a bold sentence, and ends on the workflow file. Here
+ * each step is a numbered heading, so there is a count, a place to come back to and an entry
+ * in "On this page", and the file is handed back apart, for the page to show first. The
+ * paragraph about a first scan that goes red is not a step: it is handed back as `after`,
+ * under a heading that says when to read it.
+ *
+ * Throws when the section no longer has that shape, so a rewritten README is looked at.
+ */
+export function selfRunSteps(markdown: string): {
+  workflow: string;
+  steps: string[];
+  after: string;
+} {
+  const workflow = markdown.match(/^```yaml\n[\s\S]*?\n```$/m)?.[0];
+  if (workflow === undefined) {
+    throw new Error('The README\'s "Get started" section has no workflow file in a yaml block.');
+  }
+  const paragraphs = markdown
+    .replace(workflow, "")
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph !== "")
+    .map((paragraph) => {
+      const step = paragraph.match(/^\*\*(.+?)\.\*\*\s+([\s\S]+)$/);
+      if (!step) {
+        throw new Error(
+          `A paragraph of the README's "Get started" section does not open on a bold sentence: "${paragraph.slice(0, 60)}".`,
+        );
+      }
+      return { title: step[1] ?? "", body: step[2] ?? "" };
+    });
+  const red = paragraphs.find((paragraph) => paragraph.title === FIRST_SCAN);
+  if (red === undefined) {
+    throw new Error(`The README's "Get started" section has no "${FIRST_SCAN}" paragraph.`);
+  }
+  return {
+    workflow,
+    steps: paragraphs
+      .filter((paragraph) => paragraph !== red)
+      .map(({ title, body }, i) => `### ${i + 1}. ${title}\n\n${body}`),
+    after: `### When the first scan is red\n\n${red.body}`,
+  };
+}
+
 // The decision records.
 
 export interface DecisionRecord {
@@ -472,6 +523,10 @@ export function pages(repoUrl: string, base: string): Page[] {
     .filter((h) => h.depth === 2)
     .map((h) => plainHeading(h.raw).replace(/\[([^\]]+)\]\([^)]*\)/, "$1"));
 
+  // The README's steps for running the action alone, as one heading and its body.
+  const getStarted = sectionPart(README, "Get started", { retitle: "The steps" });
+  const selfRun = selfRunSteps(getStarted.markdown.split("\n").slice(1).join("\n"));
+
   return [
     {
       id: "how-it-works",
@@ -510,12 +565,32 @@ export function pages(repoUrl: string, base: string): Page[] {
             `With the app, [one pull request](${base}/${GET_STARTED.withTheApp}/) holds the workflow and a first \`sluiceway.yaml\`, and the console guides the rest. [How the app and the action work together](${base}/${GET_STARTED.together}/) says what the app adds and what stays the same.`,
           ].join("\n"),
         ),
-        // First, so a reader checks the runner and tool versions before any step. Here since the
-        // README moved it, so get-started/#requirements keeps working.
+        // The file first: it is what the reader came for, and the steps say what goes in it.
+        generated(
+          README,
+          [
+            "## The workflow file",
+            "",
+            "This is all the action needs: one job with one Sluiceway step, in `.github/workflows/deploy-dashboard.yml` on the default branch. The comments mark where your own steps go. Read it now, and merge it at the end of the steps below.",
+            "",
+            selfRun.workflow,
+          ].join("\n"),
+        ),
+        // Before the steps, so a reader checks the runner and tool versions first. Here since
+        // the README moved it, so get-started/#requirements keeps working.
         sectionPart("docs/reference.md", "Requirements"),
         // Under a heading of its own, so the steps do not read as part of Requirements. The id
         // stays get-started, which links to the README section expect.
-        sectionPart(README, "Get started", { retitle: "The steps" }),
+        { ...getStarted, markdown: getStarted.markdown.split("\n", 1)[0] ?? "" },
+        // The last step says to add the file, which is no longer under it.
+        generated(
+          README,
+          [
+            ...selfRun.steps,
+            `The file is [at the top of this page](${base}/${GET_STARTED.runTheActionYourself}/#the-workflow-file).`,
+            selfRun.after,
+          ].join("\n\n"),
+        ),
       ],
     },
     {

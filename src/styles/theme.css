@@ -54,8 +54,13 @@
      the header clear of it. */
   --sl-menu-button-size: 44px;
   /* `ch` is the width of Inter's "0", about 1.33 average characters: 54ch holds a line of
-     about 72 characters, the measure 30-pages.md asks for. */
-  --sl-content-width: 54ch;
+     about 72 characters, the measure for prose. */
+  --sw-measure: 54ch;
+  /* The column is wider than the measure, for what is read whole and not as a paragraph: a
+     code block and a table take all of it. Beside "On this page" on a 1340px screen that comes
+     to about 80 characters of code, and on a wider screen to about 90. Everything else stays
+     at the measure, see "The measure" below. */
+  --sl-content-width: 86ch;
   --sl-sidebar-width: 18rem;
 }
 
@@ -304,6 +309,22 @@ mobile-starlight-toc summary .toggle {
 .sw-lead {
   font-size: 18px;
   line-height: 30px;
+}
+
+/* The measure. Prose, headings, lists, callouts and pictures stay at 54ch in a column that is
+   wider, and code blocks and tables run to the column's edge, so a line of a workflow is read
+   whole and not scrolled to. `:where` keeps this at no specificity: an element with a width of
+   its own keeps it. The start page has a layout of its own (landing.css). */
+:where(:root:not([data-has-hero]) .sl-markdown-content)
+> :where(:not(.expressive-code, .sw-codeblock, table)) {
+  max-width: var(--sw-measure);
+}
+:root:not([data-has-hero]) h1#_top {
+  max-width: var(--sw-measure);
+}
+/* A page with no sidebar and no hero, the 404, is one centred column of prose. */
+:root:not([data-has-sidebar], [data-has-hero]) {
+  --sl-content-width: var(--sw-measure);
 }
 
 /* Links: ink with a `water-deep` underline, the design system's sw-link. */

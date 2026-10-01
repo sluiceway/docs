@@ -27,6 +27,7 @@ import {
   urlFor,
 } from "../lib/pages";
 import { actionNames, schemaKeys } from "../lib/reference";
+import { outOfSearch } from "../lib/site";
 import { REPO_URL } from "../lib/source";
 
 interface Heading {
@@ -61,6 +62,7 @@ export function actionDocsLoader(): Loader {
             ...(page.sidebarLabel ? { sidebar: { label: page.sidebarLabel } } : {}),
             ...(page.headerPicture ? { headerPicture: page.headerPicture } : {}),
             ...(page.eyebrow ? { eyebrow: page.eyebrow } : {}),
+            ...(outOfSearch(page.id) ? { pagefind: false } : {}),
           },
         });
         const body = page.parts.map((p) => p.markdown).join("\n\n");

@@ -87,9 +87,10 @@ accept, everything the pull request holds, and what to do when there is none.
 ## Tick
 
 Tick a stack's box on the dashboard issue, or in the console on the repo's Dashboard tab. The app
-picks the tick up within about a second, judges it with the action's own tick rule, opens the
-deployment record and starts your workflow. Your runner previews the stack again and deploys only
-when the change is the one you ticked.
+picks a tick on the issue up within about a second. A tick in the console holds five seconds
+first, with an **Undo** button. The app then judges the tick with the action's own tick rule,
+opens the deployment record and starts your workflow. Your runner previews the stack again and
+deploys only when the change is the one you ticked.
 
 <a href={ROUTES.usingTheDashboard}>Using the dashboard</a> explains the rows and the boxes, and
 <a href={page("hosted-app/using-the-app")}>Using the app</a> the console.

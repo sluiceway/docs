@@ -57,6 +57,8 @@ Every page has one title and one description. The pages read from the action tak
 
 The share image, `share.png`, is Penny's `in-sync` header in light from the action's `assets/mascot` at the pinned tag, placed on a 1200 by 630 ground and rendered with resvg on every build (`src/lib/share-image.ts`). A new release of the art changes it with no work here.
 
+The site's own search (Pagefind) leaves the decision records out: `outOfSearch` in `src/lib/site.ts` names them, and the loader sets `pagefind: false` on each. They are most of the pages and use the product's words more than the guides do, so with them in the index a search for "tick" or "drift" answered with records. Weighing them down was tried first and does not work in Pagefind: a title match is boosted apart from a page's weight. The list of records stays in the index, so "decision records" or a record's number finds it, and search engines still index every record. `test/search.test.ts` asks the built index the questions a new user types.
+
 The sitemap (`sitemap-index.xml`) and `robots.txt` follow `DOCS_SITE` and `DOCS_BASE`. The pages in `UNLISTED` in `src/lib/site.ts` (the 404 and the style check) carry `noindex` and stay out of the sitemap. `test/built-site.test.ts` checks all of this in `dist/`.
 
 The `lighthouse` job in CI builds with the production address and runs Lighthouse three times on each URL in `lighthouserc.json`, as a phone. It fails when a median score for performance, accessibility, best practices or SEO is under 90 on any of them, and keeps the reports as the `lighthouse` artifact. To run it locally you need Chrome:
