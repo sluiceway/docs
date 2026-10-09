@@ -22,6 +22,7 @@ import {
   README_UNMAPPED,
   recordId,
   records,
+  recordsCitedIn,
   siteMap,
   source,
   urlFor,
@@ -48,7 +49,15 @@ export function actionDocsLoader(): Loader {
       const all = pages(REPO_URL, base);
       warnUnmappedReadme(ctx, all);
       const site = await checkedSiteMap(ctx, all, url);
-      const recordUrls = new Map(records().map((r) => [r.number, url(recordId(r))]));
+      const list = records();
+      // A number two records share links by the file that cites it (SHARED_NUMBERS).
+      const recordUrls = (part: Part) =>
+        new Map(
+          [...recordsCitedIn(part.from, part.markdown, list)].map(([n, r]) => [
+            n,
+            url(recordId(r)),
+          ]),
+        );
 
       for (const page of all) {
         const { html, headings } = await renderPage(ctx, page, site, recordUrls);
@@ -161,7 +170,7 @@ async function renderPage(
   ctx: LoaderContext,
   page: Page,
   site: SiteMap,
-  recordUrls: Map<string, string>,
+  recordUrls: (part: Part) => Map<string, string>,
 ): Promise<{ html: string; headings: Heading[] }> {
   const headings: Heading[] = [];
   const html: string[] = [];
@@ -181,7 +190,7 @@ async function renderPage(
     });
     out = rewriteLinks(out, part.from, site, (message) => ctx.logger.warn(message));
     out = linkRecords(out, {
-      urls: recordUrls,
+      urls: recordUrls(part),
       recordsContext: page.recordsContext ?? false,
       self,
     });
