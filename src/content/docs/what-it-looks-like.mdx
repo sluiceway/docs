@@ -5,7 +5,7 @@ description: The example dashboard from Sluiceway's README, rendered by Sluicewa
 
 import ExampleDashboard from "../../components/ExampleDashboard.astro";
 import { inlineHtml, readmeDashboardIntro } from "../../lib/action-text";
-import { glossary, ROUTES } from "../../lib/routes";
+import { glossary, page, ROUTES } from "../../lib/routes";
 
 export const intro = readmeDashboardIntro();
 
@@ -26,7 +26,10 @@ export const intro = readmeDashboardIntro();
   <a href={glossary("Busy stack")}>busy</a>. Under it, the
   <a href={glossary("Scan line")}>scan line</a> says which commit the last scan checked out, when, in which run, and when the
   last full scan was. While a scan runs, a <a href={glossary("Scan-running line")}>scan-running line</a> under it says
-  since when and links the run, which this example does not show.
+  since when and links the run, which this example does not show. Neither does it show
+  <a href={page("guides/workflow#a-run-that-failed")}>the lines about runs that failed</a>: a
+  run that failed before Sluiceway ran, or found a problem in `sluiceway.yaml`, says so under
+  the scan line, and the next scan that works counts the runs that failed since the one before.
 - **Deploying.** While a stack deploys, its section comes before every other. `apps/api:prod`
   deploys, and its row starts with a <a href={glossary("Spinner")}>spinner</a>. `apps/worker:prod` is a
   <a href={glossary("Queued stack")}>queued stack</a>: it waits for the stack it depends on. Both rows say
@@ -61,7 +64,8 @@ export const intro = readmeDashboardIntro();
   one row, with deploys off, or on a read-only dashboard.
 - **<a href={glossary("Drift")}>Drifted</a> rows.** Real infrastructure changed outside the code. `monitoring/grafana:prod` has
   a property changed, and `platform/external-dns:prod` has a record gone. Deploying a stack puts
-  it back as its code says.
+  it back as its code says. A stack whose drift check failed keeps its row as it was and says
+  `drift not checked`.
 - **The <a href={glossary("Confirm box")}>confirm box</a>.** Someone ticked `Repair all 2 drifted stacks`, and the next run put a
   confirm box where the bulk box was. It names the stacks and who asked. A tick on the confirm
   box deploys them, as a tick on each row. Each stack is judged by its own

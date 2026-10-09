@@ -164,10 +164,12 @@ describe("the records index", () => {
     const said = record("0009", "0096");
     const all = [early, said, record("0095", "", "0003 0009"), record("0096", "", "0003 0009")];
     expect(changesFromLeads(early, all)).toEqual([
-      { kind: "Amended by", records: ["0095"] },
-      { kind: "Amended by", records: ["0096"] },
+      { kind: "Amended by", records: ["0095"], file: "docs/adr/0095-x.md" },
+      { kind: "Amended by", records: ["0096"], file: "docs/adr/0096-x.md" },
     ]);
-    expect(changesFromLeads(said, all)).toEqual([{ kind: "Amended by", records: ["0095"] }]);
+    expect(changesFromLeads(said, all)).toEqual([
+      { kind: "Amended by", records: ["0095"], file: "docs/adr/0095-x.md" },
+    ]);
   });
 
   test("reads the leads of the real records", () => {
@@ -188,7 +190,7 @@ describe("the records index", () => {
     expect(early).toBeDefined();
     if (!early) return;
     expect(early.changes.some((c) => c.records.includes("0096"))).toBe(true);
-    expect(changesFromLeads(early, all)).toEqual(
+    expect(changesFromLeads(early, all).map(({ kind, records }) => ({ kind, records }))).toEqual(
       ["0095", "0102", "0104", "0109"].map((n) => ({ kind: "Amended by", records: [n] })),
     );
   });
