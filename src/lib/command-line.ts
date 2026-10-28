@@ -192,6 +192,7 @@ export const EXAMPLES: ExampleGroup[] = [
           run: null,
           lastDeploy: null,
           at: "2026-09-26T08:00:00Z",
+          confirm: null,
         },
         exit: 0,
       },
@@ -287,7 +288,7 @@ export const EXAMPLES: ExampleGroup[] = [
   {
     heading: "`sluiceway tick`",
     intro:
-      "Ticks the stack as you and stops once the app shows the deployment record. With `--json` the answer is two of the app's: `tick`, what the tick came to, and `deploy`, the record as the app showed it. The audit log's line for it says `via the command line`.",
+      "Ticks the stack as you and stops once the app shows the deployment record. With `--json` the answer is two of the app's: `tick`, what the tick came to, and `deploy`, the record as the app showed it. The audit log's line for it says `via the command line`. The last example has `apps/api:prod` depend on `network:prod`, ticked first, so with `--yes` its record is queued behind it.",
     examples: [
       {
         command: "sluiceway tick infra network:prod",
@@ -309,6 +310,7 @@ export const EXAMPLES: ExampleGroup[] = [
               status: "https://console.sluiceway.dev/api/v1/orgs/acme/repos/infra/deployments/4242",
             },
             dashboard: DASHBOARD,
+            confirm: null,
           },
           deploy: {
             deployment: 4242,
@@ -336,6 +338,15 @@ export const EXAMPLES: ExampleGroup[] = [
           exit: 5,
         },
         exit: 5,
+      },
+      {
+        command: "sluiceway tick infra apps/api:prod --yes",
+        words: [
+          "Asked GitHub to deploy apps/api:prod once network:prod went out. Its deployment record is queued, and resolve starts it then.",
+          "Deployment record 4243: waiting to start.",
+          `The run of resolve that starts it opens a deployment record of its own and deploys it through a fresh preview and the hash check. Follow it with sluiceway stack infra apps/api:prod, or on the dashboard: ${DASHBOARD}`,
+        ].join("\n"),
+        exit: 0,
       },
     ],
   },

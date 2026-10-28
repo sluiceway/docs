@@ -332,8 +332,11 @@ export interface DecisionRecord {
   number: string;
   file: string;
   title: string;
-  /** "Amended by 0051" and the like, from the lines above the first h2. */
-  changes: { kind: string; records: string[] }[];
+  /**
+   * "Amended by 0051" and the like, from the lines above the first h2. `file` is the record's
+   * file when it is known, as for one the index adds from a later record's lead.
+   */
+  changes: { kind: string; records: string[]; file?: string }[];
   /**
    * The records this one says it amends or supersedes, from its "Amends 0003, 0018 and 0061"
    * lead. The index turns them into "Amended by" on those records when the earlier record
@@ -398,6 +401,74 @@ export function records(): DecisionRecord[] {
         leads,
       };
     });
+}
+
+/**
+ * Numbers the action gave to more than one record. A number alone cannot say which one a file
+ * means, so each file that cites it names its record here. The build fails on a shared number
+ * this does not cover, and on a file that cites one without an entry.
+ */
+export const SHARED_NUMBERS: Record<string, Record<string, string>> = {
+  // v0.50.0 numbered both records of 2026-10-07 0119.
+  "0119": {
+    "docs/build-plan.md":
+      "0119-a-write-that-went-over-an-edit-writes-it-back-and-the-walk-looks-through-it.md",
+    "docs/adr/0004-issue-body-is-a-cache-of-row-blocks.md":
+      "0119-a-write-that-went-over-an-edit-writes-it-back-and-the-walk-looks-through-it.md",
+    "docs/adr/0017-the-bot-is-always-the-workflow-token.md":
+      "0119-a-write-that-went-over-an-edit-writes-it-back-and-the-walk-looks-through-it.md",
+    "docs/adr/0025-the-edit-history-names-the-ticker-and-the-event-is-only-a-wake-up.md":
+      "0119-a-write-that-went-over-an-edit-writes-it-back-and-the-walk-looks-through-it.md",
+    "docs/adr/0120-a-run-that-failed-says-so-under-the-scan-line.md":
+      "0119-a-write-that-went-over-an-edit-writes-it-back-and-the-walk-looks-through-it.md",
+    "docs/workflow.md":
+      "0119-the-open-pull-requests-are-read-with-pull-requests-read-alone-and-a-list-that-fails-is-a-warning.md",
+    "docs/split-workflow.md":
+      "0119-the-open-pull-requests-are-read-with-pull-requests-read-alone-and-a-list-that-fails-is-a-warning.md",
+    "docs/later.md":
+      "0119-the-open-pull-requests-are-read-with-pull-requests-read-alone-and-a-list-that-fails-is-a-warning.md",
+  },
+};
+
+/**
+ * The records the Markdown of `from` can cite, by number. A shared number it cites resolves
+ * through SHARED_NUMBERS, and a record citing its own number means itself.
+ */
+export function recordsCitedIn(
+  from: string,
+  markdown: string,
+  list: DecisionRecord[],
+): Map<string, DecisionRecord> {
+  const out = new Map<string, DecisionRecord>();
+  for (const number of new Set(list.map((r) => r.number))) {
+    const all = list.filter((r) => r.number === number);
+    if (all.length === 1) {
+      out.set(number, all[0] as DecisionRecord);
+      continue;
+    }
+    const own = all.find((r) => r.file === from);
+    if (own) {
+      out.set(number, own);
+      continue;
+    }
+    // A number that is already a link, as in the records index, is not cited again.
+    const text = markdown.replace(/\[[^\]]*\]\([^)]*\)/g, "");
+    if (!new RegExp(String.raw`\b${number}\b`).test(text)) continue;
+    out.set(number, sharedRecord(number, from, all));
+  }
+  return out;
+}
+
+function sharedRecord(number: string, from: string, all: DecisionRecord[]): DecisionRecord {
+  const file = SHARED_NUMBERS[number]?.[from];
+  const found = all.find((r) => r.file === `docs/adr/${file}`);
+  if (!found) {
+    throw new Error(
+      `${from} cites ${number}, which ${all.map((r) => r.file).join(" and ")} share. ` +
+        "Say in SHARED_NUMBERS in src/lib/pages.ts which one it means.",
+    );
+  }
+  return found;
 }
 
 /**
@@ -511,6 +582,16 @@ export function changelogHeadings(markdown: string, repoUrl: string): string {
 
 export function pages(repoUrl: string, base: string): Page[] {
   const recordList = records();
+  for (const [number, citing] of Object.entries(SHARED_NUMBERS)) {
+    const all = recordList.filter((r) => r.number === number);
+    for (const [from, file] of Object.entries(citing)) {
+      if (all.length < 2 || !all.some((r) => r.file === `docs/adr/${file}`)) {
+        throw new Error(
+          `SHARED_NUMBERS says ${from} means docs/adr/${file}, which the pinned tag does not have as a shared ${number}.`,
+        );
+      }
+    }
+  }
   for (const number of Object.keys(RECORD_PICTURES)) {
     if (!recordList.some((r) => r.number === number)) {
       throw new Error(
@@ -980,16 +1061,18 @@ function exampleFiles(): string {
 // The index of the decision records.
 
 function recordIndex(list: DecisionRecord[], base: string): string {
-  const byNumber = new Map(list.map((r) => [r.number, r]));
-  const link = (n: string) => {
-    const r = byNumber.get(n);
-    return r ? `[${n}](${base}/${recordId(r)}/)` : n;
-  };
   const rows = list.map((r) => {
+    const cited = recordsCitedIn(r.file, source(r.file).markdown, list);
+    const link = (n: string, file?: string) => {
+      const to = file ? list.find((one) => one.file === file) : cited.get(n);
+      return to ? `[${n}](${base}/${recordId(to)}/)` : n;
+    };
     const changes = [...r.changes, ...changesFromLeads(r, list)]
-      .map((c) => [c.kind, c.records.map(link).join(", ")].filter(Boolean).join(" "))
+      .map((c) =>
+        [c.kind, c.records.map((n) => link(n, c.file)).join(", ")].filter(Boolean).join(" "),
+      )
       .join("; ");
-    return `| ${link(r.number)} | ${r.title.replace(/\|/g, "\\|")} | ${changes} |`;
+    return `| ${link(r.number, r.file)} | ${r.title.replace(/\|/g, "\\|")} | ${changes} |`;
   });
   return [
     "Each record explains one decision about Sluiceway and why it was made. A later record can amend or supersede an earlier one, and the last column says which.",
@@ -1016,7 +1099,7 @@ export function changesFromLeads(
       if (!lead.records.includes(record.number) || said.has(`${lead.kind} ${later.number}`)) {
         continue;
       }
-      out.push({ kind: lead.kind, records: [later.number] });
+      out.push({ kind: lead.kind, records: [later.number], file: later.file });
     }
   }
   return out;
